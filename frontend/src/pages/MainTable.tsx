@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Tooltip } from 'antd';
+import { Pagination, Table, Tooltip } from 'antd';
 import type { TableColumnsType } from 'antd';
 import { DownloadOutlined } from '@ant-design/icons';
+import axios from 'axios';
 
 interface DataType {
   key: React.Key;
@@ -14,9 +15,10 @@ const columns: TableColumnsType<DataType> = [
   {
     title: 'Full Name',
     width: 100,
-    dataIndex: 'name',
+    dataIndex: 'postId',
     key: 'name',
     fixed: 'left',
+    filters: []
   },
   {
     title: 'Age',
@@ -27,13 +29,13 @@ const columns: TableColumnsType<DataType> = [
     sorter: true,
   },
   { title: 'Column 1', 
-    dataIndex: 'address', 
+    dataIndex: 'name', 
     key: '1',
     ellipsis: {
     showTitle: false,
   },
     render: (address) => (
-      <Tooltip placement="topLeft" title={address}>
+      <Tooltip placement="topLeft" title={"Ты..."}>
         {address}
       </Tooltip>
   ), 
@@ -77,16 +79,29 @@ const data: DataType[] = [
 
 
 const MainTable: React.FC = () => {
+  
+  const [Data, setData] = useState([]);
   const [hasData, setHasData] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(()=> {
-    setTimeout(()=>{
-      setLoading(false)
+  useEffect( () => {
+
+    const getData = async () => {
+      let {data} = await axios.get('https://jsonplaceholder.typicode.com/comments?_page=2&_limit=100')
+      const {headers} = await axios.get('https://jsonplaceholder.typicode.com/comments?_page=2&_limit=100')
+      
+      const totalCount = await headers['x-total-count']
+    
+      setData(data)
       setHasData(true)
-    }, 2000)
+      setLoading(false)
+      console.log(totalCount)
+    }
+    getData()
   },[])
 
+
+  
   return <Table 
   
   loading={loading}
@@ -99,7 +114,8 @@ const MainTable: React.FC = () => {
     onMouseLeave: event => {}, // mouse leave row
   };
 }}
-  columns={columns} dataSource={hasData ? data : []} scroll={{ x: 1300 }} />;
+  columns={columns} pagination={{}} dataSource={hasData ? Data : []} scroll={{ x: 1300 }} />
+
  
 }
 export default MainTable;

@@ -1,6 +1,9 @@
-import { Breadcrumb, Layout, Menu } from 'antd';
+import { Breadcrumb, Layout, Menu, Pagination } from 'antd';
 import React from 'react';
 import MainTable from './MainTable';
+import MainForm from './MainForm';
+import MainFormTwo from './MainFormTwo';
+import Load from './LoadData';
 
 const { Header, Content, Footer } = Layout;
 
@@ -28,7 +31,11 @@ const App: React.FC = () => (
         <Breadcrumb.Item>App</Breadcrumb.Item>
         <Breadcrumb.Item>List name1</Breadcrumb.Item>
       </Breadcrumb>
-      <MainTable/>
+      {/* <MainTable/> */}
+      {/* <MainForm/> */}
+      {/* <Load/> */}
+      <MainFormTwo/>
+      {/* <Pagination defaultCurrent={1} total={50} /> */}
     </Content>
     <Footer style={{ textAlign: 'center' }}>2024</Footer>
   </Layout>
