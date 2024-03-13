@@ -21,6 +21,7 @@ import Title from 'antd/es/typography/Title';
 import axios from 'axios';
   import Mock from 'mockjs';
   import { useEffect, useState } from 'react';
+import ModalInst from './Modal';
   
   export const waitTime = (time: number = 100) => {
     return new Promise((resolve) => {
@@ -40,7 +41,7 @@ import axios from 'axios';
 
 
     const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const options: SelectProps['options'] = [
         {
             label: '1',
@@ -73,7 +74,7 @@ import axios from 'axios';
       }
 
       setTimeout(()=> {
-        setLoading(false)
+        setLoading(true)
       },3000)
       // getData()
 
@@ -88,6 +89,7 @@ import axios from 'axios';
           padding: 24,
         }}
       >
+        <ModalInst status={loading}/>
         <Switch
           style={{
             marginBlockEnd: 16,

@@ -3,6 +3,9 @@ import { Pagination, Table, Tooltip } from 'antd';
 import type { TableColumnsType } from 'antd';
 import { DownloadOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import { Link} from 'react-router-dom';
+import { redirect } from 'react-router-dom';
+import ModalInst from './Modal';
 
 interface DataType {
   key: React.Key;
@@ -42,7 +45,8 @@ const columns: TableColumnsType<DataType> = [
 
 },
 
-  { title: 'Column 2', dataIndex: 'address', key: '2'},
+  { title: 'Column 2', dataIndex: 'address', key: '2'
+},
   { title: 'Column 3', dataIndex: 'address', key: '3' },
   { title: 'Column 4', dataIndex: 'address', key: '4' },
   { title: 'Column 5', dataIndex: 'address', key: '5' },
@@ -62,22 +66,6 @@ const columns: TableColumnsType<DataType> = [
   },
 ];
 
-const data: DataType[] = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York ParkNew York ParkNew York ParkNew York Park',
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 40,
-    address: 'London Park',
-  },
-];
-
-
 const MainTable: React.FC = () => {
   
   const [Data, setData] = useState([]);
@@ -88,34 +76,48 @@ const MainTable: React.FC = () => {
 
     const getData = async () => {
       let {data} = await axios.get('https://jsonplaceholder.typicode.com/comments?_page=2&_limit=100')
-      const {headers} = await axios.get('https://jsonplaceholder.typicode.com/comments?_page=2&_limit=100')
-      
-      const totalCount = await headers['x-total-count']
+
     
       setData(data)
       setHasData(true)
       setLoading(false)
-      console.log(totalCount)
+
     }
     getData()
   },[])
 
 
   
-  return <Table 
+  return (
+  <>
+  <ModalInst status={false}/>
+  <Table 
   
   loading={loading}
-  onRow={(record, rowIndex) => {
-  return {
-    onClick: event => {console.log(record)}, // click row
-    onDoubleClick: event => {}, // double click row
-    onContextMenu: event => {}, // right button click row
-    onMouseEnter: event => {}, // mouse enter row
-    onMouseLeave: event => {}, // mouse leave row
-  };
-}}
+  onRow={(i) => ({
+    onClick: (e) => 
+        redirect('/')
+})}
+//   onRow={(record, rowIndex) => {
+  
+//   return {
+//     onClick: event => {
+//       console.log(record); 
+//       // props.history.push(`/table/${record.name}`)
+//       // redirect(`/table/${record.name}`)
+//       // redirect(`/table/${record.name}`)
+//   }, // click row
+//     onDoubleClick: event => {}, // double click row
+//     onContextMenu: event => {}, // right button click row
+//     onMouseEnter: event => {}, // mouse enter row
+//     onMouseLeave: event => {}, // mouse leave row
+//   };
+// }}
   columns={columns} pagination={{}} dataSource={hasData ? Data : []} scroll={{ x: 1300 }} />
 
+  
+  </>)
+  
  
 }
 export default MainTable;
