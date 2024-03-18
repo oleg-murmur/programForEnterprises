@@ -94,25 +94,21 @@ const MainTable: React.FC = () => {
   <Table 
   
   loading={loading}
-  onRow={(i) => ({
-    onClick: (e) => 
-        redirect('/')
-})}
-//   onRow={(record, rowIndex) => {
+  onRow={(record, rowIndex) => {
   
-//   return {
-//     onClick: event => {
-//       console.log(record); 
-//       // props.history.push(`/table/${record.name}`)
-//       // redirect(`/table/${record.name}`)
-//       // redirect(`/table/${record.name}`)
-//   }, // click row
-//     onDoubleClick: event => {}, // double click row
-//     onContextMenu: event => {}, // right button click row
-//     onMouseEnter: event => {}, // mouse enter row
-//     onMouseLeave: event => {}, // mouse leave row
-//   };
-// }}
+  return {
+    onClick: event => {
+      console.log(record); 
+      // props.history.push(`/table/${record.name}`)
+      // redirect(`/table/${record.name}`)
+      // redirect(`/table/${record.name}`)
+  }, // click row
+    onDoubleClick: event => {}, // double click row
+    onContextMenu: event => {}, // right button click row
+    onMouseEnter: event => {}, // mouse enter row
+    onMouseLeave: event => {}, // mouse leave row
+  };
+}}
   columns={columns} pagination={{}} dataSource={hasData ? Data : []} scroll={{ x: 1300 }} />
 
   
