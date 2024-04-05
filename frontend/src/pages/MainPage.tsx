@@ -66,7 +66,7 @@ const App: React.FC = () => {
     </Header>
     <Content style={{ padding: '0 50px' }}>
       <Breadcrumb style={{ margin: '16px 0' }}>
-        <Breadcrumb.Item><Link to={'/form/ItemId'}>Форма</Link></Breadcrumb.Item>
+        <Breadcrumb.Item><Link to={`/table/1/create`}>Форма</Link></Breadcrumb.Item>
         <Breadcrumb.Item><Link to={'/table/1'}>таблица 1</Link></Breadcrumb.Item>
       </Breadcrumb>
       {/* <MainTable/> */}

@@ -20,7 +20,7 @@ const router = createBrowserRouter([
         element: <MainTable />,
       },
       {
-        path: "/form/:ItemId",
+        path: "/table/:tableId/create",
         element: <MainFormTwo />,
       }
     ]

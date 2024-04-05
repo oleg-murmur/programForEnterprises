@@ -86,19 +86,16 @@ const MainTable: React.FC = () => {
     getData()
   },[])
 
-
-  
   return (
   <>
   <ModalInst status={false}/>
   <Table 
-  
   loading={loading}
   onRow={(record, rowIndex) => {
   
   return {
     onClick: event => {
-      console.log(record); 
+      console.log(record,'123'); 
       // props.history.push(`/table/${record.name}`)
       // redirect(`/table/${record.name}`)
       // redirect(`/table/${record.name}`)
