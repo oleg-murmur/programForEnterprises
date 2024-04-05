@@ -14,8 +14,9 @@ import {
     ProFormText,
     ProFormUploadButton,
     ProFormUploadDragger,
+    StepsForm,
   } from '@ant-design/pro-components';
-  import { Select, SelectProps, Space, Spin, Switch, Typography } from 'antd';
+  import { Select, SelectProps, Space, Spin, Switch, Typography,message  } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import Title from 'antd/es/typography/Title';
 import axios from 'axios';
@@ -89,7 +90,6 @@ import ModalInst from './Modal';
           padding: 24,
         }}
       >
-        <ModalInst status={loading}/>
         <Switch
           style={{
             marginBlockEnd: 16,
@@ -99,9 +99,12 @@ import ModalInst from './Modal';
           unCheckedChildren="доступ 2"
           onChange={setReadonly}
         />
+
         <ProForm
+          submitter={{ searchConfig: { submitText: "save" } }}
           readonly={readonly}
           name="validate_other"
+          
           initialValues={{}}
           onValuesChange={(_, values) => {
             console.log(values);
@@ -131,7 +134,7 @@ import ModalInst from './Modal';
                   setData(response.data)
                   return [ {value: 'no_info', label: "Нет информации"}, ...response.data]
               }}
-              rules={[{ required: true, message: 'Тип прибора не выбран' }]}
+              // rules={[{ required: true, message: 'Тип прибора не выбран' }]}
             />
                 {/* <div style={{ margin: '24px 0' }} /> */}
             <ProFormRadio.Group

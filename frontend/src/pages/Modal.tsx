@@ -21,6 +21,7 @@ const ModalInst: React.FC<prop> = ({status}) => {
     setTimeout(() => {
       setOpen(false);
       setConfirmLoading(false);
+      console.log('Clicked ok button');
     }, 2000);
   };
 
@@ -32,10 +33,12 @@ const ModalInst: React.FC<prop> = ({status}) => {
   return (
     <>
       <Button type="primary" onClick={showModal}>
-        Open Modal with async logic
+        Добавить новую запись
       </Button>
       <Modal
         title="Title"
+        okText="save"
+        cancelText="dontsave"
         open={open}
         onOk={handleOk}
         confirmLoading={confirmLoading}
