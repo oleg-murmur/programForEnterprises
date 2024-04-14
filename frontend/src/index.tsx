@@ -9,6 +9,7 @@ import MainForm from './pages/MainForm';
 import MainFormTwo from './pages/MainFormTwo';
 import MainPage from './pages/MainPage';
 import MainTable from './pages/MainTable';
+import EditRow from './pages/EditRow';
 
 const router = createBrowserRouter([
   {
@@ -22,7 +23,11 @@ const router = createBrowserRouter([
       {
         path: "/table/:tableId/create",
         element: <MainFormTwo />,
-      }
+      },
+      {
+        path: "/table/:tableId/:instId",
+        element: <EditRow />,
+      },
     ]
   },
 

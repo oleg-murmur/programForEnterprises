@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'antd';
+import MainForm from './MainForm';
+import { Link } from 'react-router-dom';
 
 
 interface prop {
@@ -32,9 +34,12 @@ const ModalInst: React.FC<prop> = ({status}) => {
 
   return (
     <>
-      <Button type="primary" onClick={showModal}>
-        Добавить новую запись
-      </Button>
+
+      <Link to={'http://localhost:3000/table/1/create'}>      
+        <Button type="primary">
+          Добавить новую запись
+        </Button>
+      </Link>
       <Modal
         title="Title"
         okText="save"
@@ -44,9 +49,7 @@ const ModalInst: React.FC<prop> = ({status}) => {
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
       >
-        <p>{modalText}</p>
-        <p>{status}</p>
-        <p>123123</p>
+        <MainForm/>
       </Modal>
     </>
   );

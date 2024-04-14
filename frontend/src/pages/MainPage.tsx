@@ -4,7 +4,7 @@ import MainTable from './MainTable';
 import MainForm from './MainForm';
 import MainFormTwo from './MainFormTwo';
 import Load from './LoadData';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useNavigation } from 'react-router-dom';
 import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 
 const { Header, Content, Footer } = Layout;
@@ -49,9 +49,10 @@ const items: MenuProps['items'] = [
 const App: React.FC = () => {
 
   const onClick: MenuProps['onClick'] = (e) => {
-    console.log('click ', e);
+    // console.log('click ', e);
   };
-
+  const navigation = useNavigation();
+ console.log(navigation)
   return (
   <Layout className="layout">
     <Header>
@@ -65,15 +66,10 @@ const App: React.FC = () => {
       />
     </Header>
     <Content style={{ padding: '0 50px' }}>
-      <Breadcrumb style={{ margin: '16px 0' }}>
-      <Breadcrumb.Item><Link to={'/table/1'}>таблица 1</Link></Breadcrumb.Item>
-        <Breadcrumb.Item><Link to={`/table/1/create`}>Создание</Link></Breadcrumb.Item>
-      </Breadcrumb>
-      {/* <MainTable/> */}
-      {/* <MainForm/> */}
-      {/* <Load/> */}
-      {/* <MainFormTwo/> */}
-      {/* <Pagination defaultCurrent={1} total={50} /> */}
+    <Breadcrumb>
+    <Breadcrumb.Item><Link to={'/table/1'}>table</Link></Breadcrumb.Item>
+    <Breadcrumb.Item><Link to={'/table/1/create'}>Создать</Link></Breadcrumb.Item>
+  </Breadcrumb>
       <Outlet/>
     </Content>
     <Footer style={{ textAlign: 'center' }}>2024</Footer>

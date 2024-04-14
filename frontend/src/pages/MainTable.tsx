@@ -1,23 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { Input, Modal, Pagination, Table, Tooltip } from 'antd';
-import type { TableColumnsType } from 'antd';
-import { DownloadOutlined, EditOutlined } from '@ant-design/icons';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, Input, Modal, Pagination, Space, Table, Tooltip } from 'antd';
+import type { InputRef, TableColumnsType, TableColumnType } from 'antd';
+import { DownloadOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { Link} from 'react-router-dom';
 import { redirect } from 'react-router-dom';
 import ModalInst from './Modal';
 import MainFormTwo from './MainFormTwo';
+import { FilterDropdownProps } from 'antd/es/table/interface';
+import Highlighter from 'react-highlight-words';
+import { useNavigate } from "react-router-dom";
+import useColumnSearchProps from "../hooks/getColumnSearchProps"
 
 interface DataType {
   key: React.Key;
   name: string;
   age: number;
   address: string;
+  postId?: string;
 }
 
-
+type DataIndex = keyof DataType;
 const MainTable: React.FC = () => {
-  
+
   const columns: TableColumnsType<DataType> = [
     {
       title: 'Параметр 1',
@@ -41,6 +46,7 @@ const MainTable: React.FC = () => {
       ellipsis: {
       showTitle: false,
     },
+    ...useColumnSearchProps('name'),
       render: (address) => (
         <Tooltip placement="topLeft" title={"Ты..."}>
           {address}
@@ -62,43 +68,39 @@ const MainTable: React.FC = () => {
       key: 'operation',
       fixed: 'right',
       width: 100,
-      render: () => <a>
+      render: () => <Link to={''}>
           <div className="" onClick={event => event.stopPropagation()}>
             <DownloadOutlined onClick={event => console.log('click1')} style={{fontSize: '18px'}}/>
           </div>
-        </a>, //router dom Link
+        </Link>, //router dom Link
     },
     {
       title: 'Edit',
       key: 'operation',
       fixed: 'right',
       width: 100,
-      render: () => <a>
+      render: (event) => 
           <div className="" onClick={event => event.stopPropagation()}>
-            <EditOutlined onClick={onEditRow} style={{fontSize: '18px'}} />
+          <Link to={`http://localhost:3000/table/1/${event.postId}`}>      
+          <EditOutlined style={{fontSize: '18px'}} />
+        </Link>
+
           </div>
-        </a>, //router dom Link
+         //router dom Link
+        //onClick={onEditRow} 
     },
   ];
-  
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
-  const [editingRow, setIsEditingRow] = useState(null);
 
   const [Data, setData] = useState([]);
   const [hasData, setHasData] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const onEditRow = (record: any) => {
-    setIsEditing(true)
-    setIsEditingRow({...record})
-  }
-
   useEffect( () => {
 
     const getData = async () => {
       let {data} = await axios.get('https://jsonplaceholder.typicode.com/comments?_page=2&_limit=100')
-
-    
       setData(data)
       setHasData(true)
       setLoading(false)
@@ -111,23 +113,15 @@ const MainTable: React.FC = () => {
   <>
 
   <Table 
-  loading={loading}
-  onRow={(record, rowIndex) => {
   
-  return {
-    onClick: event => {
-      console.log(record,'123'); 
-      // props.history.push(`/table/${record.name}`)
-      // redirect(`/table/${record.name}`)
-      // redirect(`/table/${record.name}`)
-  }, // click row
-    onDoubleClick: event => {}, // double click row
-    onContextMenu: event => {}, // right button click row
-    onMouseEnter: event => {}, // mouse enter row
-    onMouseLeave: event => {}, // mouse leave row
-  };
-}}
+  loading={loading}
+    onRow={(i) => ({
+      onClick: (e) => {
+        navigate(`${i.postId}`)
+      }
+  })}
   columns={columns} pagination={{}} dataSource={hasData ? Data : []} scroll={{ x: 1300 }} />
+
 <Modal
   title="edit row"
   open={isEditing}
@@ -142,6 +136,7 @@ const MainTable: React.FC = () => {
 >
   <MainFormTwo/> 
 </Modal>
+
 <ModalInst status={false}/>
   </>)
   
