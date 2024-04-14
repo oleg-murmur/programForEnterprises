@@ -17,12 +17,13 @@ export class InstrumentController {
 
   @Post('upload')
     @UseInterceptors(
-
         FilesInterceptor('files', 20, {
           storage: diskStorage({
             destination: './uploads/',
             filename: (req,file,cb)=> {
               cb(null,`instId__${req.body.instId}_name__${file.originalname}`)
+              console.log(file, `FILE ${file.originalname}`)
+
             },
           }),
 
@@ -31,6 +32,7 @@ export class InstrumentController {
       uploadMultipleFiles(@UploadedFiles() files, @Body() body) {
         const response = [];
         console.log(body.instId, 'instId')
+        console.log(files, 'files')
         files.forEach(file => {
           const fileReponse = {
             filename: file.filename,

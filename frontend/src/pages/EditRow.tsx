@@ -16,7 +16,7 @@ import ruRU from 'antd/locale/ru_RU';
 import { useRef } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import UploadComponent from './upload';
-
+import fs from 'fs'
 
 export const waitTime = (time: number = 100) => {
     return new Promise((resolve) => {
@@ -65,7 +65,7 @@ const EditRow = () => {
 
     const onFinish = async() => {
       const formData:any = new FormData();
-
+      const formData2:any = new FormData();
       formData.append("name", objFormData.name);
       formData.append("name1", objFormData.name1);
       formData.append("name2", objFormData.name2);
@@ -73,11 +73,16 @@ const EditRow = () => {
       formData.append("type-instrument", JSON.stringify(objFormData["type-instrument"]));
       // formData.append("files", JSON.stringify(objFormData.files));
     // console.log(formData, '123')
-    // console.log(objFormData, '12345')
+    console.log(objFormData.files, '12345')
+    formData2.append("instId", objFormData.name)
+    // formData2.append("files", objFormData.files[0].originFileObj)
+    for (let i = 0; i < objFormData.files.length; i++) {
+      formData2.append('files', objFormData.files[i].originFileObj);
+    };
     const result = await axios({
       method: "post",
       url: "http://localhost:5000/api/instrument/upload",
-      data: {files: objFormData.files},
+      data: formData2,
       headers: { "Content-Type": "multipart/form-data" },
     })
     const result2 = await axios({
@@ -87,8 +92,6 @@ const EditRow = () => {
       headers: { "Content-Type": "multipart/form-data" },
     })
     console.log(objFormData.files)
-    console.log(result)
-    console.log(result2)
     }
 
 
