@@ -5,14 +5,33 @@ import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 
 interface DataType {
-    key: React.Key;
-    name: string;
-    age: number;
-    address: string;
+  dataIndex: any
+  id: string;
+
+  //инвантарный номер
+  inventoryName: string
+  
+  //заводской номер
+  factoryNumber: string
+
+  //пользователь прибора
+  userName: string // кто отвечает за прибор (отдельная сущность?)
+
+  dateOfIssue: string; // Дата выпуска
+
+  note: string; // Примечание
+
+  verificationEndDate: string; // Дата окончания поверки
+
+  //наличие драг. металлов
+  haveMetal: 'yes' | 'no_info' | 'no'
+  
+  type: number; // Тип измерительного прибора
+
   }
   
   type DataIndex = keyof DataType;
-  const useColumnSearchProps = (dataIndex: DataIndex): TableColumnType<DataType>=> {
+  const useColumnSearchProps = (dataIndex: DataIndex): TableColumnType<any>=> {
 
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
@@ -64,11 +83,15 @@ interface DataType {
       filterIcon: (filtered: boolean) => (
         <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
       ),
-      onFilter: (value, record) =>
-        record[dataIndex]
+      onFilter: (value, record) => {
+        console.log(dataIndex, 'dataIndex')
+        console.log(record, 'record')
+        console.log(value, 'value')
+        return dataIndex
           .toString()
           .toLowerCase()
-          .includes((value as string).toLowerCase()),
+          .includes((value as string).toLowerCase())
+        },
       onFilterDropdownOpenChange: (visible) => {
         if (visible) {
           setTimeout(() => searchInput.current?.select(), 100);

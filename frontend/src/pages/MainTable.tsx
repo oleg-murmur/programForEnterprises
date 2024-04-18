@@ -13,59 +13,83 @@ import { useNavigate } from "react-router-dom";
 import useColumnSearchProps from "../hooks/getColumnSearchProps"
 
 interface DataType {
-  key: React.Key;
-  name: string;
-  age: number;
-  address: string;
-  postId?: string;
+    id: string;
+    dataIndex: any
+    //инвантарный номер
+    inventoryName: string
+
+    //заводской номер
+    factoryNumber: string
+
+    //пользователь прибора
+    userName: string // кто отвечает за прибор (отдельная сущность?)
+
+    dateOfIssue: string; // Дата выпуска
+
+    note: string; // Примечание
+
+    verificationEndDate: string; // Дата окончания поверки
+
+    //наличие драг. металлов
+    haveMetal: 'yes' | 'no_info' | 'no'
+    
+    type: number; // Тип измерительного прибора
+
 }
 
 type DataIndex = keyof DataType;
 const MainTable: React.FC = () => {
-
   const columns: TableColumnsType<DataType> = [
     {
-      title: 'Параметр 1',
+      title: 'инвантарный номер',
       width: 100,
-      dataIndex: 'value_2',
-      key: 'value_1',
+      dataIndex: 'inventoryName',
+      key: 'inventoryName',
       fixed: 'left',
       filters: []
     },
     {
-      title: 'Параметр 1',
+      title: 'заводской номер',
       width: 100,
-      dataIndex: 'value_2',
-      key: 'value_2',
+      dataIndex: 'factoryNumber',
+      key: 'factoryNumber',
       fixed: 'left',
       sorter: true,
     },
-    { title: 'Column 1', 
-      dataIndex: 'name', 
-      key: '1',
+    { title: 'пользователь прибора', 
+      dataIndex: 'userName', 
+      key: 'userName',
       ellipsis: {
       showTitle: false,
     },
-    ...useColumnSearchProps('name'),
-      render: (address) => (
+    ...useColumnSearchProps('userName'),
+      render: (userName) => (
         <Tooltip placement="topLeft" title={"Ты..."}>
-          {address}
+          {userName}
         </Tooltip>
     ), 
-  
+      // dateOfIssue: Date; // Дата выпуска
+
+    // note: string; // Примечание
+
+    // verificationEndDate: Date; // Дата окончания поверки
+
+    // //наличие драг. металлов
+    // haveMetal: 'yes' | 'no_info' | 'no'
+    
+    // type: number; // Тип измерительного прибора
+
+
   },
-  
-    { title: 'Column 2', dataIndex: 'address', key: '2'
+    { title: 'Дата выпуска', dataIndex: 'dateOfIssue', key: 'dateOfIssue'
   },
-    { title: 'Column 3', dataIndex: 'address', key: '3' },
-    { title: 'Column 4', dataIndex: 'address', key: '4' },
-    { title: 'Column 5', dataIndex: 'address', key: '5' },
-    { title: 'Column 6', dataIndex: 'address', key: '6' },
-    { title: 'Column 7', dataIndex: 'address', key: '7' },
-    { title: 'Column 8', dataIndex: 'address', key: '8' },
+    { title: 'Дата окончания поверки', dataIndex: 'verificationEndDate', key: 'verificationEndDate' },
+    { title: 'Примечание', dataIndex: 'note', key: 'note' },
+    { title: 'наличие драг. металлов', dataIndex: 'haveMetal', key: 'haveMetal' },
+    { title: 'Тип измерительного прибора', dataIndex: 'type', key: 'dataIndex' },
     {
       title: 'Action',
-      key: 'operation',
+      key: 'operation12312321',
       fixed: 'right',
       width: 100,
       render: () => <Link to={''}>
@@ -76,7 +100,7 @@ const MainTable: React.FC = () => {
     },
     {
       title: 'Edit',
-      key: 'operation',
+      key: 'operation32112312213',
       fixed: 'right',
       width: 100,
       render: (event) => 
@@ -100,7 +124,8 @@ const MainTable: React.FC = () => {
   useEffect( () => {
 
     const getData = async () => {
-      let {data} = await axios.get('https://jsonplaceholder.typicode.com/comments?_page=2&_limit=100')
+      let {data} = await axios.get('http://localhost:5000/api/measuring-device/')
+      console.log(data)
       setData(data)
       setHasData(true)
       setLoading(false)
@@ -115,12 +140,16 @@ const MainTable: React.FC = () => {
   <Table 
   
   loading={loading}
-    onRow={(i) => ({
+  rowKey={({id}) => id}
+  onRow={(i) => ({
       onClick: (e) => {
-        navigate(`${i.postId}`)
+        navigate(`${i.id}`,{state:{id:i.id}})
       }
   })}
-  columns={columns} pagination={{}} dataSource={hasData ? Data : []} scroll={{ x: 1300 }} />
+  columns={columns} 
+  pagination={{}} 
+  dataSource={hasData ? Data : []} 
+  scroll={{ x: 1300 }} />
 
 <Modal
   title="edit row"

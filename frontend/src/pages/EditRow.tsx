@@ -17,7 +17,9 @@ import { useRef } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import UploadComponent from './upload';
 import fs from 'fs'
-
+import cl from "../test.module.css"
+import { getAllInst, getInstByID } from '../htto/instAPI';
+import { useLocation } from 'react-router-dom';
 export const waitTime = (time: number = 100) => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -25,7 +27,6 @@ export const waitTime = (time: number = 100) => {
       }, time);
     });
   };
-
 interface IObjProps {
       date: string,
       name: string,
@@ -36,7 +37,10 @@ interface IObjProps {
       "type-instrument": { value: string, label: string },
       files: any[]
 }
-const EditRow = () => {
+const EditRow = ({route, navigate}: any) => {
+  const location = useLocation();
+
+  console.log(location.state.id)
   const formRef = useRef<
     ProFormInstance<{
       name: string;
@@ -51,8 +55,10 @@ const EditRow = () => {
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
 
     useEffect( () => {
+      getAllInst()
       const getData = async () => {
         // const response = await axios.get('http://localhost:5000/api/instrument',{})
+        
         const allRows = await axios.get('http://localhost:5000/api/instrument/test',{})
         setObjFromServer(allRows.data)
         setObjFormData(allRows.data)
@@ -101,12 +107,17 @@ return (
       <div
         style={{
           padding: 24,
+          backgroundColor: '#6b6b6b98',
+          borderRadius: '10px'
         }}
       >
         <ProFormSwitch
-          checkedChildren="доступ 1"
-          unCheckedChildren="доступ 2"
-          label="пиет"
+          className={cl.myClassName}
+          // width="xs"
+          // style={{display: 'none'}}
+          checkedChildren="Нет"
+          unCheckedChildren="Да"
+          label="Редактировать"
           fieldProps={{
             onChange: setReadonly,
             checked: readonly
@@ -118,16 +129,27 @@ return (
         // autoFocusFirstInput
         
         request={async () => {
-          const allRows2 = await axios.get('http://localhost:5000/api/instrument/test',{})
-          let values = allRows2.data
-
+          const instrumentFromBD = await getInstByID(location.state.id)
+          let values = {...instrumentFromBD.data, deviceType: instrumentFromBD.data.deviceType?.name}
+          console.log(instrumentFromBD,'instrumentFromBD')
+          console.log(instrumentFromBD.data.deviceType?.name,'instrumentFromBD.data.deviceType?.name')
           return values
           ;
         }}
-          submitter={{searchConfig: {resetText: "Отменить", submitText: "Сохранить"}, resetButtonProps: {
+          submitter={{searchConfig: {resetText: "Отменить", submitText: "Сохранить" }, 
+          submitButtonProps: {
             style: {
-              // display: 'none',
+              display: readonly? 'none' : '',
+             
+           },
+          //  disabled: readonly
+          },
+          resetButtonProps: {
+            style: {
+              display: readonly? 'none' : '',
+              
             },
+            disabled: readonly,
             //открывать модалку подтвердить несохранение
             onClick: (e)=> {console.log(e)}
             
@@ -140,20 +162,20 @@ return (
           onFinish={async () => onFinish()}
         >
             <ProFormGroup title="Изменить прибор">
-                <ProFormText width="md" name="name" label="1" placeholder={"значение"}/>
-                <ProFormText width="md" name="name1" label="2" placeholder={"значение"}/>
-                <ProFormText width="md" name="name2" label="3" placeholder={"значение"}/>
-                <ProFormText width="md" name="123" label="4" placeholder={"значение"}/>
+                <ProFormText width="md" name="inventoryName" label="1" placeholder={"значение"}/>
+                <ProFormText width="md" name="factoryNumber" label="2" placeholder={"значение"}/>
+                <ProFormText width="md" name="userName" label="3" placeholder={"значение"}/>
+                {/* <ProFormText width="md" name="123" label="4" placeholder={"значение"}/>
                 <ProFormText width="md" label="5" placeholder={"значение"}/>
                 <ProFormText width="md" label="6" placeholder={"значение"}/>
                 <ProFormText width="md" label="7" placeholder={"значение"}/>
                 <ProFormText width="md" label="8" placeholder={"значение"}/>
                 <ProFormText width="md" label="9" placeholder={"значение"}/>
-                <ProFormText width="md" label="10" placeholder={"значение"}/>
+                <ProFormText width="md" label="10" placeholder={"значение"}/> */}
 
                 <ProFormSelect
                   width="md"
-                  name="type-instrument"
+                  name="deviceType"
                   label="Тип прибора"
                   placeholder="Введите тип прибора"
                   showSearch
@@ -166,7 +188,7 @@ return (
                   /> 
                   <ProFormRadio.Group
                       width="md"
-                      name="radio"
+                      name="haveMetal"
                       label="Наличие драг. металлов"
                       options={options}
                   />
@@ -174,7 +196,7 @@ return (
                       width="md"
                       placeholder="Примечания к прибору"
                       colProps={{ span: 24 }}
-                      name="textarea"
+                      name="note"
                       label="Примечания к прибору"
                       
                   />
@@ -183,7 +205,15 @@ return (
                       dataFormat=''
                       colProps={{ xl: 8, md: 12 }}
                       label="Дата последней поверки"
-                      name="date"
+                      name="dateOfIssue"
+                      placeholder="дата"
+                  />
+                  <ProFormDatePicker
+                      width="md"
+                      dataFormat=''
+                      colProps={{ xl: 8, md: 12 }}
+                      label="Дата окончания"
+                      name="verificationEndDate"
                       placeholder="дата"
                   />
 
