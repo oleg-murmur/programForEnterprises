@@ -29,18 +29,7 @@ export class CreateMeasuringDeviceDto {
 
 
 }
-export class CreateFilesDeviceDto {
-    device: MeasuringDevice
-    deviceId: string
-    files: 
-        {
-            device: MeasuringDevice
-            uid: string
-            url: string
-            name: string
-            deviceId: string
-        }[]
-}
+
 export class CreateTypeDto {
     id: number;
     name: string;

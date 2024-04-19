@@ -28,13 +28,15 @@ export const waitTime = (time: number = 100) => {
     });
   };
 interface IObjProps {
-      date: string,
-      name: string,
-      name1: string,
-      name2: string,
-      radio: string,
-      textarea: string,
-      "type-instrument": { value: string, label: string },
+  id: string
+  inventoryName: string,
+      factoryNumber: string,
+      userName: string,
+      dateOfIssue: string,
+      note: string,
+      verificationEndDate: string,
+      haveMetal: string,
+      type: number,
       files: any[]
 }
 const EditRow = ({route, navigate}: any) => {
@@ -58,10 +60,15 @@ const EditRow = ({route, navigate}: any) => {
       getAllInst()
       const getData = async () => {
         // const response = await axios.get('http://localhost:5000/api/instrument',{})
-        
+
+
+        const instrumentFromBD = await getInstByID(location.state.id)
+        setObjFormData(instrumentFromBD.data)
+        setObjFromServer(instrumentFromBD.data)
+        console.log(instrumentFromBD, 'instrumentFromBD')
         const allRows = await axios.get('http://localhost:5000/api/instrument/test',{})
-        setObjFromServer(allRows.data)
-        setObjFormData(allRows.data)
+        // setObjFromServer(allRows.data)
+        // setObjFormData(allRows.data)
       }
       setTimeout(()=> {
         setLoading(true)
@@ -69,39 +76,61 @@ const EditRow = ({route, navigate}: any) => {
       getData()
     },[])
 
+    // id: string
+    // inventoryName: string,
+    //     factoryNumber: string,
+    //     userName: string,
+    //     dateOfIssue: string,
+    //     note: string,
+    //     verificationEndDate: string,
+    //     haveMetal: string,
+    //     type: number,
+    //     "type-instrument": { value: string, label: string },
+    //     files: any[]
+console.log(objFormData.id)
+console.log(objFromServer, 'objFromServer')
+console.log(objFormData, 'objFormData')
     const onFinish = async() => {
       const formData:any = new FormData();
+      let formData3 = {
+        inventoryName: objFormData.inventoryName,
+        factoryNumber: objFormData.factoryNumber,
+        userName: objFormData.userName,
+        dateOfIssue: objFormData.dateOfIssue,
+        note: objFormData.note,
+        verificationEndDate: objFormData.verificationEndDate,
+        haveMetal: objFormData.haveMetal,
+        type: objFormData.type,
+      }
       const formData2:any = new FormData();
-      formData.append("name", objFormData.name);
-      formData.append("name1", objFormData.name1);
-      formData.append("name2", objFormData.name2);
-      formData.append("radio", objFormData.radio);
-      formData.append("type-instrument", JSON.stringify(objFormData["type-instrument"]));
-      // formData.append("files", JSON.stringify(objFormData.files));
-    // console.log(formData, '123')
-    console.log(objFormData.files, '12345')
-    formData2.append("instId", objFormData.name)
-    // formData2.append("files", objFormData.files[0].originFileObj)
+      // formData.append("inventoryName", objFormData.inventoryName);
+      // formData.append("factoryNumber", objFormData.factoryNumber);
+      // formData.append("userName", objFormData.userName);
+      // formData.append("dateOfIssue", objFormData.dateOfIssue);
+      // formData.append("note", objFormData.note);
+      // formData.append("verificationEndDate", objFormData.verificationEndDate);
+      // formData.append("haveMetal", objFormData.haveMetal);
+      // formData.append("type", objFormData.type);
+
+    console.log(objFormData, '12345')
+    formData2.append("instId", objFormData.id)
     for (let i = 0; i < objFormData.files.length; i++) {
       formData2.append('files', objFormData.files[i].originFileObj);
     };
     const result = await axios({
       method: "post",
-      url: "http://localhost:5000/api/instrument/upload",
+      url: "http://localhost:5000/api/file/upload",
       data: formData2,
       headers: { "Content-Type": "multipart/form-data" },
     })
     const result2 = await axios({
       method: "post",
-      url: "http://localhost:5000/api/instrument/load",
-      data: formData,
-      headers: { "Content-Type": "multipart/form-data" },
+      url: "http://localhost:5000/api/measuring-device",
+      data: formData3,
+      // headers: { "Content-Type": "multipart/form-data" },
     })
     console.log(objFormData.files)
     }
-
-
-
 
 return (
       <div
@@ -131,6 +160,7 @@ return (
         request={async () => {
           const instrumentFromBD = await getInstByID(location.state.id)
           let values = {...instrumentFromBD.data, deviceType: instrumentFromBD.data.deviceType?.name}
+          setObjFormData(values)
           console.log(instrumentFromBD,'instrumentFromBD')
           console.log(instrumentFromBD.data.deviceType?.name,'instrumentFromBD.data.deviceType?.name')
           return values
@@ -209,7 +239,8 @@ return (
                       label="Дата окончания"
                       name="verificationEndDate"
                       placeholder="дата"
-                  /> 
+                  />
+                 
                     <ProFormRadio.Group
                         width="md"
                         name="haveMetal"
@@ -223,6 +254,7 @@ return (
                       data={""} 
                       readonly={readonly}
                   />
+
             </ProFormGroup>
           </ProForm>
         </ConfigProvider>
@@ -271,12 +303,14 @@ const options = [
     },
 ]
 const defaultObj = {
-  date: "string",
-  name: "string",
-  name1: "string",
-  name2: "string",
-  radio: "string",
-  textarea: "string",
-  "type-instrument": { value: "string", label: "string" },
+  id: "",
+  inventoryName: "note",
+  factoryNumber: "note",
+  userName: "note",
+  dateOfIssue: "05-12-2024",
+  note: "note",
+  verificationEndDate: "05-12-2024",
+  haveMetal: "yes",
+  type: 0,
   files: []
 }

@@ -1,10 +1,15 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles } from '@nestjs/common';
-import { UpdateFileDto } from './dto/update-file.dto';
 import { MeasuringDeviceService } from 'src/measuring-device/measuring-device.service';
-import { CreateFilesDeviceDto } from 'src/measuring-device/dto/create-measuring-device.dto';
 import { FilesOfDevicesService } from './file.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { v4 as uuidv4 } from 'uuid'
+import { CreateFilesDeviceDto } from './dto/create-file.dto';
+
+let filesDevice: CreateFilesDeviceDto = {
+  deviceId: '',
+  files: [],
+}
 
 @Controller('file')
 export class FileController {
@@ -17,12 +22,16 @@ export class FileController {
         storage: diskStorage({
           destination: './uploads/',
           filename: (req,file,cb)=> {
-            cb(null,`instId__${req.body.instId}_name__${file.originalname}`)
+            let fileName = `instId__${req.body.instId}_name__${file.originalname}`
+            cb(null,fileName)
             console.log(file, `FILE ${file.originalname}`)
-
+            filesDevice.files.push({
+              uid: uuidv4(),
+              url: process.env.SERVER_URL ? `${process.env.SERVER_URL}/${fileName}` : `http://localhost:5000/${fileName}`,
+              name: fileName,
+            })
           },
         }),
-
       }),
     )
     uploadMultipleFiles(@UploadedFiles() files, @Body() body) {
@@ -35,6 +44,13 @@ export class FileController {
         };
         response.push(fileReponse);
       });
+///////////////////////////
+      filesDevice.deviceId = body.instId,
+
+      console.log(filesDevice, 'filesOfDevices filesOfDevices')
+      this.createFileInfo(filesDevice)
+
+
       return response;
     }
 
@@ -47,15 +63,16 @@ export class FileController {
     let file = {
       ...fileDto, device: deviceInfo
     }
+    
     let files = fileDto.files
     files.forEach(file => {
       this.filesOfDevices.createFileInfo({
         ...file, device: deviceInfo
       });
     });
-    console.log(file, 'typeDto')
+    console.log(file, 'typeDto this.filesOfDevices.createFileInfo')
 
-    return this.filesOfDevices.createFileInfo(file);
+    return files
   }
   @Get('files/:deviceId')
  async findFilesOfInst(@Param('id') id: string) {

@@ -1,16 +1,26 @@
+import { UUID } from "crypto"
 import { MeasuringDevice } from "src/measuring-device/entities/measuring-device.entity"
 
 export class CreateFilesDeviceDto {
-    device: MeasuringDevice
     deviceId: string
     files: 
+    {
+        uid: string
+        url: string
+        name: string
+    }[]
+}
+
+export class CreateFilesDeviceForDB {
+    device: MeasuringDevice
+    deviceId: UUID
+    files: 
         {
-            device: MeasuringDevice
-            uid: string
+            uid: UUID
             url: string
             name: string
-            deviceId: string
         }[]
+    uid: string
 }
 
 export { MeasuringDevice }

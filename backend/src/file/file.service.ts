@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateFilesDeviceDto } from './dto/create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
+import { CreateFilesDeviceForDB } from './dto/create-file.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FilesOfDevices } from './entities/file.entity';
@@ -14,7 +13,7 @@ export class  FilesOfDevicesService{
   ) {}
 
 
-  async createFileInfo(file: Partial<CreateFilesDeviceDto>): Promise<FilesOfDevices> {
+  async createFileInfo(file: Partial<CreateFilesDeviceForDB>): Promise<FilesOfDevices> {
 
     let newFile = this.filesRepository.create(file)
 

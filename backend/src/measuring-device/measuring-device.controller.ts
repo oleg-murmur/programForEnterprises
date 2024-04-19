@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { MeasuringDeviceService, MeasuringInstrumentTypeService } from './measuring-device.service';
-import { CreateFilesDeviceDto, CreateMeasuringDeviceDto, CreateTypeDto } from './dto/create-measuring-device.dto';
+import { CreateMeasuringDeviceDto, CreateTypeDto } from './dto/create-measuring-device.dto';
 import { UpdateMeasuringDeviceDto } from './dto/update-measuring-device.dto';
 import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 import { MeasuringDevice } from './entities/measuring-device.entity';
