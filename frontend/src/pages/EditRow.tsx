@@ -162,9 +162,9 @@ return (
           onFinish={async () => onFinish()}
         >
             <ProFormGroup title="Изменить прибор">
-                <ProFormText width="md" name="inventoryName" label="1" placeholder={"значение"}/>
-                <ProFormText width="md" name="factoryNumber" label="2" placeholder={"значение"}/>
-                <ProFormText width="md" name="userName" label="3" placeholder={"значение"}/>
+                <ProFormText width="md" name="inventoryName" label="инвантарный номер" placeholder={"значение"}/>
+                <ProFormText width="md" name="factoryNumber" label="Заводской номер" placeholder={"значение"}/>
+                <ProFormText width="md" name="userName" label="Пользователь" placeholder={"значение"}/>
                 {/* <ProFormText width="md" name="123" label="4" placeholder={"значение"}/>
                 <ProFormText width="md" label="5" placeholder={"значение"}/>
                 <ProFormText width="md" label="6" placeholder={"значение"}/>
@@ -186,12 +186,6 @@ return (
                     return [ {value: 'no_info', label: "Нет информации"}, ...response.data]
                 }}
                   /> 
-                  <ProFormRadio.Group
-                      width="md"
-                      name="haveMetal"
-                      label="Наличие драг. металлов"
-                      options={options}
-                  />
                   <ProFormTextArea
                       width="md"
                       placeholder="Примечания к прибору"
@@ -215,10 +209,20 @@ return (
                       label="Дата окончания"
                       name="verificationEndDate"
                       placeholder="дата"
+                  /> 
+                    <ProFormRadio.Group
+                        width="md"
+                        name="haveMetal"
+                        label="Наличие драг. металлов"
+                        options={options}
                   />
-
-                  <UploadComponent objFormData={objFormData} setObjFormData={setObjFormData} fileList={objFromServer.files} data={""} readonly={readonly}/>
-
+                  <UploadComponent 
+                      objFormData={objFormData}
+                      setObjFormData={setObjFormData} 
+                      fileList={objFromServer.files} 
+                      data={""} 
+                      readonly={readonly}
+                  />
             </ProFormGroup>
           </ProForm>
         </ConfigProvider>
