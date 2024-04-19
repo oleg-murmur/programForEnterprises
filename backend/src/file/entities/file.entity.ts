@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
+import { MeasuringDevice } from "src/measuring-device/entities/measuring-device.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { MeasuringInstrumentType } from "./measuringInstrumentType.entity";
-import { MeasuringDevice } from "./measuring-device.entity";
+
 
 
 @Entity({name: 'filesOfDevices'})

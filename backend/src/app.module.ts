@@ -11,6 +11,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { MeasuringDeviceModule } from './measuring-device/measuring-device.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [InstrumentModule,MeasuringDeviceModule, AuthModule, CommonModule,NestjsFormDataModule,
@@ -33,6 +34,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     })
   }),
     UserModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

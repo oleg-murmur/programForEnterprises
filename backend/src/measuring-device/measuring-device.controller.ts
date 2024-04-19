@@ -1,21 +1,22 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { MeasuringDeviceService, MeasuringInstrumentTypeService } from './measuring-device.service';
-import { CreateMeasuringDeviceDto } from './dto/create-measuring-device.dto';
+import { CreateFilesDeviceDto, CreateMeasuringDeviceDto, CreateTypeDto } from './dto/create-measuring-device.dto';
 import { UpdateMeasuringDeviceDto } from './dto/update-measuring-device.dto';
 import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 import { MeasuringDevice } from './entities/measuring-device.entity';
 import { v4 as uuidv4 } from 'uuid'
 import { MeasuringInstrumentType } from './entities/measuringInstrumentType.entity';
+import { FilesOfDevices } from './entities/filesInstrument.entity';
 
 @Controller('measuring-device')
 export class MeasuringDeviceController {
   constructor(private readonly measuringDeviceService: MeasuringDeviceService,
-    private readonly measuringInstrumentTypeService: MeasuringInstrumentTypeService
+    private readonly measuringInstrumentTypeService: MeasuringInstrumentTypeService,
   ) {}
 
 
   @Post('type')
-  createType(@Body() typeDto: Partial<MeasuringInstrumentType>) {
+  createType(@Body() typeDto: Partial<CreateTypeDto>) {
 
     let measuringDevice = {
       ...typeDto

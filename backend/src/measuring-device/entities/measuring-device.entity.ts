@@ -33,11 +33,9 @@ export class MeasuringDevice {
     @Column({ nullable: true }) //наличие драг. металлов
     haveMetal: 'yes' | 'no_info' | 'no'
     
-
-    @OneToOne(() => MeasuringInstrumentType, (type)=> type.masuringDevice)
-    @JoinColumn()
+    @ManyToOne(() => MeasuringInstrumentType, (device)=> device.masuringDevice)
     deviceType: MeasuringInstrumentType
-    
+
     @OneToMany(() => FilesOfDevices, (file) => file.device)
     files: FilesOfDevices[]
 

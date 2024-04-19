@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMeasuringDeviceDto } from './dto/create-measuring-device.dto';
 import { UpdateMeasuringDeviceDto } from './dto/update-measuring-device.dto';
 import { MeasuringDevice } from './entities/measuring-device.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid'
-import { UUID } from 'crypto';
 import { MeasuringInstrumentType } from './entities/measuringInstrumentType.entity';
-import { FilesOfDevices } from './entities/filesInstrument.entity';
+
 @Injectable()
 export class MeasuringDeviceService {
 
@@ -17,12 +14,7 @@ export class MeasuringDeviceService {
   ) {}
   
   async create(measuringDevice: Partial<MeasuringDevice>): Promise<MeasuringDevice> {
-
-    console.log(measuringDevice,'measuringDevice123')
-
-
     let newInst = this.deviceRepository.create(measuringDevice)
-
     return await this.deviceRepository.save(newInst)
   }
 
@@ -65,23 +57,5 @@ export class  MeasuringInstrumentTypeService{
   }
   async findOne(id: number): Promise<MeasuringInstrumentType> {
     return this.typeRepository.findOne({where: {id}});
-  }
-}
-
-export class  FilesOfDevicesService{
-  constructor(
-    @InjectRepository(FilesOfDevices)
-    private filesRepository: Repository<FilesOfDevices>,
-  ) {}
-
-
-  async create(file: Partial<FilesOfDevices>): Promise<FilesOfDevices> {
-
-    let newFile = this.filesRepository.create(file)
-
-    return await this.filesRepository.save(newFile)
-  }
-  async findOne(uid: string): Promise<FilesOfDevices> {
-    return this.filesRepository.findOne({where: {uid}});
   }
 }

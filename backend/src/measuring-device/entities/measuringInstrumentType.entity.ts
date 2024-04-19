@@ -10,10 +10,8 @@ export class MeasuringInstrumentType {
     @Column({ nullable: true })
     name: string; // Наименование типа измерительного прибора
 
-    @OneToOne(() => MeasuringDevice, (device)=> device.deviceType)
-    @JoinColumn()
-    masuringDevice: MeasuringDevice
-    
+    @OneToMany(() => MeasuringDevice, (device) => device.deviceType)
+    masuringDevice: MeasuringDevice[]
     // @OneToMany(() => MeasuringDevice, instrument => instrument.type)
     // measuringDevices: MeasuringDevice[]; 
     // Связь "один ко многим" с измерительными приборами
