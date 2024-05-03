@@ -37,7 +37,8 @@ function getItem(
 
 const items: MenuProps['items'] = [
   getItem(<Link to={'/table/3'}>Таблица</Link>, 'sub2', <AppstoreOutlined />),
-  getItem(<Link to={'/auth'}>Профиль</Link>, 'sub4', <SettingOutlined />),
+  getItem(<Link to={'/profile'}>Профиль</Link>, 'sub3', <SettingOutlined />),
+  getItem(<Link to={'/auth'}>Выйти</Link>, 'sub4', <SettingOutlined />),
 ];
 const App: React.FC = () => {
 
@@ -57,8 +58,8 @@ const App: React.FC = () => {
     </Header>
     <Content style={{ padding: '0 50px' }}>
     <Breadcrumb>
-      <Breadcrumb.Item><Link to={'/table/1'}>table</Link></Breadcrumb.Item>
-      <Breadcrumb.Item><Link to={'/table/1/create'}>Создать</Link></Breadcrumb.Item>
+      {/* <Breadcrumb.Item><Link to={'/table/1'}>table</Link></Breadcrumb.Item>
+      <Breadcrumb.Item><Link to={'/table/1/create'}>Создать</Link></Breadcrumb.Item> */}
     </Breadcrumb>
       <Outlet/>
     </Content>

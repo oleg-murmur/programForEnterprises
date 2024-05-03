@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   Button,
   Cascader,
   Checkbox,
   ColorPicker,
+  ConfigProvider,
   DatePicker,
   Form,
   Input,
@@ -18,7 +19,12 @@ import {
   TreeSelect,
   Upload,
 } from 'antd';
-
+import { ProForm, ProFormDatePicker, ProFormGroup, ProFormInstance, ProFormRadio, ProFormSelect, ProFormSwitch, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
+import axios from 'axios';
+import UploadComponent from './upload';
+import { getInstByID } from '../http/instAPI';
+import ruRU from 'antd/locale/ru_RU';
+import { useLocation, useNavigate } from 'react-router';
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
@@ -28,105 +34,210 @@ const normFile = (e: any) => {
   }
   return e?.fileList;
 };
-
+interface IObjProps {
+  id: string
+  inventoryName: string,
+      factoryNumber: string,
+      userName: string,
+      dateOfIssue: string,
+      note: string,
+      verificationEndDate: string,
+      haveMetal: string,
+      deviceType: number,
+      files: any[]
+}
 const CreateFormEdit: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const formRef = useRef<
+    ProFormInstance<{
+      name: string;
+      company?: string;
+      useMode?: string;
+    }>
+  >();
+    const [readonly, setReadonly] = useState(true);
+    const [loading, setLoading] = useState(false);
+
+    const [objFromServer, setObjFromServer] = useState<IObjProps>(defaultObj)
+    const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
+
+    useEffect( () => {
+      const getData = async () => {
+        // const instrumentFromBD = await getInstByID(location.state.id)
+        // setObjFormData(instrumentFromBD.data)
+        // setObjFromServer(instrumentFromBD.data)
+      }
+      setTimeout(()=> {
+        setLoading(true)
+      },3000)
+      getData()
+    },[])
+    const onFinish = async() => {
+      const FilesUpload:any = new FormData();
+      let EditInst = {
+        inventoryName: objFormData.inventoryName,
+        factoryNumber: objFormData.factoryNumber,
+        userName: objFormData.userName,
+        dateOfIssue: objFormData.dateOfIssue,
+        note: objFormData.note,
+        verificationEndDate: objFormData.verificationEndDate,
+        haveMetal: objFormData.haveMetal,
+        type: objFormData.deviceType,
+      }
+
+      FilesUpload.append("instId", objFormData.id)
+    for (let i = 0; i < objFormData.files.length; i++) {
+      FilesUpload.append('files', objFormData.files[i].originFileObj);
+    };
+
+    const resultFileUpload = await axios({
+      method: "post",
+      url: `${process.env.REACT_APP_BACKEND_URL_FILE_EP}`,
+      data: FilesUpload,
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+    const resultEditInst = await axios({
+      method: "post",
+      url: `${process.env.REACT_APP_BACKEND_URL_INST_EP}`,
+      data: EditInst,
+    })
+    navigate("..")
+    }
+
   const [componentDisabled, setComponentDisabled] = useState<boolean>(true);
-  const onFinish = (values: any) => {
-    console.log('Received values of form: ', values);
-  };
   const formItemLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 14 },
   };
   return (
-    <>
-    <fieldset disabled={false}>
-    <Form onFinish={onFinish} {...formItemLayout} variant="filled" style={{ maxWidth: 600 }}>
-    <Form.Item label="Input" name="Input" rules={[{ required: true, message: 'Please input!' }]}>
-      <Input />
-    </Form.Item>
-
-    <Form.Item
-      label="InputNumber"
-      name="InputNumber"
-      rules={[{ required: true, message: 'Please input!' }]}
+    <div
+      style={{
+        padding: 24,
+        backgroundColor: '#6b6b6b98',
+        borderRadius: '10px'
+      }}
     >
-      <InputNumber style={{ width: '100%' }} />
-    </Form.Item>
 
-    <Form.Item
-      label="TextArea"
-      name="TextArea"
-      rules={[{ required: true, message: 'Please input!' }]}
-    >
-      <Input.TextArea />
-    </Form.Item>
+        <ConfigProvider locale={ruRU}>
 
-    <Form.Item
-      label="Mentions"
-      name="Mentions"
-      rules={[{ required: true, message: 'Please input!' }]}
-    >
-      <Mentions />
-    </Form.Item>
-
-    <Form.Item label="Select" name="Select" rules={[{ required: false, message: 'Please input!' }]}>
-      <Select />
-    </Form.Item>
-
-    <Form.Item
-      label="Cascader"
-      name="Cascader"
-      rules={[{ required: false, message: 'Please input!' }]}
-    >
-      <Cascader />
-    </Form.Item>
-
-    <Form.Item
-      label="TreeSelect"
-      name="TreeSelect"
-      rules={[{ required: false, message: 'Please input!' }]}
-    >
-      <TreeSelect />
-    </Form.Item>
-
-    <Form.Item
-      label="DatePicker"
-      name="DatePicker"
-      rules={[{ required: true, message: 'Please input!' }]}
-    >
-      <DatePicker />
-    </Form.Item>
-
-    <Form.Item
-      label="RangePicker"
-      name="RangePicker"
-      rules={[{ required: true, message: 'Please input!' }]}
-    >
-      <RangePicker />
-    </Form.Item>
-    <Form.Item
-      name="color-picker"
-      label="ColorPicker"
-      rules={[{ required: true, message: 'color is required!' }]}
-    >
-      <ColorPicker />
-    </Form.Item>
-
-    <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
-      <Button type="primary" htmlType="submit">
-        Submit
-      </Button>
-    </Form.Item>
-  </Form>
-    </fieldset>
+  <ProForm
+      // autoFocusFirstInput
+      
+      request={async () => {
+        const instrumentFromBD = await getInstByID(location.state.id)
+        let values = {...instrumentFromBD.data, deviceType: instrumentFromBD.data.deviceType?.label}
+        setObjFormData(values)
+        console.log(instrumentFromBD,'instrumentFromBD')
+        console.log(instrumentFromBD.data.deviceType?.name,'instrumentFromBD.data.deviceType?.name')
+        return values
+        ;
+      }}
+        submitter={{searchConfig: {resetText: "Отменить", submitText: "Сохранить" }}}
 
 
-    </>
+          //открывать модалку подтвердить несохранение
+        name="validate_other"
+        onValuesChange={async (_, values) => {
+          setObjFormData({...objFormData, ...values})
+        }
+      }
+
+        onFinish={async () => onFinish()}
+      >
+          <ProFormGroup title="Изменить прибор">
+              <ProFormText width="md" name="inventoryName" label="инвантарный номер" placeholder={"значение"}/>
+              <ProFormText width="md" name="factoryNumber" label="Заводской номер" placeholder={"значение"}/>
+              <ProFormText width="md" name="userName" label="Пользователь" placeholder={"значение"}/>
+
+              <ProFormSelect
+                width="md"
+                name="deviceType"
+                label="Тип прибора"
+                placeholder="Введите тип прибора"
+                showSearch
+                rules={[{ required: true, message: 'Тип прибора не выбран' }]}
+                debounceTime={3000}
+                request={async () => {
+                    let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_TYPE_EP}`,{})
+                    return [ {value: 'no_info', label: "Нет информации"}, ...data]
+              }}
+                /> 
+                <ProFormTextArea
+                    width="md"
+                    placeholder="Примечания к прибору"
+                    colProps={{ span: 24 }}
+                    name="note"
+                    label="Примечания к прибору"
+                    
+                />
+                <ProFormDatePicker
+                    width="md"
+                    dataFormat=''
+                    colProps={{ xl: 8, md: 12 }}
+                    label="Дата последней поверки"
+                    name="dateOfIssue"
+                    placeholder="дата"
+                />
+                <ProFormDatePicker
+                    width="md"
+                    dataFormat=''
+                    colProps={{ xl: 8, md: 12 }}
+                    label="Дата окончания"
+                    name="verificationEndDate"
+                    placeholder="дата"
+                />
+               
+                  <ProFormRadio.Group
+                      width="md"
+                      name="haveMetal"
+                      label="Наличие драг. металлов"
+                      options={options}
+                />
+                <UploadComponent 
+                    objFormData={objFormData}
+                    setObjFormData={setObjFormData} 
+                    fileList={objFromServer.files} 
+                    data={""} 
+                    readonly={false}
+                />
+
+          </ProFormGroup>
+        </ProForm>
+      </ConfigProvider>
+    </div>
   );
 };
 
 export default () => <CreateFormEdit />;
+const options = [
+  {
+    
+    label: 'Нет',
+    value: 'no',
+  },
+  {
+    label: 'Да',
+    value: 'yes',
+  },
+  {
+      label: 'Нет данных',
+      value: 'no_data',
+    },
+]
+
+const defaultObj = {
+  id: "",
+  inventoryName: "note",
+  factoryNumber: "note",
+  userName: "note",
+  dateOfIssue: "05-12-2024",
+  note: "note",
+  verificationEndDate: "05-12-2024",
+  haveMetal: "yes",
+  deviceType: 0,
+  files: []
+}
 // import {
 //     ProForm,
 //     ProFormGroup,

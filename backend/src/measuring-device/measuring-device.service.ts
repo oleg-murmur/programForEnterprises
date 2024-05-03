@@ -33,9 +33,11 @@ export class MeasuringDeviceService {
       files: true
     }});
   }
-
-  async update(id: number, updateMeasuringDeviceDto: UpdateMeasuringDeviceDto) {
-    return `This action updates a #${id} measuringDevice`;
+  async edit(measuringDevice: Partial<MeasuringDevice>): Promise<MeasuringDevice> {
+    console.log(measuringDevice,'measuringDevice1')
+    let newInst = await this.deviceRepository.save({id: measuringDevice.id,...measuringDevice})
+    console.log(newInst,'measuringDevice2')
+    return newInst
   }
 
   async remove(id: number) {

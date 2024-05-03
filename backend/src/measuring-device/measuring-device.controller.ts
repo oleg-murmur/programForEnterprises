@@ -17,7 +17,6 @@ export class MeasuringDeviceController {
 
   @Post('type')
   createType(@Body() typeDto: Partial<CreateTypeDto>) {
-
     let measuringDevice = {
       ...typeDto
     }
@@ -35,19 +34,25 @@ export class MeasuringDeviceController {
   }
 
   @Post()
-  async create(@Body() createMeasuringDeviceDto: Partial<CreateMeasuringDeviceDto>) {
-
-    let typed = await this.findOneType(createMeasuringDeviceDto.type)
-    console.log(typed, 'TYYPEPTYR')
+  async create(@Body() createMeasuringDeviceDto: Partial<any>) {
+    let typed = await this.findOneType(createMeasuringDeviceDto.type.value)
     let measuringDevice = {
       id: uuidv4(),
       ...createMeasuringDeviceDto, deviceType: typed
     }
     console.log(measuringDevice, 'measuringDevice')
-
     return this.measuringDeviceService.create(measuringDevice);
   }
-
+  @Post('edit')
+  async edit(@Body() createMeasuringDeviceDto: Partial<any>) {
+    let typed = await this.findOneType(createMeasuringDeviceDto.type.value)
+    let measuringDevice = {
+      id: uuidv4(),
+      ...createMeasuringDeviceDto, deviceType: typed
+    }
+    console.log(measuringDevice, 'measuringDevice')
+    return this.measuringDeviceService.edit(measuringDevice);
+  }
   @Get()
   findAll() {
     return this.measuringDeviceService.findAll();
@@ -55,14 +60,13 @@ export class MeasuringDeviceController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    
     return this.measuringDeviceService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMeasuringDeviceDto: UpdateMeasuringDeviceDto) {
-    return this.measuringDeviceService.update(+id, updateMeasuringDeviceDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateMeasuringDeviceDto: UpdateMeasuringDeviceDto) {
+  //   return this.measuringDeviceService.update(+id, updateMeasuringDeviceDto);
+  // }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

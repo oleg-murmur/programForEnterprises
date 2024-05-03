@@ -6,11 +6,12 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import MainForm from './pages/MainForm';
-import MainFormTwo from './pages/CreateRowForm';
+import CreateFormEdit from './pages/CreateRowForm';
 import MainPage from './pages/MainPage';
 import MainTable from './pages/MainTable';
 import EditRow from './pages/EditRow';
 import AuthComponent from './pages/AuthComponent';
+import AvatarComponent from './pages/AvatarComponent';
 
 const router = createBrowserRouter([
   {
@@ -25,22 +26,25 @@ const router = createBrowserRouter([
       {
         path: "/table/:tableId",
         element: <MainTable />,
-        
       },
       {
         path: "/table/:tableId/create",
-        element: <MainFormTwo />,
+        element: <CreateFormEdit />,
       },
       {
         path: "/table/:tableId/:instId",
         element: <EditRow />,
       },
       {
-        path: "/auth",
-        element: <AuthComponent />,
-      }
+        path: "/profile",
+        element: <AvatarComponent />,
+      },
     ]
   },
+  {
+    path: "/auth",
+    element: <AuthComponent/>
+  }
 
 ]);
 

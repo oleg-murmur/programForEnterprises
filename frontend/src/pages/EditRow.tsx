@@ -35,12 +35,12 @@ interface IObjProps {
       note: string,
       verificationEndDate: string,
       haveMetal: string,
-      type: number,
+      deviceType: number,
       files: any[]
 }
-const EditRow = ({route, navigate}: any) => {
+const EditRow = ({route}: any) => {
   const location = useLocation();
-  const navigate2 = useNavigate();
+  const navigate = useNavigate();
   const formRef = useRef<
     ProFormInstance<{
       name: string;
@@ -68,6 +68,7 @@ const EditRow = ({route, navigate}: any) => {
     const onFinish = async() => {
       const FilesUpload:any = new FormData();
       let EditInst = {
+        id: location.state.id,
         inventoryName: objFormData.inventoryName,
         factoryNumber: objFormData.factoryNumber,
         userName: objFormData.userName,
@@ -75,7 +76,7 @@ const EditRow = ({route, navigate}: any) => {
         note: objFormData.note,
         verificationEndDate: objFormData.verificationEndDate,
         haveMetal: objFormData.haveMetal,
-        type: objFormData.type,
+        type: objFormData.deviceType,
       }
 
       FilesUpload.append("instId", objFormData.id)
@@ -85,18 +86,18 @@ const EditRow = ({route, navigate}: any) => {
 
     const resultFileUpload = await axios({
       method: "post",
-      url: "http://localhost:5000/api/file/upload",
+      url: `${process.env.REACT_APP_BACKEND_URL_FILE_EP}`,
       data: FilesUpload,
       headers: { "Content-Type": "multipart/form-data" },
     })
     const resultEditInst = await axios({
       method: "post",
-      url: "http://localhost:5000/api/measuring-device",
+      url: `${process.env.REACT_APP_BACKEND_URL_INST_EP_EDIT}`,
       data: EditInst,
     })
-    navigate2("..")
+    // navigate("..")
     }
-
+    console.log(objFormData)
 return (
       <div
         style={{
@@ -107,8 +108,6 @@ return (
       >
         <ProFormSwitch
           className={cl.myClassName}
-          // width="xs"
-          // style={{display: 'none'}}
           checkedChildren="Нет"
           unCheckedChildren="Да"
           label="Редактировать"
@@ -124,32 +123,26 @@ return (
         
         request={async () => {
           const instrumentFromBD = await getInstByID(location.state.id)
-          let values = {...instrumentFromBD.data, deviceType: instrumentFromBD.data.deviceType?.name}
+          let values = {...instrumentFromBD.data, deviceType: instrumentFromBD.data.deviceType?.label}
           setObjFormData(values)
           console.log(instrumentFromBD,'instrumentFromBD')
-          console.log(instrumentFromBD.data.deviceType?.name,'instrumentFromBD.data.deviceType?.name')
           return values
           ;
         }}
-          submitter={{searchConfig: {resetText: "Отменить", submitText: "Сохранить" }, 
-          // <Link to={`http://localhost:3000/table/1`}>    
+          submitter={{searchConfig: {resetText: "Отменить", submitText: "Сохранить" },  
           submitButtonProps: {
             style: {
               display: readonly? 'none' : '',
              
            },
-          //  disabled: readonly
+           onClick: (e)=> navigate("..")
         },
-          
           resetButtonProps: {
             style: {
               display: readonly? 'none' : '',
-              
             },
-            disabled: readonly,
             //открывать модалку подтвердить несохранение
-            onClick: (e)=> {console.log(e)}
-            
+            onClick: (e)=> navigate("..")
           },
       }}
           readonly={readonly}
@@ -158,16 +151,13 @@ return (
             setObjFormData({...objFormData, ...values})
           }
         }
-          
-          // onClick={e=> <Link to={`http://localhost:3000/table/1/${}`}/>}
+
           onFinish={async () => onFinish()}
         >
             <ProFormGroup title="Изменить прибор">
                 <ProFormText width="md" name="inventoryName" label="инвантарный номер" placeholder={"значение"}/>
                 <ProFormText width="md" name="factoryNumber" label="Заводской номер" placeholder={"значение"}/>
                 <ProFormText width="md" name="userName" label="Пользователь" placeholder={"значение"}/>
-                {/* <ProFormText width="md" name="123" label="4" placeholder={"значение"}/>
-                <ProFormText width="md" label="10" placeholder={"значение"}/> */}
 
                 <ProFormSelect
                   width="md"
@@ -178,7 +168,7 @@ return (
                   rules={[{ required: true, message: 'Тип прибора не выбран' }]}
                   debounceTime={3000}
                   request={async () => {
-                      let {data} = await axios.get('http://localhost:5000/api/measuring-device/type',{})
+                      let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_TYPE_EP}`,{})
                       return [ {value: 'no_info', label: "Нет информации"}, ...data]
                 }}
                   /> 
@@ -277,6 +267,6 @@ const defaultObj = {
   note: "note",
   verificationEndDate: "05-12-2024",
   haveMetal: "yes",
-  type: 0,
+  deviceType: 0,
   files: []
 }

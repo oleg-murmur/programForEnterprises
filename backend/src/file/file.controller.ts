@@ -57,8 +57,10 @@ export class FileController {
     
   @Post('fileInfo')
   async createFileInfo(@Body() fileDto: Partial<CreateFilesDeviceDto>) {
-
-    let deviceInfo = await this.measuringDeviceService.findOne(fileDto.deviceId)
+    let deviceInfo
+    if(fileDto && fileDto.deviceId){
+      deviceInfo = await this.measuringDeviceService.findOne(fileDto.deviceId)
+    
 
     let file = {
       ...fileDto, device: deviceInfo
@@ -71,8 +73,9 @@ export class FileController {
       });
     });
     console.log(file, 'typeDto this.filesOfDevices.createFileInfo')
-
+  
     return files
+  }
   }
   @Get('files/:deviceId')
  async findFilesOfInst(@Param('id') id: string) {

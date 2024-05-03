@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Tooltip } from 'antd';
+import { Button, Table, Tooltip } from 'antd';
 import type { TableColumnsType,  } from 'antd';
 import { DownloadOutlined, EditOutlined,  } from '@ant-design/icons';
 import axios from 'axios';
@@ -41,7 +41,7 @@ const MainTable: React.FC = () => {
       dataIndex: 'inventoryName',
       key: 'inventoryName',
       fixed: 'left',
-      filters: []
+      filters: [],
     },
     {
       title: 'заводской номер',
@@ -63,18 +63,6 @@ const MainTable: React.FC = () => {
           {userName}
         </Tooltip>
     ), 
-      // dateOfIssue: Date; // Дата выпуска
-
-    // note: string; // Примечание
-
-    // verificationEndDate: Date; // Дата окончания поверки
-
-    // //наличие драг. металлов
-    // haveMetal: 'yes' | 'no_info' | 'no'
-    
-    // type: number; // Тип измерительного прибора
-
-
   },
     { title: 'Дата выпуска', dataIndex: 'dateOfIssue', key: 'dateOfIssue'
   },
@@ -100,13 +88,10 @@ const MainTable: React.FC = () => {
       width: 100,
       render: (event) => 
           <div className="" onClick={event => event.stopPropagation()}>
-          <Link to={`http://localhost:3000/table/1/${event.postId}`}>      
+          <Link to={`${process.env.REACT_APP_FRONTEND_URL}/table/1/${event.postId}`}>      
           <EditOutlined style={{fontSize: '18px'}} />
         </Link>
-
           </div>
-         //router dom Link
-        //onClick={onEditRow} 
     },
   ];
   const navigate = useNavigate();
@@ -119,7 +104,7 @@ const MainTable: React.FC = () => {
   useEffect( () => {
 
     const getData = async () => {
-      let {data} = await axios.get('http://localhost:5000/api/measuring-device/')
+      let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`)
       setData(data)
       setHasData(true)
       setLoading(false)
@@ -130,22 +115,24 @@ const MainTable: React.FC = () => {
 
   return (
   <>
+  <div className="" style={{padding: '10px'}}>
+  <Button><Link to={`${process.env.REACT_APP_FRONTEND_URL}/table/1/create`}>Создать новую запись</Link></Button>
 
-  <Table 
-    loading={loading}
-    rowKey={({id}) => id}
-    onRow={(i) => ({
-        onClick: (e) => {
-          navigate(`${i.id}`,{state:{id:i.id}})
-        }
-    })}
-    columns={columns} 
-    pagination={{}} 
-    dataSource={hasData ? Data : []} 
-    scroll={{ x: 1300 }} 
-  />
+  </div>
+    <Table 
+      loading={loading}
+      rowKey={({id}) => id}
+      onRow={(i) => ({
+          onClick: (e) => {
+            navigate(`${i.id}`,{state:{id:i.id}})
+          }
+      })}
+      columns={columns} 
+      pagination={{}} 
+      dataSource={hasData ? Data : []} 
+      scroll={{ x: 1300 }} 
+      
+    />
   </>)
-  
- 
 }
 export default MainTable;
