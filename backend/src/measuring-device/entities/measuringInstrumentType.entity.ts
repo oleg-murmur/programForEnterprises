@@ -5,10 +5,10 @@ import {MeasuringDevice} from './measuring-device.entity'
 @Entity('instrumentType')
 export class MeasuringInstrumentType {
     @PrimaryGeneratedColumn()
-    id: number;
+     value: number;
 
     @Column({ nullable: true })
-    name: string; // Наименование типа измерительного прибора
+    label: string; // Наименование типа измерительного прибора
 
     @OneToMany(() => MeasuringDevice, (device) => device.deviceType)
     masuringDevice: MeasuringDevice[]

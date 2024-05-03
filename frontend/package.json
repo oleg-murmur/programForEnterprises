@@ -16,6 +16,7 @@
     "@types/react-dom": "^18.2.21",
     "antd": "^5.15.1",
     "axios": "^1.6.7",
+    "dotenv": "^16.4.5",
     "mockjs": "^1.1.0",
     "postgresql": "^0.0.1",
     "react": "^18.2.0",

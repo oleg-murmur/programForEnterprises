@@ -31,6 +31,6 @@ export class CreateMeasuringDeviceDto {
 }
 
 export class CreateTypeDto {
-    id: number;
+    value: number;
     name: string;
 }

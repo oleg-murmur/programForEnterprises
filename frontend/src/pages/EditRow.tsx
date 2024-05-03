@@ -9,17 +9,16 @@ import {
     ProFormText,
     ProFormTextArea,
   } from '@ant-design/pro-components';
-  import { Button, ConfigProvider,Upload,UploadFile,UploadProps,message  } from 'antd';
+  import { ConfigProvider} from 'antd';
 import axios, { all } from 'axios';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ruRU from 'antd/locale/ru_RU';
 import { useRef } from 'react';
-import { UploadOutlined } from '@ant-design/icons';
 import UploadComponent from './upload';
-import fs from 'fs'
 import cl from "../test.module.css"
-import { getAllInst, getInstByID } from '../htto/instAPI';
-import { useLocation } from 'react-router-dom';
+import { getInstByID } from '../http/instAPI';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+
 export const waitTime = (time: number = 100) => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -41,8 +40,7 @@ interface IObjProps {
 }
 const EditRow = ({route, navigate}: any) => {
   const location = useLocation();
-
-  console.log(location.state.id)
+  const navigate2 = useNavigate();
   const formRef = useRef<
     ProFormInstance<{
       name: string;
@@ -57,42 +55,19 @@ const EditRow = ({route, navigate}: any) => {
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
 
     useEffect( () => {
-      getAllInst()
       const getData = async () => {
-        // const response = await axios.get('http://localhost:5000/api/instrument',{})
-
-
         const instrumentFromBD = await getInstByID(location.state.id)
         setObjFormData(instrumentFromBD.data)
         setObjFromServer(instrumentFromBD.data)
-        console.log(instrumentFromBD, 'instrumentFromBD')
-        const allRows = await axios.get('http://localhost:5000/api/instrument/test',{})
-        // setObjFromServer(allRows.data)
-        // setObjFormData(allRows.data)
       }
       setTimeout(()=> {
         setLoading(true)
       },3000)
       getData()
     },[])
-
-    // id: string
-    // inventoryName: string,
-    //     factoryNumber: string,
-    //     userName: string,
-    //     dateOfIssue: string,
-    //     note: string,
-    //     verificationEndDate: string,
-    //     haveMetal: string,
-    //     type: number,
-    //     "type-instrument": { value: string, label: string },
-    //     files: any[]
-console.log(objFormData.id)
-console.log(objFromServer, 'objFromServer')
-console.log(objFormData, 'objFormData')
     const onFinish = async() => {
-      const formData:any = new FormData();
-      let formData3 = {
+      const FilesUpload:any = new FormData();
+      let EditInst = {
         inventoryName: objFormData.inventoryName,
         factoryNumber: objFormData.factoryNumber,
         userName: objFormData.userName,
@@ -102,34 +77,24 @@ console.log(objFormData, 'objFormData')
         haveMetal: objFormData.haveMetal,
         type: objFormData.type,
       }
-      const formData2:any = new FormData();
-      // formData.append("inventoryName", objFormData.inventoryName);
-      // formData.append("factoryNumber", objFormData.factoryNumber);
-      // formData.append("userName", objFormData.userName);
-      // formData.append("dateOfIssue", objFormData.dateOfIssue);
-      // formData.append("note", objFormData.note);
-      // formData.append("verificationEndDate", objFormData.verificationEndDate);
-      // formData.append("haveMetal", objFormData.haveMetal);
-      // formData.append("type", objFormData.type);
 
-    console.log(objFormData, '12345')
-    formData2.append("instId", objFormData.id)
+      FilesUpload.append("instId", objFormData.id)
     for (let i = 0; i < objFormData.files.length; i++) {
-      formData2.append('files', objFormData.files[i].originFileObj);
+      FilesUpload.append('files', objFormData.files[i].originFileObj);
     };
-    const result = await axios({
+
+    const resultFileUpload = await axios({
       method: "post",
       url: "http://localhost:5000/api/file/upload",
-      data: formData2,
+      data: FilesUpload,
       headers: { "Content-Type": "multipart/form-data" },
     })
-    const result2 = await axios({
+    const resultEditInst = await axios({
       method: "post",
       url: "http://localhost:5000/api/measuring-device",
-      data: formData3,
-      // headers: { "Content-Type": "multipart/form-data" },
+      data: EditInst,
     })
-    console.log(objFormData.files)
+    navigate2("..")
     }
 
 return (
@@ -167,13 +132,15 @@ return (
           ;
         }}
           submitter={{searchConfig: {resetText: "Отменить", submitText: "Сохранить" }, 
+          // <Link to={`http://localhost:3000/table/1`}>    
           submitButtonProps: {
             style: {
               display: readonly? 'none' : '',
              
            },
           //  disabled: readonly
-          },
+        },
+          
           resetButtonProps: {
             style: {
               display: readonly? 'none' : '',
@@ -183,12 +150,16 @@ return (
             //открывать модалку подтвердить несохранение
             onClick: (e)=> {console.log(e)}
             
-          },}}
+          },
+      }}
           readonly={readonly}
           name="validate_other"
           onValuesChange={async (_, values) => {
             setObjFormData({...objFormData, ...values})
-          }}
+          }
+        }
+          
+          // onClick={e=> <Link to={`http://localhost:3000/table/1/${}`}/>}
           onFinish={async () => onFinish()}
         >
             <ProFormGroup title="Изменить прибор">
@@ -196,11 +167,6 @@ return (
                 <ProFormText width="md" name="factoryNumber" label="Заводской номер" placeholder={"значение"}/>
                 <ProFormText width="md" name="userName" label="Пользователь" placeholder={"значение"}/>
                 {/* <ProFormText width="md" name="123" label="4" placeholder={"значение"}/>
-                <ProFormText width="md" label="5" placeholder={"значение"}/>
-                <ProFormText width="md" label="6" placeholder={"значение"}/>
-                <ProFormText width="md" label="7" placeholder={"значение"}/>
-                <ProFormText width="md" label="8" placeholder={"значение"}/>
-                <ProFormText width="md" label="9" placeholder={"значение"}/>
                 <ProFormText width="md" label="10" placeholder={"значение"}/> */}
 
                 <ProFormSelect
@@ -212,8 +178,8 @@ return (
                   rules={[{ required: true, message: 'Тип прибора не выбран' }]}
                   debounceTime={3000}
                   request={async () => {
-                      let response = await axios.get('http://localhost:5000/api/instrument',{})
-                    return [ {value: 'no_info', label: "Нет информации"}, ...response.data]
+                      let {data} = await axios.get('http://localhost:5000/api/measuring-device/type',{})
+                      return [ {value: 'no_info', label: "Нет информации"}, ...data]
                 }}
                   /> 
                   <ProFormTextArea

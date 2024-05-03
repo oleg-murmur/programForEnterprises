@@ -1,14 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, Input, Modal, Pagination, Space, Table, Tooltip } from 'antd';
-import type { InputRef, TableColumnsType, TableColumnType } from 'antd';
-import { DownloadOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import { Table, Tooltip } from 'antd';
+import type { TableColumnsType,  } from 'antd';
+import { DownloadOutlined, EditOutlined,  } from '@ant-design/icons';
 import axios from 'axios';
 import { Link} from 'react-router-dom';
-import { redirect } from 'react-router-dom';
-import ModalInst from './Modal';
-import MainFormTwo from './MainFormTwo';
-import { FilterDropdownProps } from 'antd/es/table/interface';
-import Highlighter from 'react-highlight-words';
 import { useNavigate } from "react-router-dom";
 import useColumnSearchProps from "../hooks/getColumnSearchProps"
 
@@ -115,7 +110,7 @@ const MainTable: React.FC = () => {
     },
   ];
   const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(true);
 
   const [Data, setData] = useState([]);
   const [hasData, setHasData] = useState(false);
@@ -125,7 +120,6 @@ const MainTable: React.FC = () => {
 
     const getData = async () => {
       let {data} = await axios.get('http://localhost:5000/api/measuring-device/')
-      console.log(data)
       setData(data)
       setHasData(true)
       setLoading(false)
@@ -138,35 +132,18 @@ const MainTable: React.FC = () => {
   <>
 
   <Table 
-  
-  loading={loading}
-  rowKey={({id}) => id}
-  onRow={(i) => ({
-      onClick: (e) => {
-        navigate(`${i.id}`,{state:{id:i.id}})
-      }
-  })}
-  columns={columns} 
-  pagination={{}} 
-  dataSource={hasData ? Data : []} 
-  scroll={{ x: 1300 }} />
-
-<Modal
-  title="edit row"
-  open={isEditing}
-  okText="save"
-  cancelText="dontsave"
-  onCancel={()=> {
-    setIsEditing(false)
-  }}
-  onOk={()=> {
-    setIsEditing(false)
-  }}
->
-  <MainFormTwo/> 
-</Modal>
-
-<ModalInst status={false}/>
+    loading={loading}
+    rowKey={({id}) => id}
+    onRow={(i) => ({
+        onClick: (e) => {
+          navigate(`${i.id}`,{state:{id:i.id}})
+        }
+    })}
+    columns={columns} 
+    pagination={{}} 
+    dataSource={hasData ? Data : []} 
+    scroll={{ x: 1300 }} 
+  />
   </>)
   
  

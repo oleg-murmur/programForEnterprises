@@ -29,7 +29,7 @@ const normFile = (e: any) => {
   return e?.fileList;
 };
 
-const MainFormTwo: React.FC = () => {
+const CreateFormEdit: React.FC = () => {
   const [componentDisabled, setComponentDisabled] = useState<boolean>(true);
   const onFinish = (values: any) => {
     console.log('Received values of form: ', values);
@@ -126,7 +126,7 @@ const MainFormTwo: React.FC = () => {
   );
 };
 
-export default () => <MainFormTwo />;
+export default () => <CreateFormEdit />;
 // import {
 //     ProForm,
 //     ProFormGroup,

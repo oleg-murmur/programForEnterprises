@@ -6,10 +6,11 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import MainForm from './pages/MainForm';
-import MainFormTwo from './pages/MainFormTwo';
+import MainFormTwo from './pages/CreateRowForm';
 import MainPage from './pages/MainPage';
 import MainTable from './pages/MainTable';
 import EditRow from './pages/EditRow';
+import AuthComponent from './pages/AuthComponent';
 
 const router = createBrowserRouter([
   {
@@ -17,8 +18,14 @@ const router = createBrowserRouter([
     element: <MainPage/>,
     children: [
       {
+        index: true,
+        element: <MainTable />,
+        
+      },
+      {
         path: "/table/:tableId",
         element: <MainTable />,
+        
       },
       {
         path: "/table/:tableId/create",
@@ -28,6 +35,10 @@ const router = createBrowserRouter([
         path: "/table/:tableId/:instId",
         element: <EditRow />,
       },
+      {
+        path: "/auth",
+        element: <AuthComponent />,
+      }
     ]
   },
 

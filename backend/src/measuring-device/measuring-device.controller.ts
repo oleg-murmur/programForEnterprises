@@ -25,6 +25,10 @@ export class MeasuringDeviceController {
 
     return this.measuringInstrumentTypeService.create(measuringDevice);
   }
+  @Get('type')
+ async findAllType() {
+    return await this.measuringInstrumentTypeService.find();
+  }
   @Get('type/:id')
  async findOneType(@Param('id') id: number) {
     return await this.measuringInstrumentTypeService.findOne(id);

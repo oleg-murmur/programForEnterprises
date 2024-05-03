@@ -56,6 +56,22 @@ export class  MeasuringInstrumentTypeService{
     return await this.typeRepository.save(newInst)
   }
   async findOne(id: number): Promise<MeasuringInstrumentType> {
-    return this.typeRepository.findOne({where: {id}});
+    return this.typeRepository.findOne({where: {value: id}});
+  }
+  async find(): Promise<any> {
+    return this.typeRepository.find();
+    // db
+
+    // [
+    //   {
+    //       "id": 1,
+    //       "name": "123"
+    //   }]
+
+    // front:
+
+    // [
+    //   {value: '2', label: 2},
+    // ]
   }
 }
