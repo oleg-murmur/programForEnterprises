@@ -21,8 +21,6 @@ export class  FilesOfDevicesService{
   }
   async findFilesOfInst(device: MeasuringDevice): Promise<any> {
 
-
-
     return await this.filesRepository.find({
       where: {device: device},
       take: 5

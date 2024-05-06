@@ -35,7 +35,9 @@ export class MeasuringDeviceController {
 
   @Post()
   async create(@Body() createMeasuringDeviceDto: Partial<any>) {
-    let typed = await this.findOneType(createMeasuringDeviceDto.type.value)
+    console.log(createMeasuringDeviceDto)
+    let typed = await this.findOneType(createMeasuringDeviceDto.deviceType)
+    
     let measuringDevice = {
       id: uuidv4(),
       ...createMeasuringDeviceDto, deviceType: typed
@@ -45,9 +47,14 @@ export class MeasuringDeviceController {
   }
   @Post('edit')
   async edit(@Body() createMeasuringDeviceDto: Partial<any>) {
-    let typed = await this.findOneType(createMeasuringDeviceDto.type.value)
+    let typed
+    console.log(createMeasuringDeviceDto,'createMeasuringDeviceDto')
+    if(createMeasuringDeviceDto.deviceType == "no_info" || createMeasuringDeviceDto.deviceType.value == "no_info"){
+      typed = null
+    }else{
+      typed = await this.findOneType(createMeasuringDeviceDto.deviceType.value)
+    }
     let measuringDevice = {
-      id: uuidv4(),
       ...createMeasuringDeviceDto, deviceType: typed
     }
     console.log(measuringDevice, 'measuringDevice')

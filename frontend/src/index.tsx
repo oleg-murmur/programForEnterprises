@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import {
   createBrowserRouter,
+  Navigate,
   RouterProvider,
 } from "react-router-dom";
 import MainForm from './pages/MainForm';
@@ -20,7 +21,8 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <MainTable />,
+        
+        element: <Navigate replace to="/table/1" />,
         
       },
       {
@@ -43,6 +45,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/auth",
+    index: true,
     element: <AuthComponent/>
   }
 

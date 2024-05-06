@@ -3,7 +3,10 @@ import { Button, Input, InputRef, Space, TableColumnType } from "antd";
 import { FilterDropdownProps } from "antd/es/table/interface";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-
+import { DatePicker } from 'antd';
+import moment from 'moment';
+import { ProFormDatePicker } from "@ant-design/pro-components";
+const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 interface DataType {
   dataIndex: any
   id: string;
@@ -31,7 +34,7 @@ interface DataType {
   }
   
   type DataIndex = keyof DataType;
-  const useColumnSearchProps = (dataIndex: DataIndex): TableColumnType<any>=> {
+  const useGetColumnDateSearch = (dataIndex: DataIndex): TableColumnType<any>=> {
 
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
@@ -51,7 +54,6 @@ interface DataType {
         confirm();
         setSearchText(selectedKeys[0]);
         setSearchedColumn(dataIndex);
-        console.log(selectedKeys[0])
       }, 2000);
       
       setTimeoutId(newTimeoutId);
@@ -62,17 +64,21 @@ interface DataType {
     };
   
   return {
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
-      <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-        <Input
-          ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-          style={{ marginBottom: 8, display: 'block' }}
-        />
-        <Space>
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
+        return (<div style={{padding: '15px'}} onKeyDown={(e) => e.stopPropagation()}>
+            {/* <RangePicker 
+        onChange={(e) => console.log(e)} 
+        placeholder={[`Search ${dataIndex}`, `Search ${dataIndex}`]}
+          /> */}
+          <ProFormDatePicker
+                      width="md"
+                      dataFormat=''
+                      colProps={{ xl: 8, md: 12 }}
+                      label="Дата окончания"
+                      name="verificationEndDate"
+                      placeholder="дата"
+                  />
+         <Space>
           <Button
             type="primary"
             onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
@@ -89,29 +95,8 @@ interface DataType {
           >
             Reset
           </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({ closeDropdown: false });
-              setSearchText((selectedKeys as string[])[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-            Filter
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
-          </Button>
-        </Space>
-      </div>
-    ),
+        </Space></div>)
+      },
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
     ),
@@ -141,6 +126,7 @@ interface DataType {
         ) : (
           text
         ),
+        
   }
 }
-  export default useColumnSearchProps;
+  export default useGetColumnDateSearch;

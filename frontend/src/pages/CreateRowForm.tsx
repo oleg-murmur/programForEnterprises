@@ -24,7 +24,7 @@ import axios from 'axios';
 import UploadComponent from './upload';
 import { getInstByID } from '../http/instAPI';
 import ruRU from 'antd/locale/ru_RU';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
@@ -47,7 +47,7 @@ interface IObjProps {
       files: any[]
 }
 const CreateFormEdit: React.FC = () => {
-  const location = useLocation();
+  const {instId} = useParams()
   const navigate = useNavigate();
   const formRef = useRef<
     ProFormInstance<{
@@ -56,17 +56,14 @@ const CreateFormEdit: React.FC = () => {
       useMode?: string;
     }>
   >();
-    const [readonly, setReadonly] = useState(true);
     const [loading, setLoading] = useState(false);
 
     const [objFromServer, setObjFromServer] = useState<IObjProps>(defaultObj)
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
 
+    console.log(objFormData)
     useEffect( () => {
       const getData = async () => {
-        // const instrumentFromBD = await getInstByID(location.state.id)
-        // setObjFormData(instrumentFromBD.data)
-        // setObjFromServer(instrumentFromBD.data)
       }
       setTimeout(()=> {
         setLoading(true)
@@ -83,25 +80,27 @@ const CreateFormEdit: React.FC = () => {
         note: objFormData.note,
         verificationEndDate: objFormData.verificationEndDate,
         haveMetal: objFormData.haveMetal,
-        type: objFormData.deviceType,
+        deviceType: objFormData.deviceType,
       }
 
-      FilesUpload.append("instId", objFormData.id)
+      // FilesUpload.append("instId", objFormData.id)
     for (let i = 0; i < objFormData.files.length; i++) {
       FilesUpload.append('files', objFormData.files[i].originFileObj);
     };
-
+    const resultEditInst = await axios({
+      method: "post",
+      url: `${process.env.REACT_APP_BACKEND_URL_INST_EP}`,
+      data: EditInst,
+    })
+    console.log(resultEditInst,'resultEditInst')
+    FilesUpload.append("instId", resultEditInst.data.id)
     const resultFileUpload = await axios({
       method: "post",
       url: `${process.env.REACT_APP_BACKEND_URL_FILE_EP}`,
       data: FilesUpload,
       headers: { "Content-Type": "multipart/form-data" },
     })
-    const resultEditInst = await axios({
-      method: "post",
-      url: `${process.env.REACT_APP_BACKEND_URL_INST_EP}`,
-      data: EditInst,
-    })
+
     navigate("..")
     }
 
@@ -124,15 +123,9 @@ const CreateFormEdit: React.FC = () => {
   <ProForm
       // autoFocusFirstInput
       
-      request={async () => {
-        const instrumentFromBD = await getInstByID(location.state.id)
-        let values = {...instrumentFromBD.data, deviceType: instrumentFromBD.data.deviceType?.label}
-        setObjFormData(values)
-        console.log(instrumentFromBD,'instrumentFromBD')
-        console.log(instrumentFromBD.data.deviceType?.name,'instrumentFromBD.data.deviceType?.name')
-        return values
-        ;
-      }}
+      // request={async () => {
+      
+      // }}
         submitter={{searchConfig: {resetText: "Отменить", submitText: "Сохранить" }}}
 
 
@@ -160,6 +153,7 @@ const CreateFormEdit: React.FC = () => {
                 debounceTime={3000}
                 request={async () => {
                     let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_TYPE_EP}`,{})
+                    console.log(data,'')
                     return [ {value: 'no_info', label: "Нет информации"}, ...data]
               }}
                 /> 

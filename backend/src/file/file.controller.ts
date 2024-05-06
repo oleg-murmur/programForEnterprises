@@ -79,6 +79,7 @@ export class FileController {
   }
   @Get('files/:deviceId')
  async findFilesOfInst(@Param('id') id: string) {
+  console.log(id, 'FILE ID')
     return await this.filesOfDevices.findOne(id);
   }
 

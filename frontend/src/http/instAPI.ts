@@ -1,11 +1,11 @@
 import axios from "axios"
 
 export const getAllInst = async () => {
-    let data = await axios.get("http://localhost:5000/api/measuring-device/",{})
+    let data = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`,{})
     return data
 }
-export const getInstByID = async (id:string) => {
-    let instrumentFromBD = await axios.get(`http://localhost:5000/api/measuring-device/${id}`)
+export const getInstByID = async (id:any) => {
+    let instrumentFromBD = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}/${id}`)
     return instrumentFromBD
 }
 

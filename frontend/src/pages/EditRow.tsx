@@ -17,7 +17,7 @@ import { useRef } from 'react';
 import UploadComponent from './upload';
 import cl from "../test.module.css"
 import { getInstByID } from '../http/instAPI';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export const waitTime = (time: number = 100) => {
     return new Promise((resolve) => {
@@ -35,11 +35,12 @@ interface IObjProps {
       note: string,
       verificationEndDate: string,
       haveMetal: string,
-      deviceType: number,
+      deviceType: {value: any, label: string},
       files: any[]
 }
 const EditRow = ({route}: any) => {
-  const location = useLocation();
+  const {instId} = useParams()
+  console.log(instId,'param')
   const navigate = useNavigate();
   const formRef = useRef<
     ProFormInstance<{
@@ -56,7 +57,8 @@ const EditRow = ({route}: any) => {
 
     useEffect( () => {
       const getData = async () => {
-        const instrumentFromBD = await getInstByID(location.state.id)
+        const instrumentFromBD = await getInstByID(instId)
+        instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? {value: 'no_info', label: "Нет информации"}
         setObjFormData(instrumentFromBD.data)
         setObjFromServer(instrumentFromBD.data)
       }
@@ -68,7 +70,7 @@ const EditRow = ({route}: any) => {
     const onFinish = async() => {
       const FilesUpload:any = new FormData();
       let EditInst = {
-        id: location.state.id,
+        id: instId,
         inventoryName: objFormData.inventoryName,
         factoryNumber: objFormData.factoryNumber,
         userName: objFormData.userName,
@@ -76,7 +78,7 @@ const EditRow = ({route}: any) => {
         note: objFormData.note,
         verificationEndDate: objFormData.verificationEndDate,
         haveMetal: objFormData.haveMetal,
-        type: objFormData.deviceType,
+        deviceType: objFormData.deviceType,
       }
 
       FilesUpload.append("instId", objFormData.id)
@@ -122,10 +124,13 @@ return (
         // autoFocusFirstInput
         
         request={async () => {
-          const instrumentFromBD = await getInstByID(location.state.id)
-          let values = {...instrumentFromBD.data, deviceType: instrumentFromBD.data.deviceType?.label}
+          const instrumentFromBD = await getInstByID(instId)
+          let values = {...instrumentFromBD.data, 
+            deviceType: 
+                instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? {value: 'no_info', label: "Нет информации"
+          }
+        }
           setObjFormData(values)
-          console.log(instrumentFromBD,'instrumentFromBD')
           return values
           ;
         }}
@@ -169,6 +174,7 @@ return (
                   debounceTime={3000}
                   request={async () => {
                       let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_TYPE_EP}`,{})
+                      console.log(data)
                       return [ {value: 'no_info', label: "Нет информации"}, ...data]
                 }}
                   /> 
@@ -267,6 +273,6 @@ const defaultObj = {
   note: "note",
   verificationEndDate: "05-12-2024",
   haveMetal: "yes",
-  deviceType: 0,
+  deviceType: {value: 'no_info', label: "Нет информации"},
   files: []
 }
