@@ -13,6 +13,7 @@ import MainTable from './pages/MainTable';
 import EditRow from './pages/EditRow';
 import AuthComponent from './pages/AuthComponent';
 import AvatarComponent from './pages/AvatarComponent';
+import TestPage from './pages/TestPage';
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <AvatarComponent />,
+      },
+      {
+        path: "/test",
+        element: <TestPage />,
       },
     ]
   },
