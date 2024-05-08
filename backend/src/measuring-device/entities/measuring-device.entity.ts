@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { MeasuringInstrumentType } from "./measuringInstrumentType.entity";
 import { FilesOfDevices } from "./filesInstrument.entity";
 
@@ -22,13 +22,13 @@ export class MeasuringDevice {
     userName: string // кто отвечает за прибор (отдельная сущность?)
 
     @Column({ type: 'date',nullable: true })
-    dateOfIssue: Date; // Дата выпуска
+    dateOfIssue: string; // Дата выпуска
 
     @Column({ nullable: true })
     note: string; // Примечание
 
     @Column({ type: 'date',nullable: true })
-    verificationEndDate: Date; // Дата окончания поверки
+    verificationEndDate: string; // Дата окончания поверки
 
     @Column({ nullable: true }) //наличие драг. металлов
     haveMetal: 'yes' | 'no_info' | 'no'
@@ -38,7 +38,11 @@ export class MeasuringDevice {
 
     @OneToMany(() => FilesOfDevices, (file) => file.device)
     files: FilesOfDevices[]
-
+    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+    public created_at: Date;
+    
+    @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+    public updated_at: Date;
     // @ManyToOne(() => MeasuringInstrumentType, type => type.measuringDevices)
     // type: MeasuringInstrumentType; // Тип измерительного прибора
 }

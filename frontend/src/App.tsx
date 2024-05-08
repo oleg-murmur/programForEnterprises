@@ -1,7 +1,7 @@
 import React from 'react';
 import MainPage from './pages/MainPage';
 import { ConfigProvider } from 'antd';
-import frFR from 'antd/locale/fr_FR';
+import frFR from 'antd/locale/ru_RU';
 
 function App() {
   return (

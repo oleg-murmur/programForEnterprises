@@ -116,8 +116,6 @@ interface DataType {
       <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
     ),
     onFilter: (value, record) => {
-      console.log(value,'value')
-      console.log(record,'record')
       if(record[dataIndex] === null) {
         record[dataIndex] = ""
       }

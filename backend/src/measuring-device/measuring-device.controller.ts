@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { MeasuringDeviceService, MeasuringInstrumentTypeService } from './measuring-device.service';
 import { CreateMeasuringDeviceDto, CreateTypeDto } from './dto/create-measuring-device.dto';
 import { UpdateMeasuringDeviceDto } from './dto/update-measuring-device.dto';
@@ -7,7 +7,7 @@ import { MeasuringDevice } from './entities/measuring-device.entity';
 import { v4 as uuidv4 } from 'uuid'
 import { MeasuringInstrumentType } from './entities/measuringInstrumentType.entity';
 import { FilesOfDevices } from './entities/filesInstrument.entity';
-
+import { Request } from 'express';
 @Controller('measuring-device')
 export class MeasuringDeviceController {
   constructor(private readonly measuringDeviceService: MeasuringDeviceService,
@@ -32,10 +32,44 @@ export class MeasuringDeviceController {
  async findOneType(@Param('id') id: number) {
     return await this.measuringInstrumentTypeService.findOne(id);
   }
+//   @Get('filterDateOfIssue')
+//  async findAlldateOfIssue(@Body() test: Partial<{from:string,to:string}>) {
+//     return await this.measuringDeviceService.findAlldateOfIssue(test);
+//   }
+
+
+
+  @Get('filterDateOfIssue')
+async getdata(@Req() request: Request): Promise<Object> {
+    const [result,total] =  await this.measuringDeviceService.findAlldateOfIssue({...request.query});
+    console.log(    {
+      data: result,
+      skip: total
+    })
+    return  {
+      data: result,
+      skip: total
+    }
+  }
+  @Get('filterVerificationEndDate')
+ async findAllVerificationEndDate(@Req() request: Request): Promise<Object> {
+    const [result,total] = await this.measuringDeviceService.findAllVerificationEndDate({...request.query});
+    console.log(    {
+      data: result,
+      skip: total
+    })
+
+    return  {
+      data: result,
+      skip: total
+    }
+  }
+
+
+
 
   @Post()
   async create(@Body() createMeasuringDeviceDto: Partial<any>) {
-    console.log(createMeasuringDeviceDto)
     let typed = await this.findOneType(createMeasuringDeviceDto.deviceType)
     
     let measuringDevice = {
@@ -48,7 +82,6 @@ export class MeasuringDeviceController {
   @Post('edit')
   async edit(@Body() createMeasuringDeviceDto: Partial<any>) {
     let typed
-    console.log(createMeasuringDeviceDto,'createMeasuringDeviceDto')
     if(createMeasuringDeviceDto.deviceType == "no_info" || createMeasuringDeviceDto.deviceType.value == "no_info"){
       typed = null
     }else{
@@ -57,12 +90,12 @@ export class MeasuringDeviceController {
     let measuringDevice = {
       ...createMeasuringDeviceDto, deviceType: typed
     }
-    console.log(measuringDevice, 'measuringDevice')
     return this.measuringDeviceService.edit(measuringDevice);
   }
+  
   @Get()
-  findAll() {
-    return this.measuringDeviceService.findAll();
+  findAll(@Req() request: Request): Promise<Object> {
+    return this.measuringDeviceService.findAll(request.query);
   }
 
   @Get(':id')
@@ -77,6 +110,6 @@ export class MeasuringDeviceController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.measuringDeviceService.remove(+id);
+    return this.measuringDeviceService.remove(id);
   }
 }

@@ -1,14 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Table, Tooltip } from 'antd';
-import type { TableColumnsType,  } from 'antd';
-import { DownloadOutlined, EditOutlined,  } from '@ant-design/icons';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Button, ConfigProvider, Pagination, Table, Tooltip } from 'antd';
+import type { GetProp, TableColumnsType, TableProps,  } from 'antd';
+import { DownloadOutlined, EditOutlined, SearchOutlined,  } from '@ant-design/icons';
 import axios from 'axios';
 import { Link} from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 import useColumnSearchProps from "../hooks/getColumnSearchProps"
 import { DatePicker } from 'antd';
 import useGetColumnDateSearch from '../hooks/getColumnDateSearch';
+import dayjs from 'dayjs';
+import moment from 'moment';
+import { runFilterDateOfIssue, runVerificationEndDate } from '../hooks/DateFilters';
+import { FilterDropdownProps } from 'antd/es/table/interface';
+import ruRU from 'antd/locale/ru_RU';
+const PAGE_SIZE = 10
 
+let date = new Date();
+var nowDate = moment(date);
+const dateFormatList = ["YYYY/MM/DD", "DD/MM/YYYY"];
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 interface DataType {
     id: string;
@@ -34,25 +43,61 @@ interface DataType {
     deviceType: number; // Тип измерительного прибора
 
 }
-
-type DataIndex = keyof DataType;
+type TablePaginationConfig = Exclude<GetProp<TableProps, 'pagination'>, boolean>;
+interface TableParams {
+  pagination?: TablePaginationConfig;
+  sortField?: string;
+  sortOrder?: string;
+  filters?: Parameters<GetProp<TableProps, 'onChange'>>[1];
+}
 const MainTable: React.FC = () => {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(true);
-
-  const [Data, setData] = useState([]);
+  const [resetFilter, setResetFilter] = useState(true);
+  const [countList, setCountList] = useState(0);
+  const [dateStartdateOfIssue, setDateStartdateOfIssue] = useState<string | null>("")
+  const [dateEnddateOfIssue, setDateEnddateOfIssue] = useState<string | null>("")
+  const [dateStartverificationEndDate, setDateStartverificationEndDate] = useState<string | null>("")
+  const [dateEndverificationEndDate, setDateEndverificationEndDate] = useState<string | null>("")
+  const [FilterverificationEndDate, setverificationEndDate] = useState(false)
+  const [FilterdateOfIssue, setdateOfIssue] = useState(false)
+  const [data, setData] = useState([]);
   const [hasData, setHasData] = useState(false);
   const [loading, setLoading] = useState(false);
-
- 
+  const [page, setPage] = useState(1)
+  const [tableParams, setTableParams] = useState<TableParams>({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+  const handleTableChange: TableProps['onChange'] = (pagination: any, filters: any, sorter: any) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  }
+  const test = (
+    selectedKeys: any,
+    confirm: FilterDropdownProps['confirm'],
+    setSelectedKeys: any,
+  ) => {
+    console.log(confirm());
+    console.log(selectedKeys);
+    console.log(setSelectedKeys);
+  };
   useEffect( () => {
-
     const getData = async () => {
-      // let data3 = await axios.get(`${process.env.REACT_APP_BACKEND_URL_TYPE_EP}`,{})
-      // setType(data3.data)
-      let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`)
+      setLoading(true)
+      // let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`)
+      let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`, {params: {
+        skip: page, take: PAGE_SIZE
+      }})
       let data2:any = [];
-      data.forEach((element: any) => {
+      console.log(data.data)
+      data.data.forEach((element: any) => {
+        console.log(element, 'element')
         if(!element.deviceType) {
           element.deviceType = "Нет информации"
           data2.push(element)
@@ -61,38 +106,68 @@ const MainTable: React.FC = () => {
           data2.push(element)
         }
       });
+
+      setCountList(data.skip)
       setData(data2)
       setHasData(true)
       setLoading(false)
 
     }
     getData()
-  },[])
+  },[resetFilter,page])
 
+  // const [FilterverificationEndDate, setverificationEndDate] = useState(false)
+  // const [FilterdateOfIssue, setdateOfIssue] = useState(false)
+
+const onButtonClickDateOfIssue = async (close:any) => {
+  setdateOfIssue(true)
+  setLoading(true)
+  const test = await runFilterDateOfIssue(dateStartdateOfIssue,dateEnddateOfIssue)
+  console.log(test)
+  setCountList(test.skip)
+  setData(test.data)
+
+  close()
+  setLoading(false)
+}
+const onButtonClickVerificationEndDate = async (close:any) => {
+  setverificationEndDate(true)
+  setLoading(true)
+  const test = await runVerificationEndDate(dateStartverificationEndDate,dateEndverificationEndDate)
+  setCountList(test.skip)
+  setData(test.data)
+
+  close()
+  setLoading(false)
+}
+// const visibleTodos = useMemo(async ()=>{
+//   // let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`)
+//   let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`, {params: {
+//     page, limit: PAGE_SIZE
+//   }})
+//   setData(data.data)
+//   console.log(data)
+// },[page]);
 
   const columns: TableColumnsType<DataType> = [
     {
-      title: 'инвантарный номер',
+      title: 'Инвантарный номер',
       dataIndex: 'inventoryName',
       key: 'inventoryName',
       // fixed: 'left',
-
       sorter: (record1,record2):any=>{
         return record1.inventoryName > record2.inventoryName
       },
     },
     {
-      title: 'заводской номер',
-      
+      title: 'Заводской номер',
       dataIndex: 'factoryNumber',
       key: 'factoryNumber',
-      // fixed: 'left',
-
       sorter: (record1,record2):any=>{
         return record1.factoryNumber > record2.factoryNumber
       },
     },
-    { title: 'пользователь прибора', 
+    { title: 'Пользователь прибора', 
       dataIndex: 'userName', 
       key: 'userName',
       sorter: (record1,record2):any=>{
@@ -109,17 +184,39 @@ const MainTable: React.FC = () => {
     ), 
   },
 
-
   ////////////////////
     { title: 'Дата выпуска', dataIndex: 'dateOfIssue', key: 'dateOfIssue',
 
     sorter: (record1,record2):any=>{
       return record1.dateOfIssue > record2.dateOfIssue
     },
+    filterSearch: true,
+    filtered: FilterdateOfIssue ? true : false,
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
-      return (<div style={{padding: '15px'}}><RangePicker onChange={function onChange(date:any, dateString:any) {
-        console.log(date, dateString);
-      }} /></div>)
+      return (<div style={{padding: '15px'}} onKeyDown={(e) => e.stopPropagation()}>
+        <RangePicker
+          className="mr-3"
+          // defaultValue={[
+          //     dayjs(moment(nowDate, dateFormatList[0]).format("YYYY-MM-DD")),
+          //     dayjs(moment(nowDate, dateFormatList[0]).format("YYYY-MM-DD"))
+          // ]}
+          onChange={(e) => {
+            if(!(e && e[0])) {
+              setResetFilter(value => !value)
+              setdateOfIssue(false)
+              
+            }
+              setDateStartdateOfIssue(e && e[0] ? dayjs(e[0]).format("YYYY-MM-DD") : '0');
+              setDateEnddateOfIssue(e && e[1] ? dayjs(e[1]).format("YYYY-MM-DD") : '0');
+          }
+          }
+          
+          format={dateFormatList}
+          size={"large"}
+      />
+      <Button onClick={e=> onButtonClickDateOfIssue(close)} type="primary" size={"large"} icon={<SearchOutlined />}>
+        Search
+      </Button></div>)
     },
     render: (dateOfIssue) => (
       <Tooltip placement="topLeft" title={dateOfIssue}>
@@ -127,11 +224,31 @@ const MainTable: React.FC = () => {
       </Tooltip>)
   },
     { title: 'Дата окончания поверки', dataIndex: 'verificationEndDate', key: 'verificationEndDate',
-
     sorter: (record1,record2):any=>{
       return record1.dateOfIssue > record2.dateOfIssue
     },
-   ...useGetColumnDateSearch('verificationEndDate')
+    filtered: FilterverificationEndDate ? true : false,
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
+      return (<div style={{padding: '15px'}} onKeyDown={(e) => e.stopPropagation()}>
+        <RangePicker
+          className="mr-3"
+          onChange={(e) => {
+            if(!(e && e[0])) {
+              setResetFilter(value => !value)
+              setverificationEndDate(false)
+            }
+            setDateStartverificationEndDate(e && e[0] ? dayjs(e[0]).format("YYYY-MM-DD") : '0');
+            setDateEndverificationEndDate(e && e[1] ? dayjs(e[1]).format("YYYY-MM-DD") : '0');
+          }
+          }
+          format={dateFormatList}
+          size={"large"}
+      />
+      <Button onClick={e=> onButtonClickVerificationEndDate(close)} type="primary" size={"large"} icon={<SearchOutlined />}>
+        Search
+      </Button></div>)
+    },
+  //  ...useGetColumnDateSearch('verificationEndDate')
  },
  //////////////////////
 
@@ -147,7 +264,7 @@ const MainTable: React.FC = () => {
         {note}
       </Tooltip>)
  },
-    { title: 'наличие драг. металлов', dataIndex: 'haveMetal', key: 'haveMetal',
+    { title: 'Наличие драг. металлов', dataIndex: 'haveMetal', key: 'haveMetal',
 
     filters: [
       {
@@ -174,19 +291,36 @@ const MainTable: React.FC = () => {
       },
      },
   ];
-
   return (
   <div style={{paddingTop: '15px'}}>
+    <ConfigProvider locale={ruRU}>
     <Table 
-    bordered={true}
-    title={() =>  
-    <div className="" style={{padding: '10px'}}>
-      <Button>
-        <Link to={`${process.env.REACT_APP_FRONTEND_URL}/table/1/create`}>
-          Создать новую запись
-        </Link>
-      </Button>
-    </div>}
+    
+      bordered={true}
+      title={() =>  
+      <div className="" style={{padding: '10px'}}>
+        <Button>
+          <Link to={`${process.env.REACT_APP_FRONTEND_URL}/table/1/create`}>
+            Создать новую запись
+          </Link>
+        </Button>
+      </div>
+      }
+      // footer={()=> 
+      //   data.length / PAGE_SIZE > 1 && 
+      //   <div className="">
+      //     <Pagination 
+      //       showSizeChanger={false}
+      //       total={countList}
+      //       // current={countList}
+      //       defaultCurrent={2}
+      //       showQuickJumper
+      //       onChange={(page)=> setPage(page)}
+            
+      //     />
+      //   </div>
+      // }
+      
       loading={loading}
       rowKey={({id}) => id}
       onRow={(i) => ({
@@ -195,11 +329,16 @@ const MainTable: React.FC = () => {
           }
       })}
       columns={columns} 
-      pagination={{}} 
-      dataSource={hasData ? Data : []} 
+      pagination={{
+        pageSize: PAGE_SIZE,
+        total: countList,
+        defaultPageSize: 10, showSizeChanger: false,showQuickJumper: true,
+        onChange: (page)=> setPage(page)
+      }} 
+      dataSource={hasData ? data : []} 
       scroll={{ x: 1300 }} 
       
-    />
+    /></ConfigProvider>
   </div>)
 }
 

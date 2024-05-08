@@ -66,10 +66,6 @@ interface DataType {
   return {
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
         return (<div style={{padding: '15px'}} onKeyDown={(e) => e.stopPropagation()}>
-            {/* <RangePicker 
-        onChange={(e) => console.log(e)} 
-        placeholder={[`Search ${dataIndex}`, `Search ${dataIndex}`]}
-          /> */}
           <ProFormDatePicker
                       width="md"
                       dataFormat=''
@@ -101,8 +97,6 @@ interface DataType {
       <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
     ),
     onFilter: (value, record) => {
-      console.log(value,'value')
-      console.log(record,'record')
       if(record[dataIndex] === null) {
         record[dataIndex] = ""
       }

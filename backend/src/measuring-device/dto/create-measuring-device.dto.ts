@@ -1,7 +1,6 @@
-import { UUID } from "crypto";
+
 import { Generated } from "typeorm";
 import { v4 as uuidv4 } from 'uuid'
-import { MeasuringDevice } from "../entities/measuring-device.entity";
 
 export class CreateMeasuringDeviceDto {
     @Generated("uuid")

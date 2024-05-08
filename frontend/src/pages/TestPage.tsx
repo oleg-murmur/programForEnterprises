@@ -5,6 +5,8 @@ import { DatePicker, Button, Table } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import moment from "moment";
 import dayjs from "dayjs";
+import { filterDateOfIssue, filterVerificationEndDate } from "../http/instAPI";
+import { runFilterDateOfIssue, runVerificationEndDate } from "../hooks/DateFilters";
  
 
 const data = [
@@ -65,7 +67,7 @@ const TestPage: React.FC = () => {
 
 
     const [dateStart, setDateStart] = useState("")
-    const [setDateEnd, dateEnd] = useState("")
+    const [dateEnd, setDateEnd] = useState("")
 
     const dataSourceEquivalent = () =>
         data.map(cdr => {
@@ -137,11 +139,6 @@ const columns = [
   }
 ];
 
-const runFilterDate = () => {
-    console.log(dateStart)
-    console.log(setDateEnd)
-}
-
 return (
   <div>
     <div className="d-flex">
@@ -153,13 +150,13 @@ return (
         ]}
         onChange={(e) => {
             setDateStart(dayjs(e[0]).format("YYYY-MM-DD"));
-            dateEnd(dayjs(e[1]).format("YYYY-MM-DD"));
+            setDateEnd(dayjs(e[1]).format("YYYY-MM-DD"));
         }
         }
         format={dateFormatList}
         size={"large"}
       />
-      <Button onClick={e=> runFilterDate()} type="primary" size={"large"} icon={<SearchOutlined />}>
+      <Button onClick={e=> runVerificationEndDate(dateStart,dateEnd)} type="primary" size={"large"} icon={<SearchOutlined />}>
         Search
       </Button>
     </div>
