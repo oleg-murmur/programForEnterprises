@@ -43,7 +43,7 @@ interface IObjProps {
       note: string,
       verificationEndDate: string,
       haveMetal: string,
-      deviceType: number,
+      deviceType: {value: any, label: string},
       files: any[]
 }
 const CreateFormEdit: React.FC = () => {
@@ -60,11 +60,14 @@ const CreateFormEdit: React.FC = () => {
 
     const [objFromServer, setObjFromServer] = useState<IObjProps>(defaultObj)
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
-
-    console.log(objFormData)
     useEffect( () => {
-      const getData = async () => {
+      const getData = async () =>{
+        let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`)
+        console.log(data.data)
+        // setObjFromServer()
+        // setObjFormData()
       }
+
       setTimeout(()=> {
         setLoading(true)
       },3000)
@@ -82,26 +85,28 @@ const CreateFormEdit: React.FC = () => {
         haveMetal: objFormData.haveMetal,
         deviceType: objFormData.deviceType,
       }
+      const resultEditInst = await axios({
+        method: "post",
+        url: `${process.env.REACT_APP_BACKEND_URL_INST_EP}`,
+        data: EditInst,
+      })
 
-      // FilesUpload.append("instId", objFormData.id)
+      FilesUpload.append("instId", resultEditInst.data.id)
     for (let i = 0; i < objFormData.files.length; i++) {
       FilesUpload.append('files', objFormData.files[i].originFileObj);
     };
-    const resultEditInst = await axios({
-      method: "post",
-      url: `${process.env.REACT_APP_BACKEND_URL_INST_EP}`,
-      data: EditInst,
-    })
-    console.log(resultEditInst,'resultEditInst')
-    FilesUpload.append("instId", resultEditInst.data.id)
-    const resultFileUpload = await axios({
-      method: "post",
-      url: `${process.env.REACT_APP_BACKEND_URL_FILE_EP}`,
-      data: FilesUpload,
-      headers: { "Content-Type": "multipart/form-data" },
-    })
-
-    navigate("..")
+    try {
+      const resultFileUpload = await axios({
+        method: "post",
+        url: `${process.env.REACT_APP_BACKEND_URL_FILE_EP}`,
+        data: FilesUpload,
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      navigate("..")
+    } catch (error) {
+     // delete created row from db
+     console.log(error) 
+    }
     }
 
   const [componentDisabled, setComponentDisabled] = useState<boolean>(true);
@@ -121,11 +126,9 @@ const CreateFormEdit: React.FC = () => {
         <ConfigProvider locale={ruRU}>
 
   <ProForm
-      // autoFocusFirstInput
+      autoFocusFirstInput
       
-      // request={async () => {
-      
-      // }}
+      // request={}
         submitter={{searchConfig: {resetText: "Отменить", submitText: "Сохранить" }}}
 
 
@@ -153,8 +156,7 @@ const CreateFormEdit: React.FC = () => {
                 debounceTime={3000}
                 request={async () => {
                     let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_TYPE_EP}`,{})
-                    console.log(data,'')
-                    return [ {value: 'no_info', label: "Нет информации"}, ...data]
+                    return [ {value: 'Нет информации', label: "Нет информации"}, ...data]
               }}
                 /> 
                 <ProFormTextArea
@@ -208,207 +210,27 @@ const options = [
   {
     
     label: 'Нет',
-    value: 'no',
+    value: 'Нет',
   },
   {
     label: 'Да',
-    value: 'yes',
+    value: 'Да',
   },
   {
-      label: 'Нет данных',
-      value: 'no_data',
+      label: 'Нет информации',
+      value: 'Нет информации',
     },
 ]
 
 const defaultObj = {
   id: "",
-  inventoryName: "note",
-  factoryNumber: "note",
-  userName: "note",
+  inventoryName: "-",
+  factoryNumber: "-",
+  userName: "-",
   dateOfIssue: "05-12-2024",
-  note: "note",
+  note: "-",
   verificationEndDate: "05-12-2024",
-  haveMetal: "yes",
-  deviceType: 0,
+  haveMetal: "Нет информации",
+  deviceType: {value: 'Нет информации', label: "Нет информации"},
   files: []
 }
-// import {
-//     ProForm,
-//     ProFormGroup,
-//     ProFormRadio,
-//     ProFormSelect,
-//     ProFormText,
-//     ProFormUploadDragger,
-//   } from '@ant-design/pro-components';
-// import { Select, SelectProps, Space, Spin, Switch, Typography,message  } from 'antd';
-// import TextArea from 'antd/es/input/TextArea';
-// import axios from 'axios';
-// import { useEffect, useState } from 'react';
-  
-//   export const waitTime = (time: number = 100) => {
-//     return new Promise((resolve) => {
-//       setTimeout(() => {
-//         resolve(true);
-//       }, time);
-//     });
-//   };
-
-
-//   const handleChange = (value: string[]) => {
-//     console.log(`selected ${value}`);
-//   };
-//   const MainFormTwo = () => {
-//     const [readonly, setReadonly] = useState(false);
-
-
-
-//     const [data, setData] = useState([]);
-//     const [loading, setLoading] = useState(false);
-//     const options: SelectProps['options'] = [
-//         {
-//             label: '1',
-//             value: '1',
-//             disabled: false,
-//           },
-//           {
-//             label: '2',
-//             value: '2',
-//             disabled: false,
-//           },
-//           {
-//             label: '3',
-//             value: '3',
-//             disabled: false,
-//           },
-//           {
-//             label: '4',
-//             value: '4',
-//             disabled: false,
-//           },
-//     ];
-
-//     // useEffect( () => {
-  
-//     //   const getData = async () => {
-//     //     const response = await axios.get('http://localhost:5000/api/instrument',{})
-//     //     console.log(response.data)
-//     //     setData(response.data)
-//     //   }
-
-//     //   setTimeout(()=> {
-//     //     setLoading(true)
-//     //   },3000)
-//     //   // getData()
-
-//     // },[])
-
-
-
-//     return (
-
-//       <div
-//         style={{
-//           padding: 24,
-//         }}
-//       >
-//         <Switch
-//           style={{
-//             marginBlockEnd: 16,
-//           }}
-//           checked={readonly}
-//           checkedChildren="доступ 1"
-//           unCheckedChildren="доступ 2"
-//           onChange={setReadonly}
-//         />
-
-//         <ProForm
-//           submitter={{ searchConfig: { submitText: "save" } }}
-//           readonly={readonly}
-//           name="validate_other"
-          
-//           initialValues={{}}
-//           onValuesChange={(_, values) => {
-//             console.log(values);
-//           }}
-//           onFinish={async (value) => console.log(value)}
-//         >
-//             <ProFormGroup title="Изменить прибор">
-//                 <ProFormText width="md" label="1" placeholder={"значение"}/>
-//                 <ProFormText width="md" label="2" placeholder={"значение"}/>
-//                 <ProFormText width="md" label="3" placeholder={"значение"}/>
-//                 <ProFormText width="md" label="4" placeholder={"значение"}/>
-//                 <ProFormText width="md" label="5" placeholder={"значение"}/>
-//                 <ProFormText width="md" label="6" placeholder={"значение"}/>
-//                 <ProFormText width="md" label="7" placeholder={"значение"}/>
-//                 <ProFormText width="md" label="8" placeholder={"значение"}/>
-//                 <ProFormText width="md" label="9" placeholder={"значение"}/>
-//                 <ProFormText width="md" label="10" placeholder={"значение"}/>
-//                 <ProFormSelect
-//               width="md"
-//               name="type-instrument"
-//               label="Тип прибора"
-//               placeholder="Введите тип прибора"
-//               showSearch
-//               debounceTime={3000}
-//               request={async () => {
-//                   const response = await axios.get('http://localhost:5000/api/instrument',{})
-//                   setData(response.data)
-//                   return [ {value: 'no_info', label: "Нет информации"}, ...response.data]
-//               }}
-//               // rules={[{ required: true, message: 'Тип прибора не выбран' }]}
-//             />
-//                 {/* <div style={{ margin: '24px 0' }} /> */}
-//             <ProFormRadio.Group
-//               name="radio"
-//               label="Наличие драг. металлов"
-//               options={[
-//                 {
-//                   label: 'Нет',
-//                   value: 'no',
-//                 },
-//                 {
-//                   label: 'Да',
-//                   value: 'yes',
-//                 },
-//                 {
-//                     label: 'Нет данных',
-//                     value: 'no_data',
-//                   },
-//               ]}
-//             />
-//           </ProFormGroup>
-//           <Space direction="vertical" style={{ width: '100%' }}>
-//           <Typography.Title level={5}>Текст1</Typography.Title>
-//       <Select
-//       showSearch
-
-//       style={{ width: '100%' }}
-//       placeholder="Please select"
-//       // defaultValue={['a10', 'c12']}
-//       onChange={handleChange}
-//       options={[ {value: 'no_info', label: "Нет информации"}, ...data]}
-//       notFoundContent={loading ? <Spin size="small" /> : null}
-//     />
-//     </Space>
-//           <Typography.Title level={5}>Примечания к прибору</Typography.Title>
-//           <TextArea
-//                     placeholder="Примечания к прибору"
-//                     autoSize={{ minRows: 4, maxRows: 5 }}
-//                 />
-//           <Typography.Title level={5}>Загрузите документ, если он есть</Typography.Title>
-//           <ProFormUploadDragger description={"desc"} title={"Документ"} name="drag-pic" />
-
-
-//             {/* <ProFormCheckbox.Group
-//               name="checkbox-group"
-//               label="Checkbox.Group"
-//               options={['A', 'B', 'C', 'D', 'E', 'F']}
-//             /> */}
-//             {/* <ProFormColorPicker label="颜色选择" name="color" /> */}
-
-//         </ProForm>
-//       </div>
-//     );
-//   };
-  
-//   export default MainFormTwo;

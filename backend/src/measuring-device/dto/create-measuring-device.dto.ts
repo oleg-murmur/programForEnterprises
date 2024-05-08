@@ -22,7 +22,7 @@ export class CreateMeasuringDeviceDto {
     verificationEndDate: Date; // Дата окончания поверки
 
     //наличие драг. металлов
-    haveMetal: 'yes' | 'no_info' | 'no'
+    haveMetal: 'Да' | 'Нет информации' | 'Нет'
     
     type: number; // Тип измерительного прибора
 

@@ -9,14 +9,14 @@ import {
     ProFormText,
     ProFormTextArea,
   } from '@ant-design/pro-components';
-  import { ConfigProvider} from 'antd';
+  import { Button, ConfigProvider} from 'antd';
 import axios, { all } from 'axios';
 import { useEffect, useState } from 'react';
 import ruRU from 'antd/locale/ru_RU';
 import { useRef } from 'react';
 import UploadComponent from './upload';
 import cl from "../test.module.css"
-import { getInstByID } from '../http/instAPI';
+import { deleteByID, getInstByID } from '../http/instAPI';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const waitTime = (time: number = 100) => {
@@ -58,7 +58,7 @@ const EditRow = ({route}: any) => {
     useEffect( () => {
       const getData = async () => {
         const instrumentFromBD = await getInstByID(instId)
-        instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? {value: 'no_info', label: "Нет информации"}
+        instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? {value: 'Нет информации', label: "Нет информации"}
         setObjFormData(instrumentFromBD.data)
         setObjFromServer(instrumentFromBD.data)
       }
@@ -97,9 +97,19 @@ const EditRow = ({route}: any) => {
       url: `${process.env.REACT_APP_BACKEND_URL_INST_EP_EDIT}`,
       data: EditInst,
     })
-    // navigate("..")
+    navigate("..")
     }
-    console.log(objFormData)
+
+
+    const deleteRow = async () => {
+      const instrumentFromBD = await deleteByID(instId)
+      navigate("..")
+      console.log(instrumentFromBD, 'CHECK CHECK')
+    }
+
+
+
+
 return (
       <div
         style={{
@@ -121,19 +131,19 @@ return (
           <ConfigProvider locale={ruRU}>
 
     <ProForm
-        // autoFocusFirstInput
+        autoFocusFirstInput
         
         request={async () => {
           const instrumentFromBD = await getInstByID(instId)
           let values = {...instrumentFromBD.data, 
             deviceType: 
-                instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? {value: 'no_info', label: "Нет информации"
-          }
+                instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? {value: 'Нет информации', label: "Нет информации"}
         }
           setObjFormData(values)
           return values
           ;
         }}
+        
           submitter={{searchConfig: {resetText: "Отменить", submitText: "Сохранить" },  
           submitButtonProps: {
             style: {
@@ -160,7 +170,7 @@ return (
           onFinish={async () => onFinish()}
         >
             <ProFormGroup title="Изменить прибор">
-                <ProFormText width="md" name="inventoryName" label="инвантарный номер" placeholder={"значение"}/>
+                <ProFormText width="md" name="inventoryName" label="инвантарный номер" placeholder={"значение"} rules={[{ required: true, message: 'Инвентарный номер не заполнен' }]}/>
                 <ProFormText width="md" name="factoryNumber" label="Заводской номер" placeholder={"значение"}/>
                 <ProFormText width="md" name="userName" label="Пользователь" placeholder={"значение"}/>
 
@@ -175,7 +185,7 @@ return (
                   request={async () => {
                       let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_TYPE_EP}`,{})
                       console.log(data)
-                      return [ {value: 'no_info', label: "Нет информации"}, ...data]
+                      return [ {value: 'Нет информации', label: "Нет информации"}, ...data]
                 }}
                   /> 
                   <ProFormTextArea
@@ -195,6 +205,7 @@ return (
                       placeholder="дата"
                   />
                   <ProFormDatePicker
+                  
                       width="md"
                       dataFormat=''
                       colProps={{ xl: 8, md: 12 }}
@@ -204,6 +215,8 @@ return (
                   />
                  
                     <ProFormRadio.Group
+                    
+                    rules={[{ required: true, message: 'Заполните информацию о драг. металлах' }]}
                         width="md"
                         name="haveMetal"
                         label="Наличие драг. металлов"
@@ -220,6 +233,8 @@ return (
             </ProFormGroup>
           </ProForm>
         </ConfigProvider>
+        <Button disabled onClick={E=> deleteRow()} style={{marginTop: '15px', width: '90px', display: readonly? 'none' : ''}} type="primary" danger>Удалить</Button>
+
       </div>
     );
   };
@@ -253,26 +268,26 @@ const options = [
   {
     
     label: 'Нет',
-    value: 'no',
+    value: 'Нет',
   },
   {
     label: 'Да',
-    value: 'yes',
+    value: 'Да',
   },
   {
-      label: 'Нет данных',
-      value: 'no_data',
+      label: 'Нет информации',
+      value: 'Нет информации',
     },
 ]
 const defaultObj = {
   id: "",
-  inventoryName: "note",
-  factoryNumber: "note",
-  userName: "note",
+  inventoryName: "",
+  factoryNumber: "",
+  userName: "",
   dateOfIssue: "05-12-2024",
-  note: "note",
+  note: "",
   verificationEndDate: "05-12-2024",
-  haveMetal: "yes",
-  deviceType: {value: 'no_info', label: "Нет информации"},
+  haveMetal: "Нет информации",
+  deviceType: {value: 'Нет информации', label: "Нет информации"},
   files: []
 }

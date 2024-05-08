@@ -31,12 +31,12 @@ export class MeasuringDevice {
     verificationEndDate: string; // Дата окончания поверки
 
     @Column({ nullable: true }) //наличие драг. металлов
-    haveMetal: 'yes' | 'no_info' | 'no'
+    haveMetal: 'Да' | 'Нет информации' | 'Нет'
     
     @ManyToOne(() => MeasuringInstrumentType, (device)=> device.masuringDevice)
     deviceType: MeasuringInstrumentType
 
-    @OneToMany(() => FilesOfDevices, (file) => file.device)
+    @OneToMany(() => FilesOfDevices, (file) => file.device, { onDelete: 'CASCADE' })
     files: FilesOfDevices[]
     @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
     public created_at: Date;

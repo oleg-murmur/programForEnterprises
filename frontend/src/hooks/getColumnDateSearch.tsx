@@ -27,7 +27,7 @@ interface DataType {
   verificationEndDate: string; // Дата окончания поверки
 
   //наличие драг. металлов
-  haveMetal: 'yes' | 'no_info' | 'no'
+  haveMetal: 'Да' | 'Нет информации' | 'Нет'
   
   deviceType: number; // Тип измерительного прибора
 

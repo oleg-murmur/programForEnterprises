@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Button, ConfigProvider, Pagination, Table, Tooltip } from 'antd';
-import type { GetProp, TableColumnsType, TableProps,  } from 'antd';
+import { Button, Checkbox, ConfigProvider, Divider, Pagination, Space, Table, Tooltip } from 'antd';
+import type { CheckboxOptionType, GetProp, TableColumnsType, TableProps,  } from 'antd';
 import { DownloadOutlined, EditOutlined, SearchOutlined,  } from '@ant-design/icons';
 import axios from 'axios';
 import { Link} from 'react-router-dom';
@@ -38,7 +38,7 @@ interface DataType {
     verificationEndDate: string; // Дата окончания поверки
 
     //наличие драг. металлов
-    haveMetal: 'yes' | 'no_info' | 'no'
+    haveMetal: 'Да' | 'Нет информации' | 'Нет'
     
     deviceType: number; // Тип измерительного прибора
 
@@ -65,6 +65,9 @@ const MainTable: React.FC = () => {
   const [hasData, setHasData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1)
+
+
+  
   const [tableParams, setTableParams] = useState<TableParams>({
     pagination: {
       current: 1,
@@ -90,14 +93,12 @@ const MainTable: React.FC = () => {
   useEffect( () => {
     const getData = async () => {
       setLoading(true)
-      // let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`)
       let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`, {params: {
         skip: page, take: PAGE_SIZE
       }})
       let data2:any = [];
       console.log(data.data)
       data.data.forEach((element: any) => {
-        console.log(element, 'element')
         if(!element.deviceType) {
           element.deviceType = "Нет информации"
           data2.push(element)
@@ -106,18 +107,13 @@ const MainTable: React.FC = () => {
           data2.push(element)
         }
       });
-
       setCountList(data.skip)
       setData(data2)
       setHasData(true)
       setLoading(false)
-
     }
     getData()
   },[resetFilter,page])
-
-  // const [FilterverificationEndDate, setverificationEndDate] = useState(false)
-  // const [FilterdateOfIssue, setdateOfIssue] = useState(false)
 
 const onButtonClickDateOfIssue = async (close:any) => {
   setdateOfIssue(true)
@@ -140,15 +136,6 @@ const onButtonClickVerificationEndDate = async (close:any) => {
   close()
   setLoading(false)
 }
-// const visibleTodos = useMemo(async ()=>{
-//   // let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`)
-//   let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`, {params: {
-//     page, limit: PAGE_SIZE
-//   }})
-//   setData(data.data)
-//   console.log(data)
-// },[page]);
-
   const columns: TableColumnsType<DataType> = [
     {
       title: 'Инвантарный номер',
@@ -248,12 +235,11 @@ const onButtonClickVerificationEndDate = async (close:any) => {
         Search
       </Button></div>)
     },
-  //  ...useGetColumnDateSearch('verificationEndDate')
  },
  //////////////////////
 
 
-    { title: 'Примечание', dataIndex: 'note', key: 'note',
+    { title: 'Примечания', dataIndex: 'note', key: 'note',
 
     sorter: (record1,record2):any=>{
       return record1.dateOfIssue > record2.dateOfIssue
@@ -291,35 +277,48 @@ const onButtonClickVerificationEndDate = async (close:any) => {
       },
      },
   ];
+  const defaultCheckedList = columns.map((item) => item.key as string);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+
+  const options = columns.map(({ key, title }) => ({
+    label: title,
+    value: key,
+  }));
+
+  const newColumns = columns.map((item) => ({
+    ...item,
+    hidden: !checkedList.includes(item.key as string),
+  }));
+
+
+
   return (
-  <div style={{paddingTop: '15px'}}>
+  <div style={{paddingTop: '5px'}}>
     <ConfigProvider locale={ruRU}>
+    {/* <Divider>Columns displayed</Divider> */}
     <Table 
-    
-      bordered={true}
+      bordered={true} 
       title={() =>  
-      <div className="" style={{padding: '10px'}}>
+      <div className="" style={{padding: '2px', display: 'inline-block', alignItems: ""}}>
         <Button>
           <Link to={`${process.env.REACT_APP_FRONTEND_URL}/table/1/create`}>
             Создать новую запись
           </Link>
         </Button>
+        <div style={{ padding:'2px', minHeight: '50px'}} className="">
+        <Checkbox.Group
+        style={{padding: '10px', display: 'flex'}}
+        value={checkedList}
+        options={options as CheckboxOptionType[]}
+        onChange={(value) => {
+          setCheckedList(value as string[]);
+        }}
+      />
+      </div>
+
+
       </div>
       }
-      // footer={()=> 
-      //   data.length / PAGE_SIZE > 1 && 
-      //   <div className="">
-      //     <Pagination 
-      //       showSizeChanger={false}
-      //       total={countList}
-      //       // current={countList}
-      //       defaultCurrent={2}
-      //       showQuickJumper
-      //       onChange={(page)=> setPage(page)}
-            
-      //     />
-      //   </div>
-      // }
       
       loading={loading}
       rowKey={({id}) => id}
@@ -328,7 +327,7 @@ const onButtonClickVerificationEndDate = async (close:any) => {
             navigate(`${i.id}`,{state:{id:i.id}})
           }
       })}
-      columns={columns} 
+      columns={newColumns} 
       pagination={{
         pageSize: PAGE_SIZE,
         total: countList,
@@ -342,14 +341,13 @@ const onButtonClickVerificationEndDate = async (close:any) => {
   </div>)
 }
 
-
 export default MainTable;
 
 const type = [
   { text: "Нет информации", value: "Нет информации" },
-  { text: "123", value: "123" },
-  { text: "1234", value: "1234" },
-  { text: "12345", value: "12345" },
-  { text: "123456", value: "123456" },
-  { text: "1234567", value: "1234567" },
-  { text: "12345678", value: "12345678" }]
+  { text: "Аналоговый", value: "Аналоговый" },
+  { text: "Цифровой", value: "Цифровой" },
+  { text: "Показывающий", value: "Показывающий" },
+  { text: "Регистрирующий", value: "Регистрирующий" },
+  { text: "Суммирующий", value: "Суммирующий" },
+  { text: "Интегрирующий", value: "Интегрирующий" }]

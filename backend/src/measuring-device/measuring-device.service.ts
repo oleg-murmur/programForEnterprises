@@ -40,7 +40,7 @@ export class MeasuringDeviceService {
       },
       relations: {
         deviceType: true,
-        files: true
+        // files: true
       }
     });
     return {
@@ -102,7 +102,7 @@ export class MeasuringDeviceService {
   }
 
   async remove(id: string): Promise<any> { 
-    const entityToDelete = await this.deviceRepository.findOne({where: {id}});
+    const entityToDelete = await this.deviceRepository.findOne({where: {id},relations: {files: true}});
 
     if (!entityToDelete) {
       throw new NotFoundException(`Entity with id ${id} not found`);

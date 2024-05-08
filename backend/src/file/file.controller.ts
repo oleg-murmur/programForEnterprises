@@ -22,7 +22,8 @@ export class FileController {
         storage: diskStorage({
           destination: './uploads/',
           filename: (req,file,cb)=> {
-            let fileName = `instId__${req.body.instId}_name__${file.originalname}`
+            console.log(req.body, 'REQ BODY CHECK')
+            let fileName = `id_${req.body.instId}_name_${file.originalname}`
             cb(null,fileName)
             console.log(file, `FILE ${file.originalname}`)
             filesDevice.files.push({
@@ -49,7 +50,10 @@ export class FileController {
 
       console.log(filesDevice, 'filesOfDevices filesOfDevices')
       this.createFileInfo(filesDevice)
-
+      filesDevice = {
+        deviceId: '',
+        files: [],
+      }
 
       return response;
     }

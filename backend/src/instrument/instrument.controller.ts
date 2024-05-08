@@ -98,14 +98,12 @@ export class InstrumentController {
     @Get()
     async findAll(@Req() request: Request): Promise<any[]> {
         let inst = [
-          {value: '2', label: 2},
-          {value: '3', label: 3},
-          {value: '4', label: 4},
-          {value: '1', label: 1},
-          {value: '6', label: 6},
-          {value: '7', label: 7},
-          {value: '8', label: 8},
-          {value: '5', label: 5},
+          {value: 'Аналоговый', label: 2},
+          {value: 'Цифровой', label: 3},
+          {value: 'Показывающий', label: 4},
+          {value: 'Регистрирующий', label: 1},
+          {value: 'Суммирующий', label: 6},
+          {value: 'Интегрирующий', label: 7}
         ]
       return inst;
     }

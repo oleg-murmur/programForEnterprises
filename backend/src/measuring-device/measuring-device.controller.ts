@@ -70,19 +70,22 @@ async getdata(@Req() request: Request): Promise<Object> {
 
   @Post()
   async create(@Body() createMeasuringDeviceDto: Partial<any>) {
-    let typed = await this.findOneType(createMeasuringDeviceDto.deviceType)
-    
+    let typed
+    if(createMeasuringDeviceDto.deviceType == "Нет информации" || createMeasuringDeviceDto.deviceType.value == "Нет информации"){
+      typed = null
+    }else{
+      typed = await this.findOneType(createMeasuringDeviceDto.deviceType)
+    }
     let measuringDevice = {
       id: uuidv4(),
       ...createMeasuringDeviceDto, deviceType: typed
     }
-    console.log(measuringDevice, 'measuringDevice')
     return this.measuringDeviceService.create(measuringDevice);
   }
   @Post('edit')
   async edit(@Body() createMeasuringDeviceDto: Partial<any>) {
     let typed
-    if(createMeasuringDeviceDto.deviceType == "no_info" || createMeasuringDeviceDto.deviceType.value == "no_info"){
+    if(createMeasuringDeviceDto.deviceType == "Нет информации" || createMeasuringDeviceDto.deviceType.value == "Нет информации"){
       typed = null
     }else{
       typed = await this.findOneType(createMeasuringDeviceDto.deviceType.value)
