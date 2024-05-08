@@ -51,7 +51,7 @@ const EditRow = ({route}: any) => {
   >();
     const [readonly, setReadonly] = useState(true);
     const [loading, setLoading] = useState(false);
-
+    const [userStatus, setStatus] = useState(true)
     const [objFromServer, setObjFromServer] = useState<IObjProps>(defaultObj)
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
 
@@ -98,7 +98,8 @@ const EditRow = ({route}: any) => {
       data: EditInst,
     })
     navigate("..")
-    }
+    // проверка что изменений не было, сравнение значений до и после
+  }
 
 
     const deleteRow = async () => {
@@ -118,7 +119,7 @@ return (
           borderRadius: '10px'
         }}
       >
-        <ProFormSwitch
+        {/* <ProFormSwitch
           className={cl.myClassName}
           checkedChildren="Нет"
           unCheckedChildren="Да"
@@ -127,7 +128,7 @@ return (
             onChange: setReadonly,
             checked: readonly
           }}
-        />
+        /> */}
           <ConfigProvider locale={ruRU}>
 
     <ProForm
@@ -147,20 +148,20 @@ return (
           submitter={{searchConfig: {resetText: "Отменить", submitText: "Сохранить" },  
           submitButtonProps: {
             style: {
-              display: readonly? 'none' : '',
+              display: userStatus? 'none' : '',
              
            },
            onClick: (e)=> navigate("..")
         },
           resetButtonProps: {
             style: {
-              display: readonly? 'none' : '',
+              display: userStatus? 'none' : '',
             },
             //открывать модалку подтвердить несохранение
             onClick: (e)=> navigate("..")
           },
       }}
-          readonly={readonly}
+          readonly={userStatus}
           name="validate_other"
           onValuesChange={async (_, values) => {
             setObjFormData({...objFormData, ...values})
@@ -227,13 +228,13 @@ return (
                       setObjFormData={setObjFormData} 
                       fileList={objFromServer.files} 
                       data={""} 
-                      readonly={readonly}
+                      readonly={userStatus}
                   />
 
             </ProFormGroup>
           </ProForm>
         </ConfigProvider>
-        <Button disabled onClick={E=> deleteRow()} style={{marginTop: '15px', width: '90px', display: readonly? 'none' : ''}} type="primary" danger>Удалить</Button>
+        <Button disabled onClick={E=> deleteRow()} style={{marginTop: '15px', width: '90px', display: userStatus? 'none' : ''}} type="primary" danger>Удалить</Button>
 
       </div>
     );

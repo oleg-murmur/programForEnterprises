@@ -15,6 +15,8 @@ import { FilterDropdownProps } from 'antd/es/table/interface';
 import ruRU from 'antd/locale/ru_RU';
 const PAGE_SIZE = 10
 
+type userRole = 'admin' | 'user' | 'editor'
+
 let date = new Date();
 var nowDate = moment(date);
 const dateFormatList = ["YYYY/MM/DD", "DD/MM/YYYY"];
@@ -51,6 +53,7 @@ interface TableParams {
   filters?: Parameters<GetProp<TableProps, 'onChange'>>[1];
 }
 const MainTable: React.FC = () => {
+  const [userStatus, setStatus] = useState(false)
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(true);
   const [resetFilter, setResetFilter] = useState(true);
@@ -202,7 +205,7 @@ const onButtonClickVerificationEndDate = async (close:any) => {
           size={"large"}
       />
       <Button onClick={e=> onButtonClickDateOfIssue(close)} type="primary" size={"large"} icon={<SearchOutlined />}>
-        Search
+        Поиск
       </Button></div>)
     },
     render: (dateOfIssue) => (
@@ -300,11 +303,11 @@ const onButtonClickVerificationEndDate = async (close:any) => {
       bordered={true} 
       title={() =>  
       <div className="" style={{padding: '2px', display: 'inline-block', alignItems: ""}}>
-        <Button>
+        {userStatus ? <Button>
           <Link to={`${process.env.REACT_APP_FRONTEND_URL}/table/1/create`}>
             Создать новую запись
           </Link>
-        </Button>
+        </Button> : <div></div>}
         <div style={{ padding:'2px', minHeight: '50px'}} className="">
         <Checkbox.Group
         style={{padding: '10px', display: 'flex'}}

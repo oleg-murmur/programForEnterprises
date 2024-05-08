@@ -51,7 +51,6 @@ interface DataType {
         confirm();
         setSearchText(selectedKeys[0]);
         setSearchedColumn(dataIndex);
-        console.log(selectedKeys[0])
       }, 2000);
       
       setTimeoutId(newTimeoutId);
