@@ -97,7 +97,7 @@ const EditRow = ({route}: any) => {
       url: `${process.env.REACT_APP_BACKEND_URL_INST_EP_EDIT}`,
       data: EditInst,
     })
-    navigate("..")
+    // navigate("..")
     // проверка что изменений не было, сравнение значений до и после
   }
 
@@ -145,17 +145,18 @@ return (
           ;
         }}
         
-          submitter={{searchConfig: {resetText: "Отменить", submitText: "Сохранить" },  
+          submitter={{
+          searchConfig: {resetText: "Отменить", submitText: "Сохранить" },  
           submitButtonProps: {
             style: {
-              display: userStatus? 'none' : '',
+              display: userStatus? 'none' : 'flex',
              
            },
            onClick: (e)=> navigate("..")
         },
           resetButtonProps: {
             style: {
-              display: userStatus? 'none' : '',
+              display: userStatus? 'none' : 'flex',
             },
             //открывать модалку подтвердить несохранение
             onClick: (e)=> navigate("..")
@@ -234,7 +235,7 @@ return (
             </ProFormGroup>
           </ProForm>
         </ConfigProvider>
-        <Button disabled onClick={E=> deleteRow()} style={{marginTop: '15px', width: '90px', display: userStatus? 'none' : ''}} type="primary" danger>Удалить</Button>
+        <Button disabled onClick={E=> deleteRow()} style={{marginTop: '15px', width: '90px', display: userStatus? 'none' : 'flex'}} type="primary" danger>Удалить</Button>
 
       </div>
     );

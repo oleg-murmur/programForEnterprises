@@ -57,7 +57,7 @@ const CreateFormEdit: React.FC = () => {
     }>
   >();
     const [loading, setLoading] = useState(false);
-
+    const [userStatus, setStatus] = useState(false)
     const [objFromServer, setObjFromServer] = useState<IObjProps>(defaultObj)
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
     useEffect( () => {
@@ -102,7 +102,7 @@ const CreateFormEdit: React.FC = () => {
         data: FilesUpload,
         headers: { "Content-Type": "multipart/form-data" },
       })
-      navigate("..")
+      // navigate("..")
     } catch (error) {
      // delete created row from db
      console.log(error) 
@@ -129,9 +129,23 @@ const CreateFormEdit: React.FC = () => {
       autoFocusFirstInput
       
       // request={}
-        submitter={{searchConfig: {resetText: "Отменить", submitText: "Сохранить" }}}
-
-
+      submitter={{
+        searchConfig: {resetText: "Отменить", submitText: "Сохранить" },  
+        submitButtonProps: {
+          style: {
+            display: userStatus? 'none' : 'flex',
+           
+         },
+         onClick: (e)=> navigate("..")
+      },
+        resetButtonProps: {
+          style: {
+            display: userStatus? 'none' : 'flex',
+          },
+          //открывать модалку подтвердить несохранение
+          onClick: (e)=> navigate("..")
+        },
+    }}
           //открывать модалку подтвердить несохранение
         name="validate_other"
         onValuesChange={async (_, values) => {
