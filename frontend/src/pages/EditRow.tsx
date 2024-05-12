@@ -51,7 +51,7 @@ const EditRow = ({route}: any) => {
   >();
     const [readonly, setReadonly] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [userStatus, setStatus] = useState(true)
+    const [userStatus, setStatus] = useState(false)
     const [objFromServer, setObjFromServer] = useState<IObjProps>(defaultObj)
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
 

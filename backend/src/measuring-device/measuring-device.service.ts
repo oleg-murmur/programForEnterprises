@@ -32,7 +32,7 @@ export class MeasuringDeviceService {
     const skip = (query.skip - 1) * query.take || 0
     const keyword = query.keyword || ''
     const [result, total] = await this.deviceRepository.findAndCount({
-      where: {},
+      where: {deleted: false},
       take: take,
       skip: skip,
       order: {
@@ -65,7 +65,8 @@ export class MeasuringDeviceService {
 }
     return this.deviceRepository.findAndCount({
       where: {
-        dateOfIssue: BetweenDates(from, to)
+        dateOfIssue: BetweenDates(from, to),
+        deleted: false
       }
     });
   }
@@ -83,13 +84,14 @@ export class MeasuringDeviceService {
 }
     return this.deviceRepository.findAndCount({
       where: {
-        verificationEndDate: BetweenDates(from, to)
+        verificationEndDate: BetweenDates(from, to),
+        deleted: false
       }
     });
   }
 
   async findOne(id: string): Promise<any> {
-    return this.deviceRepository.findOne({where: {id}, relations: {
+    return this.deviceRepository.findOne({where: {id,deleted: false}, relations: {
       deviceType: true,
       files: true
     }});
@@ -102,7 +104,7 @@ export class MeasuringDeviceService {
   }
 
   async remove(id: string): Promise<any> { 
-    const entityToDelete = await this.deviceRepository.findOne({where: {id},relations: {files: true}});
+    const entityToDelete = await this.deviceRepository.findOne({where: {id,deleted: false},relations: {files: true}});
 
     if (!entityToDelete) {
       throw new NotFoundException(`Entity with id ${id} not found`);
@@ -124,7 +126,7 @@ export class  MeasuringInstrumentTypeService{
     return await this.typeRepository.save(newInst)
   }
   async findOne(id: number): Promise<MeasuringInstrumentType> {
-    return this.typeRepository.findOne({where: {value: id}});
+    return this.typeRepository.findOne({where: {value: id},});
   }
   async find(): Promise<any> {
     return this.typeRepository.find();

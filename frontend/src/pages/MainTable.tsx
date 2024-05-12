@@ -13,6 +13,7 @@ import moment from 'moment';
 import { runFilterDateOfIssue, runVerificationEndDate } from '../hooks/DateFilters';
 import { FilterDropdownProps } from 'antd/es/table/interface';
 import ruRU from 'antd/locale/ru_RU';
+import { CheckboxProps } from 'antd/lib/checkbox/Checkbox';
 const PAGE_SIZE = 10
 
 type userRole = 'admin' | 'user' | 'editor'
@@ -53,7 +54,7 @@ interface TableParams {
   filters?: Parameters<GetProp<TableProps, 'onChange'>>[1];
 }
 const MainTable: React.FC = () => {
-  const [userStatus, setStatus] = useState(false)
+  const [userStatus, setStatus] = useState(true)
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(true);
   const [resetFilter, setResetFilter] = useState(true);
@@ -283,18 +284,31 @@ const onButtonClickVerificationEndDate = async (close:any) => {
   const defaultCheckedList = columns.map((item) => item.key as string);
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
 
-  const options = columns.map(({ key, title }) => ({
+  const options = columns.map(({ key, title }) => {
+    if(key === 'inventoryName') {
+      return {
+        label: title,
+        value: key,
+        disabled: true,
+        defaultChecked: true
+      }
+    }else{
+    return {
     label: title,
     value: key,
-  }));
-
+  }}});
+  const options2 = columns
+  const defaultCheckedList2 = options2.map((item) => item.key as string);
   const newColumns = columns.map((item) => ({
     ...item,
     hidden: !checkedList.includes(item.key as string),
   }));
+  const checkAll = options.length === checkedList.length;
+  const indeterminate = checkedList.length > 0 && checkedList.length < options.length;
 
-
-
+  const onCheckAllChange: CheckboxProps['onChange'] = (e) => {
+    setCheckedList(e.target.checked ? defaultCheckedList2 : ["inventoryName"]);
+  };
   return (
   <div style={{paddingTop: '5px'}}>
     <ConfigProvider locale={ruRU}>
@@ -309,6 +323,9 @@ const onButtonClickVerificationEndDate = async (close:any) => {
           </Link>
         </Button> : <div></div>}
         <div style={{ padding:'2px', minHeight: '50px'}} className="">
+        <Checkbox style={{padding: '10px', display: 'flex'}} indeterminate={indeterminate} onChange={onCheckAllChange} checked={checkAll}>
+        Выбрать все столбцы
+      </Checkbox>
         <Checkbox.Group
         style={{padding: '10px', display: 'flex'}}
         value={checkedList}
@@ -317,9 +334,7 @@ const onButtonClickVerificationEndDate = async (close:any) => {
           setCheckedList(value as string[]);
         }}
       />
-      </div>
-
-
+        </div>
       </div>
       }
       

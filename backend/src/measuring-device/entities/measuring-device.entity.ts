@@ -32,11 +32,14 @@ export class MeasuringDevice {
 
     @Column({ nullable: true }) //наличие драг. металлов
     haveMetal: 'Да' | 'Нет информации' | 'Нет'
+
+    @Column({ default: false}) //наличие драг. металлов
+    deleted: boolean
     
     @ManyToOne(() => MeasuringInstrumentType, (device)=> device.masuringDevice)
     deviceType: MeasuringInstrumentType
 
-    @OneToMany(() => FilesOfDevices, (file) => file.device, { onDelete: 'CASCADE' })
+    @OneToMany(() => FilesOfDevices, (file) => file.device)
     files: FilesOfDevices[]
     @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
     public created_at: Date;
