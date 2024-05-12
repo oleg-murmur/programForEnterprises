@@ -102,7 +102,6 @@ const CreateFormEdit: React.FC = () => {
         data: FilesUpload,
         headers: { "Content-Type": "multipart/form-data" },
       })
-      // navigate("..")
     } catch (error) {
      // delete created row from db
      console.log(error) 

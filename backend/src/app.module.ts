@@ -12,6 +12,7 @@ import { UserModule } from './user/user.module';
 import { MeasuringDeviceModule } from './measuring-device/measuring-device.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FileModule } from './file/file.module';
+import { MutexServiceModule } from './mutex-service/mutex-service.module';
 
 @Module({
   imports: [InstrumentModule,MeasuringDeviceModule, AuthModule, CommonModule,NestjsFormDataModule,
@@ -35,6 +36,7 @@ import { FileModule } from './file/file.module';
   }),
     UserModule,
     FileModule,
+    MutexServiceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

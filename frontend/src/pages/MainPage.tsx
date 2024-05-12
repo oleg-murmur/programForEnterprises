@@ -5,7 +5,7 @@ import MainForm from './MainForm';
 import MainFormTwo from './CreateRowForm';
 import Load from './LoadData';
 import { Link, Outlet, useNavigate, useNavigation } from 'react-router-dom';
-import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, LogoutOutlined, MailOutlined, SettingOutlined, TableOutlined, UserOutlined } from '@ant-design/icons';
 
 const { Header, Content, Footer } = Layout;
 
@@ -36,9 +36,9 @@ function getItem(
 }
 
 const items: MenuProps['items'] = [
-  getItem(<Link to={'/table/3'}>Таблица</Link>, 'sub2', <AppstoreOutlined />),
-  getItem(<Link to={'/profile'}>Профиль</Link>, 'sub3', <SettingOutlined />),
-  getItem(<Link to={'/auth'}>Выйти</Link>, 'sub4', <SettingOutlined />),
+  getItem(<Link to={'/table/3'}>Таблица</Link>, 'sub2', <TableOutlined />),
+  getItem(<Link to={'/profile'}>Профиль</Link>, 'sub3', <UserOutlined />),
+  getItem(<Link to={'/auth'}>Выйти</Link>, 'sub4', <LogoutOutlined />),
 ];
 const App: React.FC = () => {
 

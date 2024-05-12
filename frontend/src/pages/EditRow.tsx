@@ -97,11 +97,11 @@ const EditRow = ({route}: any) => {
       url: `${process.env.REACT_APP_BACKEND_URL_INST_EP_EDIT}`,
       data: EditInst,
     })
-    // navigate("..")
     // проверка что изменений не было, сравнение значений до и после
   }
 
-
+// https://ant.design/components/modal 
+// модалка с подтверждением удаления
     const deleteRow = async () => {
       const instrumentFromBD = await deleteByID(instId)
       navigate("..")
@@ -235,7 +235,7 @@ return (
             </ProFormGroup>
           </ProForm>
         </ConfigProvider>
-        <Button disabled onClick={E=> deleteRow()} style={{marginTop: '15px', width: '90px', display: userStatus? 'none' : 'flex'}} type="primary" danger>Удалить</Button>
+        <Button onClick={E=> deleteRow()} style={{marginTop: '15px', width: '90px', display: userStatus? 'none' : 'flex'}} type="primary" danger>Удалить</Button>
 
       </div>
     );

@@ -109,7 +109,7 @@ export class MeasuringDeviceService {
     if (!entityToDelete) {
       throw new NotFoundException(`Entity with id ${id} not found`);
     }
-    return this.deviceRepository.remove(entityToDelete);
+    return this.deviceRepository.save({...entityToDelete, deleted: true});
 }
 }
 
