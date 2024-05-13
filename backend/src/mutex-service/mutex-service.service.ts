@@ -4,6 +4,94 @@ import { UpdateMutexServiceDto } from './dto/update-mutex-service.dto';
 
 @Injectable()
 export class MutexServiceService {
+  private toolsInfo: { [key:string]: { viewer: string, timestamp: number,editingTimer: any} } = {
+  };
+
+// 
+// addToolInfo
+// 
+// UpdateToolViewed
+//
+// isToolAvailable
+//
+// Попробовать перейти в режим редактирования: 1. проверка, доступен ли инструмент для ред.
+// Да? Запись в массив Нет? Уведомляем, что нет
+
+
+// проверить
+  checkToolViewed(toolId: {toolId: string}): {text: string, errors: string | null} {
+    const inTool = this.isToolAvailable(toolId.toolId)
+    if(inTool.bool) {
+      return {text:'вы можете перейти в режим редактирования 2', errors: null};
+    }else{
+      return {text:'сейчас инструмент редактирует другой 2', errors: null};
+    }
+  }
+
+// обновить нахождение в инструменте сотрудником
+  UpdateToolViewed(toolId: string): {text: string, errors: string | null} {
+    const tool = this.toolsInfo[toolId];
+    if (tool) {
+        if (!tool.editingTimer) {
+            tool.editingTimer = setTimeout(() => {
+              console.log('таймер 10 сек _1')
+                tool.editingTimer = setTimeout(() => {
+                  console.log('таймер 5 сек _1')
+                    this.deleteFromTool(toolId);
+                    console.log('deleted', toolId)
+                }, 5000);
+            }, 10000);
+        } else {
+            clearTimeout(tool.editingTimer);
+            
+            tool.editingTimer = setTimeout(() => {
+              console.log('таймер 10 сек _2')
+                tool.editingTimer = setTimeout(() => {
+                  console.log('таймер 5 сек _2')
+                    this.deleteFromTool(toolId);
+                    console.log('освобождаем инструмент')
+                }, 5000);
+            }, 10000);
+        }
+        return {text: 'тестовый ответ4', errors: null};
+    } else {
+      return {text: 'тестовый ответ5', errors: null};
+    }
+}
+// добавить инструмент в массив
+  setReadStatus(toolId: any): {text: string, bool: boolean} {
+    const inTool = !this.toolsInfo[toolId]
+    if(inTool) {
+      this.addToolInfo(toolId, 'тестовый юзер')
+      this.UpdateToolViewed(toolId)
+      return {text:'перешли в режим редактирования', bool: inTool};
+    }else{
+      return {text:'сейчас инструмент редактирует другой', bool: inTool};
+    }
+  }
+  // добавить инструмент в массив
+  addToolInfo(toolId: string, viewer: string): {text: string, errors: string | null} {
+    this.toolsInfo[toolId] = { viewer, timestamp: Date.now(),editingTimer: null };
+    return {text: 'тестовый ответ1',errors: null}
+  }
+  // проверить, что инструмент есть в массиве
+  isToolAvailable(toolId: string): {text: string, bool: boolean} {
+    // const inTool = !!this.toolsInfo[toolId]; //редактируют другие?
+    if(this.toolsInfo.hasOwnProperty(toolId)) { //редактируют другие?
+    console.log(this.toolsInfo, 'общий список')
+    return {text:'ye', bool: this.toolsInfo.hasOwnProperty(toolId)};
+    }
+    return {text:'no', bool: this.toolsInfo.hasOwnProperty(toolId)};
+  }
+  //удалить инструмент из массива
+  deleteFromTool(toolId: string): {text: string, deleted: any} {
+    const result = delete this.toolsInfo[toolId];
+    return {text:'', deleted: result};
+  }
+
+
+
+
   create(createMutexServiceDto: CreateMutexServiceDto) {
     return 'This action adds a new mutexService';
   }

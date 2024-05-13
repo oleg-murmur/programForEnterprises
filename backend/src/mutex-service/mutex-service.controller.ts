@@ -8,27 +8,31 @@ export class MutexServiceController {
   constructor(private readonly mutexServiceService: MutexServiceService) {}
 
   @Post()
-  create(@Body() createMutexServiceDto: CreateMutexServiceDto) {
-    return this.mutexServiceService.create(createMutexServiceDto);
+  setReadStatus(@Body() createMutexServiceDto: {toolId: string}) {
+    return this.mutexServiceService.setReadStatus(createMutexServiceDto.toolId);
   }
 
-  @Get()
-  findAll() {
-    return this.mutexServiceService.findAll();
+  @Get('update/:toolId')
+  UpdateToolViewed(@Param('toolId') toolId: string) { // обновление информации, что прибор занят, удаление если прошло много времени
+    return this.mutexServiceService.UpdateToolViewed(toolId);
+  }
+  @Get('check/:toolId')
+  checkToolViewed(@Param('toolId') toolId: string) { // обновление информации, что прибор занят, удаление если прошло много времени
+    return this.mutexServiceService.checkToolViewed({toolId});
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.mutexServiceService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.mutexServiceService.findOne(+id);
+  // }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMutexServiceDto: UpdateMutexServiceDto) {
-    return this.mutexServiceService.update(+id, updateMutexServiceDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateMutexServiceDto: UpdateMutexServiceDto) {
+  //   return this.mutexServiceService.update(+id, updateMutexServiceDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.mutexServiceService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.mutexServiceService.remove(+id);
+  // }
 }
