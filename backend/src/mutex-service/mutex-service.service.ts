@@ -21,10 +21,10 @@ export class MutexServiceService {
 // проверить
   checkToolViewed(toolId: {toolId: string}): {text: string, errors: string | null} {
     const inTool = this.isToolAvailable(toolId.toolId)
-    if(inTool.bool) {
-      return {text:'вы можете перейти в режим редактирования 2', errors: null};
+    if(!inTool.bool) {
+      return {text:'Можно перейти в режим редактирования', errors: null};
     }else{
-      return {text:'сейчас инструмент редактирует другой 2', errors: null};
+      return {text:'Сейчас файл редактируем другой', errors: null};
     }
   }
 
@@ -33,29 +33,28 @@ export class MutexServiceService {
     const tool = this.toolsInfo[toolId];
     if (tool) {
         if (!tool.editingTimer) {
+          console.log('таймер 10 сек _1')
             tool.editingTimer = setTimeout(() => {
-              console.log('таймер 10 сек _1')
+              console.log('таймер 5 сек _1')
                 tool.editingTimer = setTimeout(() => {
-                  console.log('таймер 5 сек _1')
                     this.deleteFromTool(toolId);
-                    console.log('deleted', toolId)
+                    console.log('освобождаем инструмент', toolId)
                 }, 5000);
             }, 10000);
         } else {
             clearTimeout(tool.editingTimer);
-            
+            console.log('таймер 10 сек _2')           
             tool.editingTimer = setTimeout(() => {
-              console.log('таймер 10 сек _2')
+              console.log('таймер 5 сек _2')
                 tool.editingTimer = setTimeout(() => {
-                  console.log('таймер 5 сек _2')
                     this.deleteFromTool(toolId);
-                    console.log('освобождаем инструмент')
+                    console.log('освобождаем инструмент', toolId)
                 }, 5000);
             }, 10000);
         }
-        return {text: 'тестовый ответ4', errors: null};
+        return {text: 'Сервер принял данные, вы в режиме редактирования', errors: null};
     } else {
-      return {text: 'тестовый ответ5', errors: null};
+      return {text: 'вы уже вышли из режима редактирования. Нужно зайти снова', errors: null};
     }
 }
 // добавить инструмент в массив
