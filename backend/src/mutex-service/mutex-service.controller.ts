@@ -12,9 +12,9 @@ export class MutexServiceController {
     return this.mutexServiceService.setReadStatus(createMutexServiceDto.toolId);
   }
 
-  @Get('update/:toolId')
-  UpdateToolViewed(@Param('toolId') toolId: string) { // обновление информации, что прибор занят, удаление если прошло много времени
-    return this.mutexServiceService.UpdateToolViewed(toolId);
+  @Post('update')
+  UpdateToolViewed(@Body() createMutexServiceDto: {toolId: string}) { // обновление информации, что прибор занят, удаление если прошло много времени
+    return this.mutexServiceService.UpdateToolViewed(createMutexServiceDto.toolId);
   }
   @Get('check/:toolId')
   checkToolViewed(@Param('toolId') toolId: string) { // обновление информации, что прибор занят, удаление если прошло много времени
