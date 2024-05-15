@@ -6,57 +6,77 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid'
 import { CreateFilesDeviceDto } from './dto/create-file.dto';
 
-let filesDevice: CreateFilesDeviceDto = {
-  deviceId: '',
-  files: [],
-}
-
 @Controller('file')
 export class FileController {
   constructor(private readonly measuringDeviceService: MeasuringDeviceService,
-    private readonly filesOfDevices: FilesOfDevicesService
+    private readonly filesOfDevices: FilesOfDevicesService,
+    private filesDevice: CreateFilesDeviceDto
   ) {}
+
   @Post('upload')
   @UseInterceptors(
       FilesInterceptor('files', 20, {
+        
         storage: diskStorage({
           destination: './uploads/',
           filename: (req,file,cb)=> {
-            console.log(req.body, 'REQ BODY CHECK')
             let fileName = `id_${req.body.instId}_name_${file.originalname}`
             cb(null,fileName)
-            console.log(file, `FILE ${file.originalname}`)
-            filesDevice.files.push({
-              uid: uuidv4(),
-              url: process.env.SERVER_URL ? `${process.env.SERVER_URL}/${fileName}` : `http://localhost:5000/${fileName}`,
-              name: fileName,
-            })
           },
         }),
       }),
     )
-    uploadMultipleFiles(@UploadedFiles() files, @Body() body) {
+    async upload(@UploadedFiles() files:any, @Body() body:any) {
+      this.filesDevice = {
+        deviceId: '',
+        files: [],
+      }
       const response = [];
-      console.log(body.instId, 'instId')
-      console.log(files, 'files')
-      files.forEach(file => {
+      this.filesDevice.deviceId = body.instId ?? null
+      files.map(file => {
+        let fileName = `id_${body.instId}_name_${file.originalname}`
+        this.filesDevice.files.push({
+          uid: uuidv4(),
+          url: process.env.SERVER_URL ? `${process.env.SERVER_URL}/${fileName}` : `http://localhost:5000/${fileName}`,
+          name: fileName,
+        })
+
         const fileReponse = {
           filename: file.filename,
         };
         response.push(fileReponse);
-      });
-///////////////////////////
-      filesDevice.deviceId = body.instId,
+      })
 
-      console.log(filesDevice, 'filesOfDevices filesOfDevices')
-      this.createFileInfo(filesDevice)
-      filesDevice = {
+///////////////////////////
+      this.createFileInfo(this.filesDevice)
+      this.filesDevice = {
         deviceId: '',
         files: [],
       }
-
       return response;
     }
+    // async createFileInfo2(@Body() fileDto: Partial<CreateFilesDeviceDto>) {}
+//     uploadMultipleFiles(@UploadedFiles() files, @Body() body) {
+//       const response = [];
+//       files.forEach(file => {
+//         const fileReponse = {
+//           filename: file.filename,
+//         };
+//         response.push(fileReponse);
+//       });
+// ///////////////////////////
+//       filesDevice.deviceId = body.instId,
+
+//       console.log(filesDevice, 'filesOfDevices filesOfDevices')
+//       this.createFileInfo(filesDevice)
+//       filesDevice = {
+//         deviceId: '',
+//         files: [],
+//       }
+
+//       return response;
+//     }
+
 
     
   @Post('fileInfo')

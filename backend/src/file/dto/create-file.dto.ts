@@ -2,7 +2,7 @@ import { UUID } from "crypto"
 import { MeasuringDevice } from "src/measuring-device/entities/measuring-device.entity"
 
 export class CreateFilesDeviceDto {
-    deviceId: string
+    deviceId: string | null
     files: 
     {
         uid: string
