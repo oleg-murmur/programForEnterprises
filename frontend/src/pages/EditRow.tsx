@@ -20,6 +20,7 @@ import { deleteByID, getInstByID } from '../http/instAPI';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { getCurrentDate } from '../hooks/currentDay';
+import NotificationComp from '../components/notification';
 const dateFormat = 'YYYY-MM-DD';
 export const waitTime = (time: number = 100) => {
     return new Promise((resolve) => {
@@ -147,6 +148,7 @@ return (
       >
         {/* <ProFormSwitch
           className={cl.myClassName}
+          onClick={e=> }
           checkedChildren="Нет"
           unCheckedChildren="Да"
           label="Редактировать"
@@ -156,7 +158,7 @@ return (
           }}
         /> */}
           <ConfigProvider locale={ruRU}>
-
+          <NotificationComp/> 
     <ProForm
         autoFocusFirstInput
         
@@ -172,7 +174,7 @@ return (
         }}
         
           submitter={{
-          searchConfig: {resetText: "Отменить", submitText: "Сохранить" },  
+          searchConfig: {resetText: "Отменить", submitText: "Сохранить"},  
           submitButtonProps: {
             style: {
               display: userStatus? 'none' : 'flex',
@@ -187,6 +189,7 @@ return (
             //открывать модалку подтвердить несохранение
             onClick: (e)=> navigate("..")
           },
+          
       }}
           readonly={userStatus}
           name="validate_other"
@@ -221,6 +224,7 @@ return (
                       return [ {value: 'Нет информации', label: "Нет информации"}, ...data]
                 }}
                   /> 
+                  
                   <ProFormTextArea
                       width="md"
                       placeholder="Примечания к прибору"
