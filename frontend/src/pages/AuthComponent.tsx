@@ -34,22 +34,39 @@ export default () => {
   };
   const onFinish = async(userInfo:any) => {
     console.log(userInfo)
-      const FilesUpload:any = new FormData();
     navigate("..")
     }
+
+
+    const handleCompare = async (any: any, value: any) => {
+      console.log(value)
+      if(!value) {
+        return Promise.reject()
+      }
+      if (value.includes(' ')) {
+
+        return Promise.reject(new Error('Пароль не должен содержать пробелы.'));
+    }
+    if (value.length < 8) {
+
+        return Promise.reject(new Error('Пароль должен содержать не менее 8 символов.'));
+    }
+    return Promise.resolve('Пароль прошел проверку');
+    };
+
   return (
     <ProConfigProvider hashed={false}>
       <div style={{ backgroundColor: token.colorBgContainer }}>
         <LoginForm
         submitter={{searchConfig: {submitText: "Сохранить" }}}
-        // onError={e=>console.log('e123232131213')}
+        onChange={e=> console.log(e.target)}
         onFinish={async obj=> onFinish(obj)}
           logo=""
-          title="Program for Enterprises"
-          subTitle="123"
+          title="Company name"
+          subTitle="Program for Enterprises"
           actions={
             <Space>
-              {/* 321
+              {/* 
               <AlipayCircleOutlined style={iconStyles} />
               <TaobaoCircleOutlined style={iconStyles} />
               <WeiboCircleOutlined style={iconStyles} /> */}
@@ -73,7 +90,7 @@ export default () => {
                   size: 'large',
                   prefix: <UserOutlined className={'prefixIcon'} />,
                 }}
-                placeholder={'email'}
+                placeholder={'Электронная почта'}
                 rules={[
                   {
                     required: true,
@@ -113,7 +130,7 @@ export default () => {
                     if (status === 'ok') {
                       return (
                         <div style={{ color: token.colorSuccess }}>
-                          Идеальный пароль
+                          Идеальный по длине пароль
                         </div>
                       );
                     }
@@ -122,12 +139,13 @@ export default () => {
                     );
                   },
                 }}
-                placeholder={'password'}
+                placeholder={'Пароль'}
                 rules={[
                   {
                     required: true,
                     message: 'Поле не заполнено',
                   },
+                  { validator: handleCompare }
                 ]}
               />
             </>
@@ -167,13 +185,13 @@ export default () => {
             <ProFormCheckbox noStyle name="autoLogin">
               Запомнить
             </ProFormCheckbox>
-            <a
+            {/* <a
               style={{
                 float: 'right',
               }}
             >
               ку1
-            </a>
+            </a> */}
           </div>
         </LoginForm>
       </div>
