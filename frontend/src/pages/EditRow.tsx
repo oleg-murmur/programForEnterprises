@@ -97,6 +97,7 @@ const EditRow = ({route}: any) => {
       url: `${process.env.REACT_APP_BACKEND_URL_INST_EP_EDIT}`,
       data: EditInst,
     })
+    navigate("..")
     // проверка что изменений не было, сравнение значений до и после
   }
 
@@ -152,7 +153,7 @@ return (
               display: userStatus? 'none' : 'flex',
              
            },
-           onClick: (e)=> navigate("..")
+           onClick: (e)=> {}
         },
           resetButtonProps: {
             style: {

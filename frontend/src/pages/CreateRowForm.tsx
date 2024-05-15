@@ -39,9 +39,9 @@ interface IObjProps {
   inventoryName: string,
       factoryNumber: string,
       userName: string,
-      dateOfIssue: string,
+      dateOfIssue: string | null,
       note: string,
-      verificationEndDate: string,
+      verificationEndDate: string  | null,
       haveMetal: string,
       deviceType: {value: any, label: string},
       files: any[]
@@ -106,6 +106,7 @@ const CreateFormEdit: React.FC = () => {
      // delete created row from db
      console.log(error) 
     }
+    navigate("..")
     }
 
   const [componentDisabled, setComponentDisabled] = useState<boolean>(true);
@@ -135,7 +136,7 @@ const CreateFormEdit: React.FC = () => {
             display: userStatus? 'none' : 'flex',
            
          },
-         onClick: (e)=> navigate("..")
+         onClick: (e)=> {}
       },
         resetButtonProps: {
           style: {
@@ -237,12 +238,12 @@ const options = [
 
 const defaultObj = {
   id: "",
-  inventoryName: "-",
-  factoryNumber: "-",
-  userName: "-",
-  dateOfIssue: "05-12-2024",
-  note: "-",
-  verificationEndDate: "05-12-2024",
+  inventoryName: "",
+  factoryNumber: "",
+  userName: "",
+  dateOfIssue: null,
+  note: "",
+  verificationEndDate: null,
   haveMetal: "Нет информации",
   deviceType: {value: 'Нет информации', label: "Нет информации"},
   files: []

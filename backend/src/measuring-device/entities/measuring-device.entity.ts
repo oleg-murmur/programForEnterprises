@@ -22,13 +22,13 @@ export class MeasuringDevice {
     userName: string // кто отвечает за прибор (отдельная сущность?)
 
     @Column({ type: 'date',nullable: true })
-    dateOfIssue: string; // Дата выпуска
+    dateOfIssue: string | null; // Дата выпуска
 
     @Column({ nullable: true })
     note: string; // Примечание
 
     @Column({ type: 'date',nullable: true })
-    verificationEndDate: string; // Дата окончания поверки
+    verificationEndDate: string | null; // Дата окончания поверки
 
     @Column({ nullable: true }) //наличие драг. металлов
     haveMetal: 'Да' | 'Нет информации' | 'Нет'
