@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Button, Checkbox, ConfigProvider, Divider, Pagination, Space, Table, Tooltip } from 'antd';
+import { Button, Checkbox, ConfigProvider, Divider, Form, message, Pagination, Space, Table, Tooltip } from 'antd';
 import type { CheckboxOptionType, GetProp, TableColumnsType, TableProps,  } from 'antd';
 import { DownloadOutlined, EditOutlined, SearchOutlined,  } from '@ant-design/icons';
 import axios from 'axios';
@@ -61,8 +61,11 @@ const MainTable: React.FC = () => {
   const [countList, setCountList] = useState(0);
   const [dateStartdateOfIssue, setDateStartdateOfIssue] = useState<string | null>("")
   const [dateEnddateOfIssue, setDateEnddateOfIssue] = useState<string | null>("")
+
+
   const [dateStartverificationEndDate, setDateStartverificationEndDate] = useState<string | null>("")
   const [dateEndverificationEndDate, setDateEndverificationEndDate] = useState<string | null>("")
+
   const [FilterverificationEndDate, setverificationEndDate] = useState(false)
   const [FilterdateOfIssue, setdateOfIssue] = useState(false)
   const [data, setData] = useState([]);
@@ -142,12 +145,16 @@ const onButtonClickVerificationEndDate = async (close:any) => {
 }
   const columns: TableColumnsType<DataType> = [
     {
-      title: 'Инвантарный номер',
+      title: 'Инвентарный номер',
       dataIndex: 'inventoryName',
       key: 'inventoryName',
+      width: '200px',
       // fixed: 'left',
       sorter: (record1,record2):any=>{
         return record1.inventoryName > record2.inventoryName
+      },
+      ellipsis: {
+        showTitle: false,
       },
     },
     {
@@ -157,17 +164,17 @@ const onButtonClickVerificationEndDate = async (close:any) => {
       sorter: (record1,record2):any=>{
         return record1.factoryNumber > record2.factoryNumber
       },
+      ellipsis: {
+        showTitle: false,
+      },
     },
     { title: 'Пользователь прибора', 
       dataIndex: 'userName', 
       key: 'userName',
-      sorter: (record1,record2):any=>{
-        return record1.userName > record2.userName
-      },
       ellipsis: {
       showTitle: false,
     },
-    ...useColumnSearchProps('userName'),
+    ...useColumnSearchProps('userName', 'Пользователь прибора'),
       render: (userName) => (
         <Tooltip placement="topLeft" title={userName}>
           {userName}
@@ -176,7 +183,7 @@ const onButtonClickVerificationEndDate = async (close:any) => {
   },
 
   ////////////////////
-    { title: 'Дата выпуска', dataIndex: 'dateOfIssue', key: 'dateOfIssue',
+    { title: 'Дата выпуска прибора', dataIndex: 'dateOfIssue', key: 'dateOfIssue',
 
     sorter: (record1,record2):any=>{
       return record1.dateOfIssue > record2.dateOfIssue
@@ -201,7 +208,6 @@ const onButtonClickVerificationEndDate = async (close:any) => {
               setDateEnddateOfIssue(e && e[1] ? dayjs(e[1]).format("YYYY-MM-DD") : '0');
           }
           }
-          
           format={dateFormatList}
           size={"large"}
       />
@@ -236,7 +242,7 @@ const onButtonClickVerificationEndDate = async (close:any) => {
           size={"large"}
       />
       <Button onClick={e=> onButtonClickVerificationEndDate(close)} type="primary" size={"large"} icon={<SearchOutlined />}>
-        Search
+        Поиск
       </Button></div>)
     },
  },
@@ -244,11 +250,10 @@ const onButtonClickVerificationEndDate = async (close:any) => {
 
 
     { title: 'Примечания', dataIndex: 'note', key: 'note',
-
-    sorter: (record1,record2):any=>{
-      return record1.dateOfIssue > record2.dateOfIssue
+    ellipsis: {
+      showTitle: false,
     },
-    ...useColumnSearchProps('note'),
+    ...useColumnSearchProps('note','Примечания'),
     render: (note) => (
       <Tooltip placement="topLeft" title={note}>
         {note}
@@ -266,8 +271,8 @@ const onButtonClickVerificationEndDate = async (close:any) => {
         value: 'Да',
       },
       {
-        text: 'Нет данных',
-          value: 'Нет данных',
+        text: 'Нет информации',
+          value: 'Нет информации',
         },
     ],
     onFilter:(value,record)=>{
@@ -309,6 +314,8 @@ const onButtonClickVerificationEndDate = async (close:any) => {
   const onCheckAllChange: CheckboxProps['onChange'] = (e) => {
     setCheckedList(e.target.checked ? defaultCheckedList2 : ["inventoryName"]);
   };
+
+
   return (
   <div style={{paddingTop: '5px'}}>
     <ConfigProvider locale={ruRU}>

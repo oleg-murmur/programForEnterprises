@@ -11,12 +11,14 @@ import {
   Input,
   InputNumber,
   Mentions,
+  message,
   Radio,
   Select,
   Slider,
   Space,
   Switch,
   TreeSelect,
+  Typography,
   Upload,
 } from 'antd';
 import { ProForm, ProFormDatePicker, ProFormGroup, ProFormInstance, ProFormRadio, ProFormSelect, ProFormSwitch, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
@@ -25,8 +27,13 @@ import UploadComponent from './upload';
 import { getInstByID } from '../http/instAPI';
 import ruRU from 'antd/locale/ru_RU';
 import { useLocation, useNavigate, useParams } from 'react-router';
+import dayjs, { Dayjs } from 'dayjs';
+import { getCurrentDate } from '../hooks/currentDay';
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
+const dateFormat = 'YYYY-MM-DD';
+
+
 
 const normFile = (e: any) => {
   if (Array.isArray(e)) {
@@ -74,46 +81,84 @@ const CreateFormEdit: React.FC = () => {
       getData()
     },[])
     const onFinish = async() => {
-      const FilesUpload:any = new FormData();
-      let EditInst = {
-        inventoryName: objFormData.inventoryName,
-        factoryNumber: objFormData.factoryNumber,
-        userName: objFormData.userName,
-        dateOfIssue: objFormData.dateOfIssue,
-        note: objFormData.note,
-        verificationEndDate: objFormData.verificationEndDate,
-        haveMetal: objFormData.haveMetal,
-        deviceType: objFormData.deviceType,
+   
+        const FilesUpload:any = new FormData();
+        let EditInst = {
+          inventoryName: objFormData.inventoryName,
+          factoryNumber: objFormData.factoryNumber,
+          userName: objFormData.userName,
+          dateOfIssue: objFormData.dateOfIssue,
+          note: objFormData.note,
+          verificationEndDate: objFormData.verificationEndDate,
+          haveMetal: objFormData.haveMetal,
+          deviceType: objFormData.deviceType,
+        }
+        const resultEditInst = await axios({
+          method: "post",
+          url: `${process.env.REACT_APP_BACKEND_URL_INST_EP}`,
+          data: EditInst,
+        })
+  
+        FilesUpload.append("instId", resultEditInst.data.id)
+      for (let i = 0; i < objFormData.files.length; i++) {
+        FilesUpload.append('files', objFormData.files[i].originFileObj);
+      };
+      try {
+        const resultFileUpload = await axios({
+          method: "post",
+          url: `${process.env.REACT_APP_BACKEND_URL_FILE_EP}`,
+          data: FilesUpload,
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+      } catch (error) {
+       // delete created row from db
+       console.log(error) 
       }
-      const resultEditInst = await axios({
-        method: "post",
-        url: `${process.env.REACT_APP_BACKEND_URL_INST_EP}`,
-        data: EditInst,
-      })
-
-      FilesUpload.append("instId", resultEditInst.data.id)
-    for (let i = 0; i < objFormData.files.length; i++) {
-      FilesUpload.append('files', objFormData.files[i].originFileObj);
-    };
-    try {
-      const resultFileUpload = await axios({
-        method: "post",
-        url: `${process.env.REACT_APP_BACKEND_URL_FILE_EP}`,
-        data: FilesUpload,
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-    } catch (error) {
-     // delete created row from db
-     console.log(error) 
-    }
-    navigate("..")
-    }
+      navigate("..")
+      }
+      // else{
+      //   console.log('ОШИБКА')
+      // }
+    // }
 
   const [componentDisabled, setComponentDisabled] = useState<boolean>(true);
   const formItemLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 14 },
   };
+
+
+const currentDate = getCurrentDate();
+
+const handleCompare = async (_: any, value: { number: number }) => {
+  try {
+    let dateOfIssue = objFormData.dateOfIssue ?? ''
+    let verificationEndDate = objFormData.verificationEndDate ?? ''
+    if(dateOfIssue === '' || verificationEndDate === '') {
+      return Promise.resolve();
+    }
+    let test1 = dayjs(dateOfIssue)
+    let test2 = dayjs(verificationEndDate)
+    let test3 = new Date(dateOfIssue)
+    let test4 = new Date(verificationEndDate)
+
+    console.log(test1,test2)
+    if (test3.getTime() > test4.getTime()) {
+      return Promise.reject(new Error('Дата поверки не может быть меньше даты создания'));
+    } else if(!test1){
+      return Promise.reject(new Error('Дата создания прибора не заполнена'));
+    }else if(!test2){
+      return Promise.reject(new Error('Дата последней поверки не заполнена'));
+    }else {
+      console.log('Даты выбраны верно');
+      return Promise.resolve();
+    }
+} catch (errorInfo) {
+    console.log('Failed:', errorInfo);
+    return false
+}
+};
+const { Text, Link } = Typography;
   return (
     <div
       style={{
@@ -127,7 +172,7 @@ const CreateFormEdit: React.FC = () => {
 
   <ProForm
       autoFocusFirstInput
-      
+      // form={form}
       // request={}
       submitter={{
         searchConfig: {resetText: "Отменить", submitText: "Сохранить" },  
@@ -156,9 +201,15 @@ const CreateFormEdit: React.FC = () => {
         onFinish={async () => onFinish()}
       >
           <ProFormGroup title="Изменить прибор">
-              <ProFormText width="md" name="inventoryName" label="инвантарный номер" placeholder={"значение"}/>
-              <ProFormText width="md" name="factoryNumber" label="Заводской номер" placeholder={"значение"}/>
-              <ProFormText width="md" name="userName" label="Пользователь" placeholder={"значение"}/>
+              <ProFormText width="md" name="inventoryName" label="Инвентарный номер" placeholder={"Инвантарный номер"}
+              rules={[{ required: true, message: 'Инвентарный номер не выбран' }]}
+              />
+              <ProFormText width="md" name="factoryNumber" label="Заводской номер" placeholder={"Заводской номер"}
+              rules={[{ required: true, message: 'Заводской номер не выбран' }]}
+              />
+              <ProFormText width="md" name="userName" label="Пользователь" placeholder={"Пользователь"}
+              rules={[{ required: true, message: 'Пользователь не выбран' }]}
+              />
 
               <ProFormSelect
                 width="md"
@@ -166,6 +217,7 @@ const CreateFormEdit: React.FC = () => {
                 label="Тип прибора"
                 placeholder="Введите тип прибора"
                 showSearch
+                
                 rules={[{ required: true, message: 'Тип прибора не выбран' }]}
                 debounceTime={3000}
                 request={async () => {
@@ -173,29 +225,44 @@ const CreateFormEdit: React.FC = () => {
                     return [ {value: 'Нет информации', label: "Нет информации"}, ...data]
               }}
                 /> 
-                <ProFormTextArea
+                <div className="">
+                    {/* <Text>Приложенные файлы</Text> */}
+                    <ProFormTextArea
                     width="md"
                     placeholder="Примечания к прибору"
                     colProps={{ span: 24 }}
                     name="note"
                     label="Примечания к прибору"
-                    
+
+                    style={{ maxHeight: 800,display: 'flex', height: 120, width: 328, resize: 'vertical', margin: '5px 0 15px 0' }}
+
+                    fieldProps={{showCount: true, maxLength: 500}}
+                />
+                </div>
+                <ProFormDatePicker
+                    width="md"
+                    dataFormat=''
+                    colProps={{ xl: 8, md: 12 }}
+                    label="Дата выпуска прибора"
+                    name="dateOfIssue"
+                    placeholder="Дата выпуска прибора"
+                    rules={[{ validator: handleCompare }]}
+                    fieldProps={{minDate: dayjs('1950-01-01', dateFormat),
+                    onChange: (e)=> {setObjFormData({...objFormData, dateOfIssue: e?e.toString(): null})},
+                    disabledDate: (d) => !d || d.isAfter(currentDate)}}
                 />
                 <ProFormDatePicker
                     width="md"
                     dataFormat=''
                     colProps={{ xl: 8, md: 12 }}
                     label="Дата последней поверки"
-                    name="dateOfIssue"
-                    placeholder="дата"
-                />
-                <ProFormDatePicker
-                    width="md"
-                    dataFormat=''
-                    colProps={{ xl: 8, md: 12 }}
-                    label="Дата окончания"
                     name="verificationEndDate"
-                    placeholder="дата"
+                    placeholder="Дата последней поверки"
+                    rules={[{ validator: handleCompare }]}
+                    fieldProps={{minDate: dayjs('1950-01-01', dateFormat),
+                    onChange: (e)=> {setObjFormData({...objFormData, verificationEndDate: e?e.toString(): null})},
+                    disabledDate: (d) => !d || d.isAfter(currentDate)
+                  }}
                 />
                
                   <ProFormRadio.Group

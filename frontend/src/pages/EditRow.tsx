@@ -18,7 +18,9 @@ import UploadComponent from './upload';
 import cl from "../test.module.css"
 import { deleteByID, getInstByID } from '../http/instAPI';
 import { useNavigate, useParams } from 'react-router-dom';
-
+import dayjs from 'dayjs';
+import { getCurrentDate } from '../hooks/currentDay';
+const dateFormat = 'YYYY-MM-DD';
 export const waitTime = (time: number = 100) => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -26,14 +28,16 @@ export const waitTime = (time: number = 100) => {
       }, time);
     });
   };
+  
+const currentDate = getCurrentDate();
 interface IObjProps {
   id: string
   inventoryName: string,
       factoryNumber: string,
       userName: string,
-      dateOfIssue: string,
+      dateOfIssue: string | null,
       note: string,
-      verificationEndDate: string,
+      verificationEndDate: string | null,
       haveMetal: string,
       deviceType: {value: any, label: string},
       files: any[]
@@ -109,7 +113,28 @@ const EditRow = ({route}: any) => {
       console.log(instrumentFromBD, 'CHECK CHECK')
     }
 
-
+    const handleCompare = async (_: any, value: { number: number }) => {
+      try {
+        let dateOfIssue = objFormData.dateOfIssue ?? ''
+        let verificationEndDate = objFormData.verificationEndDate ?? ''
+        if(dateOfIssue === '' || verificationEndDate === '') {
+          return Promise.resolve();
+        }
+        if (dateOfIssue > verificationEndDate) {
+          return Promise.reject(new Error('Дата поверки не может быть меньше даты создания'));
+        } else if(!dateOfIssue){
+          return Promise.reject(new Error('Дата создания прибора не заполнена'));
+        }else if(!verificationEndDate){
+          return Promise.reject(new Error('Дата последней поверки не заполнена'));
+        }else {
+          console.log('Даты выбраны верно');
+          return Promise.resolve();
+        }
+    } catch (errorInfo) {
+        console.log('Failed:', errorInfo);
+        return false
+    }
+    };
 
 
 return (
@@ -173,10 +198,15 @@ return (
           onFinish={async () => onFinish()}
         >
             <ProFormGroup title="Изменить прибор">
-                <ProFormText width="md" name="inventoryName" label="инвантарный номер" placeholder={"значение"} rules={[{ required: true, message: 'Инвентарный номер не заполнен' }]}/>
-                <ProFormText width="md" name="factoryNumber" label="Заводской номер" placeholder={"значение"}/>
-                <ProFormText width="md" name="userName" label="Пользователь" placeholder={"значение"}/>
-
+            <ProFormText width="md" name="inventoryName" label="Инвентарный номер" placeholder={"Инвантарный номер"}
+              rules={[{ required: true, message: 'Инвентарный номер не выбран' }]}
+              />
+              <ProFormText width="md" name="factoryNumber" label="Заводской номер" placeholder={"Заводской номер"}
+              rules={[{ required: true, message: 'Заводской номер не выбран' }]}
+              />
+              <ProFormText width="md" name="userName" label="Пользователь" placeholder={"Пользователь"}
+              rules={[{ required: true, message: 'Пользователь не выбран' }]}
+              />
                 <ProFormSelect
                   width="md"
                   name="deviceType"
@@ -206,6 +236,9 @@ return (
                       label="Дата последней поверки"
                       name="dateOfIssue"
                       placeholder="дата"
+                      rules={[{ validator: handleCompare }]}
+                      fieldProps={{minDate: dayjs('1950-01-01', dateFormat),
+                      disabledDate: (d) => !d || d.isAfter(currentDate), onChange: (e)=> {setObjFormData({...objFormData, dateOfIssue: e?e.toString(): null})}}}
                   />
                   <ProFormDatePicker
                   
@@ -215,6 +248,9 @@ return (
                       label="Дата окончания"
                       name="verificationEndDate"
                       placeholder="дата"
+                      rules={[{ validator: handleCompare }]}
+                      fieldProps={{minDate: dayjs('1950-01-01', dateFormat),
+                      disabledDate: (d) => !d || d.isAfter(currentDate), onChange: (e)=> {setObjFormData({...objFormData, verificationEndDate: e?e.toString(): null})}}}
                   />
                  
                     <ProFormRadio.Group

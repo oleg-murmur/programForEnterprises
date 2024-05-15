@@ -31,7 +31,7 @@ interface DataType {
   }
   
   type DataIndex = keyof DataType;
-  const useColumnSearchProps = (dataIndex: DataIndex): TableColumnType<any>=> {
+  const useColumnSearchProps = (dataIndex: DataIndex, dataName: string): TableColumnType<any>=> {
 
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
@@ -65,7 +65,7 @@ interface DataType {
       <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Поиск по полю: ${dataName}`}
           value={selectedKeys[0]}
           onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
           onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
@@ -79,14 +79,14 @@ interface DataType {
             size="small"
             style={{ width: 90 }}
           >
-            Search
+            Поиск
           </Button>
           <Button
             onClick={() => clearFilters && handleReset(clearFilters)}
             size="small"
             style={{ width: 90 }}
           >
-            Reset
+            Сбросить
           </Button>
           <Button
             type="link"
@@ -97,7 +97,7 @@ interface DataType {
               setSearchedColumn(dataIndex);
             }}
           >
-            Filter
+            Фильтр
           </Button>
           <Button
             type="link"
@@ -106,7 +106,7 @@ interface DataType {
               close();
             }}
           >
-            close
+            Закрыть
           </Button>
         </Space>
       </div>
