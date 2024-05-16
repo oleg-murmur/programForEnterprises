@@ -3,7 +3,7 @@ import { Button, Checkbox, ConfigProvider, Divider, Form, message, Pagination, S
 import type { CheckboxOptionType, GetProp, TableColumnsType, TableProps,  } from 'antd';
 import { DownloadOutlined, EditOutlined, SearchOutlined,  } from '@ant-design/icons';
 import axios from 'axios';
-import { Link} from 'react-router-dom';
+import { Link, Navigate} from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 import useColumnSearchProps from "../hooks/getColumnSearchProps"
 import { DatePicker } from 'antd';
@@ -14,14 +14,14 @@ import { runFilterDateOfIssue, runVerificationEndDate } from '../hooks/DateFilte
 import { FilterDropdownProps } from 'antd/es/table/interface';
 import ruRU from 'antd/locale/ru_RU';
 import { CheckboxProps } from 'antd/lib/checkbox/Checkbox';
+import { getAllInstFilter } from '../http/instAPI';
+import { checkToken } from '../hooks/checkValidToken';
 const PAGE_SIZE = 10
 
 type userRole = 'admin' | 'user' | 'editor'
 
-let date = new Date();
-var nowDate = moment(date);
 const dateFormatList = ["YYYY/MM/DD", "DD/MM/YYYY"];
-const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
+const { RangePicker } = DatePicker;
 interface DataType {
     id: string;
     dataIndex: any
@@ -46,22 +46,16 @@ interface DataType {
     deviceType: number; // Тип измерительного прибора
 
 }
-type TablePaginationConfig = Exclude<GetProp<TableProps, 'pagination'>, boolean>;
-interface TableParams {
-  pagination?: TablePaginationConfig;
-  sortField?: string;
-  sortOrder?: string;
-  filters?: Parameters<GetProp<TableProps, 'onChange'>>[1];
-}
+
 const MainTable: React.FC = () => {
+  
   const [userStatus, setStatus] = useState(true)
   const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(true);
+  // const [isEditing, setIsEditing] = useState(true);
   const [resetFilter, setResetFilter] = useState(true);
   const [countList, setCountList] = useState(0);
   const [dateStartdateOfIssue, setDateStartdateOfIssue] = useState<string | null>("")
   const [dateEnddateOfIssue, setDateEnddateOfIssue] = useState<string | null>("")
-
 
   const [dateStartverificationEndDate, setDateStartverificationEndDate] = useState<string | null>("")
   const [dateEndverificationEndDate, setDateEndverificationEndDate] = useState<string | null>("")
@@ -72,54 +66,55 @@ const MainTable: React.FC = () => {
   const [hasData, setHasData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1)
-
-
   
-  const [tableParams, setTableParams] = useState<TableParams>({
-    pagination: {
-      current: 1,
-      pageSize: 10,
-    },
-  });
-  const handleTableChange: TableProps['onChange'] = (pagination: any, filters: any, sorter: any) => {
-    setTableParams({
-      pagination,
-      filters,
-      ...sorter,
-    });
-  }
-  const test = (
-    selectedKeys: any,
-    confirm: FilterDropdownProps['confirm'],
-    setSelectedKeys: any,
-  ) => {
-    console.log(confirm());
-    console.log(selectedKeys);
-    console.log(setSelectedKeys);
-  };
   useEffect( () => {
-    const getData = async () => {
-      setLoading(true)
-      let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`, {params: {
-        skip: page, take: PAGE_SIZE
-      }})
-      let data2:any = [];
-      console.log(data.data)
-      data.data.forEach((element: any) => {
-        if(!element.deviceType) {
-          element.deviceType = "Нет информации"
-          data2.push(element)
-        }else{
-          element.deviceType= element.deviceType.label
-          data2.push(element)
-        }
-      });
-      setCountList(data.skip)
-      setData(data2)
-      setHasData(true)
-      setLoading(false)
+    const valid = async () => {
+      console.log((localStorage.getItem('token')), '(localStorage.getItem()')
+      const isValidToken = await checkToken(localStorage.getItem('token'))
+      console.log(isValidToken)
+      if(isValidToken) {
+        console.log('хуйня')
+      }else{
+        localStorage.clear()
+        navigate('/auth')
+        console.log('полная хуйня')
+      }
     }
-    getData()
+
+valid()
+
+const getData = async () => {
+
+  try {
+    setLoading(true)
+    let data = await getAllInstFilter(page, PAGE_SIZE)
+    let data2:any = [];
+    console.log(data.data)
+    data.data.forEach((element: any) => {
+      if(!element.deviceType) {
+        element.deviceType = "Нет информации"
+        data2.push(element)
+      }else{
+        element.deviceType= element.deviceType.label
+        data2.push(element)
+      }
+    });
+    setCountList(data.skip)
+    setData(data2)
+    setHasData(true)
+    setLoading(false)
+  } catch (error) {
+    console.log(error)
+  }
+
+}
+
+try {
+  getData()
+} catch (error) {
+  console.log(error)
+}
+
   },[resetFilter,page])
 
 const onButtonClickDateOfIssue = async (close:any) => {
@@ -315,7 +310,10 @@ const onButtonClickVerificationEndDate = async (close:any) => {
     setCheckedList(e.target.checked ? defaultCheckedList2 : ["inventoryName"]);
   };
 
-
+  // const isAuthenticated = true
+  // if(isAuthenticated) {
+  //   return <div className="">Нет доступа к</div>
+  // }
   return (
   <div style={{paddingTop: '5px'}}>
     <ConfigProvider locale={ruRU}>

@@ -15,9 +15,11 @@ import {
   setAlpha,
 } from '@ant-design/pro-components';
 import { Space, Tabs, message, theme } from 'antd';
+import axios from 'axios';
 import type { CSSProperties } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { checkToken, setToken } from '../hooks/checkValidToken';
 
 type LoginType = 'registration' | 'login';
 
@@ -32,9 +34,19 @@ export default () => {
     verticalAlign: 'middle',
     cursor: 'pointer',
   };
+
+
   const onFinish = async(userInfo:any) => {
-    console.log(userInfo)
-    navigate("..")
+    let {data} = await axios.post('http://localhost:5000/api/auth/login', {      
+        email: "employee",
+        password: "employee",
+        role: ""  
+    })
+    console.log(data.access_token)
+    localStorage.setItem('token', data.access_token);
+    await setToken({token: data.access_token, email: "employee",password: "employee"})
+    // checkToken({token: data.access_token,email: "employee",password: "employee"})
+    navigate("/table/1")
     }
 
 

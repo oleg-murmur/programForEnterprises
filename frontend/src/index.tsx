@@ -14,16 +14,22 @@ import EditRow from './pages/EditRow';
 import AuthComponent from './pages/AuthComponent';
 import AvatarComponent from './pages/AvatarComponent';
 import TestPage from './pages/TestPage';
+import ErrorPage from './pages/error-page';
+import { checkToken } from './hooks/checkValidToken';
 
+const isAuthenticated = !!localStorage.getItem('token');
+// if(!isAuthenticated)
+// localStorage.getItem('token')
 const router = createBrowserRouter([
   {
     path: "/",
     element: <MainPage/>,
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
-        
-        element: <Navigate replace to="/table/1" />,
+        errorElement: <ErrorPage />,
+        element: <Navigate replace to="/table/1" /> ,
         
       },
       {
@@ -60,6 +66,9 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <RouterProvider router={router} />
+
+      <RouterProvider router={router} />
+
+
 );
 

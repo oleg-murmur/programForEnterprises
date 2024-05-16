@@ -2,6 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { CreateMutexServiceDto } from './dto/create-mutex-service.dto';
 import { UpdateMutexServiceDto } from './dto/update-mutex-service.dto';
 
+interface checkToolViewedProps {
+  toolId: string
+  user?: any
+}
+interface updateToolViewedProps {
+  toolId: string
+  user?: any
+}
+interface setReadStatusProps {
+  toolId: string
+  user?: any
+}
+
+
+
 @Injectable()
 export class MutexServiceService {
   private toolsInfo: { [key:string]: { viewer: string, timestamp: number,editingTimer: any} } = {
@@ -19,8 +34,9 @@ export class MutexServiceService {
 
 
 // проверить
-  checkToolViewed(toolId: {toolId: string}): {text: string, errors: string | null} {
-    const inTool = this.isToolAvailable(toolId.toolId)
+  checkToolViewed(toolId2: checkToolViewedProps): {text: string, errors: string | null} {
+
+    const inTool = this.isToolAvailable(toolId2.toolId)
     if(!inTool.bool) {
       return {text:'Можно перейти в режим редактирования', errors: null};
     }else{
@@ -29,16 +45,17 @@ export class MutexServiceService {
   }
 
 // обновить нахождение в инструменте сотрудником
-  UpdateToolViewed(toolId: string): {text: string, errors: string | null} {
-    const tool = this.toolsInfo[toolId];
+  UpdateToolViewed(data: updateToolViewedProps): {text: string, errors: string | null} {
+
+    const tool = this.toolsInfo[data.toolId];
     if (tool) {
         if (!tool.editingTimer) {
           console.log('таймер 10 сек _1')
             tool.editingTimer = setTimeout(() => {
               console.log('таймер 5 сек _1')
                 tool.editingTimer = setTimeout(() => {
-                    this.deleteFromTool(toolId);
-                    console.log('освобождаем инструмент', toolId)
+                    this.deleteFromTool(data.toolId);
+                    console.log('освобождаем инструмент', data)
                 }, 5000);
             }, 10000);
         } else {
@@ -47,8 +64,8 @@ export class MutexServiceService {
             tool.editingTimer = setTimeout(() => {
               console.log('таймер 5 сек _2')
                 tool.editingTimer = setTimeout(() => {
-                    this.deleteFromTool(toolId);
-                    console.log('освобождаем инструмент', toolId)
+                    this.deleteFromTool(data.toolId);
+                    console.log('освобождаем инструмент', data)
                 }, 5000);
             }, 10000);
         }
@@ -58,11 +75,12 @@ export class MutexServiceService {
     }
 }
 // добавить инструмент в массив
-  setReadStatus(toolId: any): {text: string, bool: boolean} {
-    const inTool = !this.toolsInfo[toolId]
+  setReadStatus(data: setReadStatusProps): {text: string, bool: boolean} {
+    const inTool = !this.toolsInfo[data.toolId]
+
     if(inTool) {
-      this.addToolInfo(toolId, 'тестовый юзер')
-      this.UpdateToolViewed(toolId)
+      this.addToolInfo(data.toolId, 'тестовый юзер')
+      this.UpdateToolViewed(data)
       return {text:'перешли в режим редактирования', bool: inTool};
     }else{
       return {text:'сейчас инструмент редактирует другой', bool: inTool};

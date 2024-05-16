@@ -8,16 +8,19 @@ export class MutexServiceController {
   constructor(private readonly mutexServiceService: MutexServiceService) {}
 
   @Post()
-  setReadStatus(@Body() createMutexServiceDto: {toolId: string}) {
-    return this.mutexServiceService.setReadStatus(createMutexServiceDto.toolId);
+  setReadStatus(@Body() createMutexServiceDto: any) {
+    // console.log(createMutexServiceDto, 'setReadStatus1')
+    return this.mutexServiceService.setReadStatus(createMutexServiceDto.data);
   }
 
   @Post('update')
-  UpdateToolViewed(@Body() createMutexServiceDto: {toolId: string}) { // обновление информации, что прибор занят, удаление если прошло много времени
-    return this.mutexServiceService.UpdateToolViewed(createMutexServiceDto.toolId);
+  UpdateToolViewed(@Body() createMutexServiceDto: any) { // обновление информации, что прибор занят, удаление если прошло много времени
+    // console.log(createMutexServiceDto.data, 'UpdateToolViewed1')
+    return this.mutexServiceService.UpdateToolViewed(createMutexServiceDto.data);
   }
   @Get('check/:toolId')
   checkToolViewed(@Param('toolId') toolId: string) { // обновление информации, что прибор занят, удаление если прошло много времени
+    // console.log(toolId, 'checkToolViewed1')
     return this.mutexServiceService.checkToolViewed({toolId});
   }
 

@@ -95,12 +95,14 @@ const EditRow = ({route}: any) => {
       method: "post",
       url: `${process.env.REACT_APP_BACKEND_URL_FILE_EP}`,
       data: FilesUpload,
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`,"Content-Type": "multipart/form-data" },
     })
     const resultEditInst = await axios({
       method: "post",
       url: `${process.env.REACT_APP_BACKEND_URL_INST_EP_EDIT}`,
       data: EditInst,
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`},
+
     })
     navigate("..")
     // проверка что изменений не было, сравнение значений до и после
@@ -158,6 +160,7 @@ return (
           }}
         /> */}
           <ConfigProvider locale={ruRU}>
+            
           <NotificationComp/> 
     <ProForm
         autoFocusFirstInput
@@ -219,7 +222,10 @@ return (
                   rules={[{ required: true, message: 'Тип прибора не выбран' }]}
                   debounceTime={3000}
                   request={async () => {
-                      let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_TYPE_EP}`,{})
+                      let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_TYPE_EP}`,{headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json',
+                      }})
                       console.log(data)
                       return [ {value: 'Нет информации', label: "Нет информации"}, ...data]
                 }}
@@ -231,7 +237,10 @@ return (
                       colProps={{ span: 24 }}
                       name="note"
                       label="Примечания к прибору"
-                      
+
+                      style={{ maxHeight: 800,display: 'flex', height: 120, width: 328, resize: 'vertical', margin: '5px 0 15px 0' }}
+  
+                      fieldProps={{showCount: true, maxLength: 500}}
                   />
                   <ProFormDatePicker
                       width="md"

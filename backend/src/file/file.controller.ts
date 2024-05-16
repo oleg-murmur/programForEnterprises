@@ -5,6 +5,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid'
 import { CreateFilesDeviceDto } from './dto/create-file.dto';
+import { Public } from 'src/auth/constants';
 
 @Controller('file')
 export class FileController {
@@ -12,7 +13,7 @@ export class FileController {
     private readonly filesOfDevices: FilesOfDevicesService,
     private filesDevice: CreateFilesDeviceDto
   ) {}
-
+  @Public()
   @Post('upload')
   @UseInterceptors(
       FilesInterceptor('files', 20, {
@@ -78,7 +79,7 @@ export class FileController {
 //     }
 
 
-    
+@Public()  
   @Post('fileInfo')
   async createFileInfo(@Body() fileDto: Partial<CreateFilesDeviceDto>) {
     let deviceInfo
@@ -101,6 +102,7 @@ export class FileController {
     return files
   }
   }
+  @Public()
   @Get('files/:deviceId')
  async findFilesOfInst(@Param('id') id: string) {
   console.log(id, 'FILE ID')

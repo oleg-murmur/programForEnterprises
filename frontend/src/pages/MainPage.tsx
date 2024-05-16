@@ -1,11 +1,12 @@
 import { Breadcrumb, Layout, Menu, MenuProps, Pagination } from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
 import MainTable from './MainTable';
 import MainForm from './MainForm';
 import MainFormTwo from './CreateRowForm';
 import Load from './LoadData';
 import { Link, Outlet, useNavigate, useNavigation } from 'react-router-dom';
 import { AppstoreOutlined, LogoutOutlined, MailOutlined, SettingOutlined, TableOutlined, UserOutlined } from '@ant-design/icons';
+import { checkToken } from '../hooks/checkValidToken';
 
 const { Header, Content, Footer } = Layout;
 
@@ -36,14 +37,39 @@ function getItem(
 }
 
 const items: MenuProps['items'] = [
-  getItem(<Link to={'/table/3'}>Таблица</Link>, 'sub2', <TableOutlined />),
+  getItem(<Link to={'/table/1'}>Таблица</Link>, 'sub2', <TableOutlined />),
   getItem(<Link to={'/profile'}>Профиль</Link>, 'sub3', <UserOutlined />),
   getItem(<Link to={'/auth'}>Выйти</Link>, 'sub4', <LogoutOutlined />),
 ];
 const App: React.FC = () => {
-
+  const navigate = useNavigate();
   const onClick: MenuProps['onClick'] = (e) => {
   };
+  useEffect( () => {
+    const valid = async () => {
+      console.log((localStorage.getItem('token')), '(localStorage.getItem()')
+      const isValidToken = await checkToken(localStorage.getItem('token'))
+      console.log(isValidToken)
+      if(isValidToken) {
+        console.log('хуйня')
+      }else{
+        localStorage.clear()
+        navigate('/auth')
+        console.log('полная хуйня')
+      }
+    }
+
+valid()
+  },[])
+  // const isAuthenticated = !!localStorage.getItem('token');
+  // if(!isAuthenticated) {
+  //   // navigate("/auth")
+  //   return (<div className="">
+  //     <div className="">Нет доступа к разделу</div>
+  //     <div className="">Перейти на страницу входа "кнопка"</div>
+  //   </div>)
+  // }
+
   return (
   <Layout className="layout">
     <Header>

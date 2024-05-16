@@ -69,7 +69,11 @@ const CreateFormEdit: React.FC = () => {
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
     useEffect( () => {
       const getData = async () =>{
-        let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`)
+        let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`,
+        {headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+        }})
         console.log(data.data)
         // setObjFromServer()
         // setObjFormData()
@@ -97,6 +101,7 @@ const CreateFormEdit: React.FC = () => {
           method: "post",
           url: `${process.env.REACT_APP_BACKEND_URL_INST_EP}`,
           data: EditInst,
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`},
         })
   
         FilesUpload.append("instId", resultEditInst.data.id)
@@ -108,7 +113,7 @@ const CreateFormEdit: React.FC = () => {
           method: "post",
           url: `${process.env.REACT_APP_BACKEND_URL_FILE_EP}`,
           data: FilesUpload,
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`,"Content-Type": "multipart/form-data" },
         })
       } catch (error) {
        // delete created row from db
@@ -221,7 +226,10 @@ const { Text, Link } = Typography;
                 rules={[{ required: true, message: 'Тип прибора не выбран' }]}
                 debounceTime={3000}
                 request={async () => {
-                    let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_TYPE_EP}`,{})
+                    let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_TYPE_EP}`,{headers: {
+                      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                      'Content-Type': 'application/json',
+                    }})
                     return [ {value: 'Нет информации', label: "Нет информации"}, ...data]
               }}
                 /> 
