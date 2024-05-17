@@ -50,7 +50,7 @@ const App: React.FC = () => {
       console.log((localStorage.getItem('token')), '(localStorage.getItem()')
       const isValidToken = await checkToken(localStorage.getItem('token')?? '')
       console.log(isValidToken)
-      if(isValidToken) {
+      if(isValidToken.status) {
         console.log('хуйня')
       }else{
         localStorage.clear()

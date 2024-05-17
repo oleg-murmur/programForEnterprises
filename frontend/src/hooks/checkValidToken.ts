@@ -12,10 +12,10 @@ export const checkToken = async ({token,email,password}:any) => {
     console.log(data,'data token')
     if(!data) {
         localStorage.removeItem('token');
-        return false
+        return {status: false, data: {}}
     }
  
-    return true
+    return {status: true, data}
 
 }
 export const setToken = async ({token = '',email,password}:any) => {

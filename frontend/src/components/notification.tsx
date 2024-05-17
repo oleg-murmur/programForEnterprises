@@ -38,7 +38,7 @@ useEffect(() => {
   const getData = async() => {
     try {
       const isValidToken = await checkToken(localStorage.getItem('token')?? '')
-      if(isValidToken) {
+      if(isValidToken.status) {
         let data = await setTool("321")
         let data2 =await updateTool("321",{})
         let data3 =await checkTool("123",{})

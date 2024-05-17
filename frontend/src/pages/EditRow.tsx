@@ -22,6 +22,8 @@ import dayjs from 'dayjs';
 import { getCurrentDate } from '../hooks/currentDay';
 import NotificationComp from '../components/notification';
 import { checkToken } from '../hooks/checkValidToken';
+import { userRole } from './MainTable';
+
 const dateFormat = 'YYYY-MM-DD';
 export const waitTime = (time: number = 100) => {
     return new Promise((resolve) => {
@@ -55,9 +57,10 @@ const EditRow = ({route}: any) => {
       useMode?: string;
     }>
   >();
+  
     const [readonly, setReadonly] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [userStatus, setStatus] = useState(false)
+    const [userStatus, setStatus] = useState<userRole>("employee")
     const [objFromServer, setObjFromServer] = useState<IObjProps>(defaultObj)
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
 
@@ -66,7 +69,7 @@ const EditRow = ({route}: any) => {
         console.log((localStorage.getItem('token')), '(localStorage.getItem()')
         const isValidToken = await checkToken(localStorage.getItem('token')?? '')
         console.log(isValidToken)
-        if(isValidToken) {
+        if(isValidToken.status) {
           console.log('хуйня')
         }else{
           localStorage.clear()
@@ -182,8 +185,10 @@ return (
           }}
         /> */}
           <ConfigProvider locale={ruRU}>
-            
-          <NotificationComp/> 
+        <div style={{
+          display: (userStatus === 'admin' || userStatus === 'editor'? false : true)? 'none' : 'flex'
+        }}><NotificationComp /> </div>   
+
     <ProForm
         autoFocusFirstInput
         
@@ -202,21 +207,21 @@ return (
           searchConfig: {resetText: "Отменить", submitText: "Сохранить"},  
           submitButtonProps: {
             style: {
-              display: userStatus? 'none' : 'flex',
+              display: (userStatus === 'admin' || userStatus === 'editor'? false : true)? 'none' : 'flex',
              
            },
            onClick: (e)=> {}
         },
           resetButtonProps: {
             style: {
-              display: userStatus? 'none' : 'flex',
+              display: (userStatus === 'admin' || userStatus === 'editor'? false : true)? 'none' : 'flex',
             },
             //открывать модалку подтвердить несохранение
             onClick: (e)=> navigate("..")
           },
           
       }}
-          readonly={userStatus}
+          readonly={userStatus === 'admin' || userStatus === 'editor'? false : true}
           name="validate_other"
           onValuesChange={async (_, values) => {
             setObjFormData({...objFormData, ...values})
@@ -225,7 +230,7 @@ return (
 
           onFinish={async () => onFinish()}
         >
-            <ProFormGroup title="Изменить прибор">
+            <ProFormGroup title={(userStatus === 'admin' || userStatus === 'editor'? false : true)? '' : 'Изменить прибор'}>
             <ProFormText width="md" name="inventoryName" label="Инвентарный номер" placeholder={"Инвантарный номер"}
               rules={[{ required: true, message: 'Инвентарный номер не выбран' }]}
               />
@@ -252,8 +257,8 @@ return (
                       return [ {value: 'Нет информации', label: "Нет информации"}, ...data]
                 }}
                   /> 
-                  
-                  <ProFormTextArea
+                <div className="" style={{display: 'flex', flexWrap: 'wrap'}}>
+                <ProFormTextArea
                       width="md"
                       placeholder="Примечания к прибору"
                       colProps={{ span: 24 }}
@@ -263,7 +268,8 @@ return (
                       style={{ maxHeight: 800,display: 'flex', height: 120, width: 328, resize: 'vertical', margin: '5px 0 15px 0' }}
   
                       fieldProps={{showCount: true, maxLength: 500}}
-                  />
+                  /></div> 
+                  
                   <ProFormDatePicker
                       width="md"
                       dataFormat=''
@@ -301,7 +307,7 @@ return (
                       setObjFormData={setObjFormData} 
                       fileList={objFromServer.files} 
                       data={""} 
-                      readonly={userStatus}
+                      readonly={(userStatus === 'admin' || userStatus === 'editor'? false : true)}
                   />
 
             </ProFormGroup>

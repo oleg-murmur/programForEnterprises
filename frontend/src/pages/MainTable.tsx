@@ -18,8 +18,7 @@ import { getAllInstFilter } from '../http/instAPI';
 import { checkToken } from '../hooks/checkValidToken';
 const PAGE_SIZE = 10
 
-type userRole = 'admin' | 'user' | 'editor'
-
+export type userRole = 'admin' | 'editor' | 'employee'
 const dateFormatList = ["YYYY/MM/DD", "DD/MM/YYYY"];
 const { RangePicker } = DatePicker;
 interface DataType {
@@ -49,7 +48,7 @@ interface DataType {
 
 const MainTable: React.FC = () => {
   
-  const [userStatus, setStatus] = useState(true)
+  const [userStatus, setStatus] = useState<userRole>("employee")
   const navigate = useNavigate();
   // const [isEditing, setIsEditing] = useState(true);
   const [resetFilter, setResetFilter] = useState(true);
@@ -71,8 +70,26 @@ const MainTable: React.FC = () => {
     const valid = async () => {
       console.log((localStorage.getItem('token')), '(localStorage.getItem()')
       const isValidToken = await checkToken(localStorage.getItem('token')?? '')
-      console.log(isValidToken)
-      if(isValidToken) {
+      console.log(isValidToken,'isValidTokenisValidTokenisValidToken')
+      if(isValidToken.status) {
+        switch (isValidToken.data.role) {
+          case "admin":
+            console.log('admin')
+            setStatus('admin')
+            break;
+          case "editor":
+            console.log('editor')
+            setStatus('editor')
+            break;
+          case "employee":
+            console.log('employee')
+            setStatus('employee')
+            break;
+          default:
+            console.log('нет данных о роли пользователя')
+            setStatus('employee')
+        }
+        // setStatus(isValidToken.data)
         console.log('хуйня')
       }else{
         localStorage.clear()
@@ -322,7 +339,7 @@ const onButtonClickVerificationEndDate = async (close:any) => {
       bordered={true} 
       title={() =>  
       <div className="" style={{padding: '2px', display: 'inline-block', alignItems: ""}}>
-        {userStatus ? <Button>
+        {userStatus === 'admin' || userStatus === 'editor'? <Button>
           <Link to={`${process.env.REACT_APP_FRONTEND_URL}/table/1/create`}>
             Создать новую запись
           </Link>

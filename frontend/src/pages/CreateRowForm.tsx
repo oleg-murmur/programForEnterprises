@@ -29,6 +29,7 @@ import ruRU from 'antd/locale/ru_RU';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import dayjs, { Dayjs } from 'dayjs';
 import { getCurrentDate } from '../hooks/currentDay';
+import { checkToken } from '../hooks/checkValidToken';
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 const dateFormat = 'YYYY-MM-DD';
@@ -64,20 +65,43 @@ const CreateFormEdit: React.FC = () => {
     }>
   >();
     const [loading, setLoading] = useState(false);
-    const [userStatus, setStatus] = useState(false)
+    const [editStatus, setEditStatus] = useState(false)
     const [objFromServer, setObjFromServer] = useState<IObjProps>(defaultObj)
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
     useEffect( () => {
       const getData = async () =>{
-        
-        // let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`,
-        // {headers: {
-        //   'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        //   'Content-Type': 'application/json',
-        // }})
-        // console.log(data.data)
-        // // setObjFromServer()
-        // // setObjFormData()
+        const valid = async () => {
+          console.log((localStorage.getItem('token')), '(localStorage.getItem()')
+          const isValidToken = await checkToken(localStorage.getItem('token')?? '')
+          console.log(isValidToken,'isValidTokenisValidTokenisValidToken')
+          if(isValidToken.status) {
+            switch (isValidToken.data.role) {
+              case "admin":
+                console.log('admin')
+                setEditStatus(true)
+                break;
+              case "editor":
+                console.log('editor')
+                setEditStatus(true)
+                break;
+              case "employee":
+                console.log('employee')
+                setEditStatus(false)
+                break;
+              default:
+                console.log('нет данных о роли пользователя')
+                setEditStatus(false)
+            }
+            // setStatus(isValidToken.data)
+            console.log('хуйня')
+          }else{
+            localStorage.clear()
+            navigate('/auth')
+            console.log('полная хуйня')
+          }
+        }
+    
+    valid()
       }
 
       setTimeout(()=> {
@@ -175,7 +199,7 @@ const { Text, Link } = Typography;
     >
 
         <ConfigProvider locale={ruRU}>
-
+      {editStatus ? 
   <ProForm
       autoFocusFirstInput
       // form={form}
@@ -184,14 +208,14 @@ const { Text, Link } = Typography;
         searchConfig: {resetText: "Отменить", submitText: "Сохранить" },  
         submitButtonProps: {
           style: {
-            display: userStatus? 'none' : 'flex',
+            display: 'flex',
            
          },
          onClick: (e)=> {}
       },
         resetButtonProps: {
           style: {
-            display: userStatus? 'none' : 'flex',
+            display: 'flex',
           },
           //открывать модалку подтвердить несохранение
           onClick: (e)=> navigate("..")
@@ -291,6 +315,8 @@ const { Text, Link } = Typography;
 
           </ProFormGroup>
         </ProForm>
+        : <div className="">Какой хитрый. Нет доступа к редактированию. Нет прав:3</div>}
+
       </ConfigProvider>
     </div>
   );
