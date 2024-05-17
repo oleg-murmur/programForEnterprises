@@ -37,7 +37,6 @@ export default () => {
 
 
   const onFinish = async(userInfo:any) => {
-    console.log(userInfo,'    console.log(userInfo)')
     if(loginType === 'login'){
       let {data} = await axios.post('http://localhost:5000/api/auth/login', {      
         email: userInfo.email,
@@ -45,7 +44,6 @@ export default () => {
         role: ""  
     })
 
-    console.log(data.result,'data check')
 
     localStorage.setItem('token', data.access_token);
 
@@ -263,7 +261,7 @@ useEffect(()=> {
               />
             </>
           )}
-          <div
+          {/* <div
             style={{
               marginBlockEnd: 24,
             }}
@@ -271,14 +269,7 @@ useEffect(()=> {
             <ProFormCheckbox noStyle name="autoLogin">
               Запомнить
             </ProFormCheckbox>
-            {/* <a
-              style={{
-                float: 'right',
-              }}
-            >
-              ку1
-            </a> */}
-          </div>
+          </div> */}
         </LoginForm>
       </div>
     </ProConfigProvider>
