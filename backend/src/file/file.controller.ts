@@ -32,6 +32,7 @@ export class FileController {
         deviceId: '',
         files: [],
       }
+      console.log(files, 'FILES TEST')
       const response = [];
       this.filesDevice.deviceId = body.instId ?? null
       files.map(file => {

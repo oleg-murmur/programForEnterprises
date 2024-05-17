@@ -16,13 +16,13 @@ export class FilesOfDevices {
     @Column({ nullable: true })
     url: string
 
-    //пользователь прибора
-    @Column({ nullable: true })
-    date: string // дата загрузки
-
-  
-
     @ManyToOne(() => MeasuringDevice, (device)=> device.files)
     device: MeasuringDevice
 }
+
+    //пользователь прибора
+    // @Column({ nullable: true })
+    // date: string // дата загрузки
+
+  
 

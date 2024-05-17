@@ -46,6 +46,7 @@ interface IObjProps {
       deviceType: {value: any, label: string},
       files: any[]
 }
+
 const EditRow = ({route}: any) => {
   const {instId} = useParams()
   console.log(instId,'param')
@@ -61,33 +62,31 @@ const EditRow = ({route}: any) => {
     const [readonly, setReadonly] = useState(true);
     const [loading, setLoading] = useState(false);
     const [userStatus, setStatus] = useState<userRole>("employee")
+    const [files, setFiles] = useState([])
     const [objFromServer, setObjFromServer] = useState<IObjProps>(defaultObj)
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
-
+    console.log(files)
     useEffect( () => {
       const valid = async () => {
-        console.log((localStorage.getItem('token')), '(localStorage.getItem()')
         const isValidToken = await checkToken(localStorage.getItem('token')?? '')
-        console.log(isValidToken)
         if(isValidToken.status) {
           switch (isValidToken.data.role) {
             case "admin":
-              console.log('admin')
+              // console.log('admin')
               setStatus('admin')
               break;
             case "editor":
-              console.log('editor')
+              // console.log('editor')
               setStatus('editor')
               break;
             case "employee":
-              console.log('employee')
+              // console.log('employee')
               setStatus('employee')
               break;
             default:
-              console.log('нет данных о роли пользователя')
+              // console.log('нет данных о роли пользователя')
               setStatus('employee')
           }
-          console.log('хуйня')
         }else{
           localStorage.clear()
           navigate('/auth')
@@ -96,26 +95,27 @@ const EditRow = ({route}: any) => {
       }
   
   valid()
-
     const getData = async () => {
       try {
       const instrumentFromBD = await getInstByID(instId)
+      console.log(instrumentFromBD.data,'instrumentFromBD.data')
       instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? {value: 'Нет информации', label: "Нет информации"}
       setObjFormData(instrumentFromBD.data)
       setObjFromServer(instrumentFromBD.data)
+      setFiles(instrumentFromBD.data.files)
     } catch (error) {
       console.log(error)
-    }
-
-    setTimeout(()=> {
-      setLoading(true)
-    },3000)
-    getData()    
+    }   
+    // setTimeout(()=> {
+    //   setLoading(true)
+    // },3000)
   }
-
+  getData() 
     },[])
+
     const onFinish = async() => {
       const FilesUpload:any = new FormData();
+      
       let EditInst = {
         id: instId,
         inventoryName: objFormData.inventoryName,
@@ -180,7 +180,8 @@ const EditRow = ({route}: any) => {
         return false
     }
     };
-
+console.log(objFormData,'objFormDataobjFormData')
+console.log(objFormData.files,'objFormData.filesobjFormData.files')
 
 return (
       <div
@@ -211,11 +212,13 @@ return (
         
         request={async () => {
           const instrumentFromBD = await getInstByID(instId)
-          let values = {...instrumentFromBD.data, 
-            deviceType: 
+          let values = {
+            ...instrumentFromBD.data, deviceType: 
                 instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? {value: 'Нет информации', label: "Нет информации"}
         }
-          setObjFormData(values)
+
+          setObjFormData({...values})
+          setObjFromServer({...values})
           return values
           ;
         }}
@@ -242,6 +245,7 @@ return (
           name="validate_other"
           onValuesChange={async (_, values) => {
             setObjFormData({...objFormData, ...values})
+            // setObjFromServer({...objFormData, ...values})
           }
         }
 
@@ -322,7 +326,7 @@ return (
                   <UploadComponent 
                       objFormData={objFormData}
                       setObjFormData={setObjFormData} 
-                      fileList={objFromServer.files} 
+                      fileList={files} 
                       data={""} 
                       readonly={(userStatus === 'admin' || userStatus === 'editor'? false : true)}
                   />

@@ -9,7 +9,7 @@ export const checkToken = async ({token,email,password}:any) => {
         //     'Content-Type': 'application/json',
         //   }
     }) 
-    console.log(data,'data token')
+    // console.log(data,'data token')
     if(!data) {
         localStorage.removeItem('token');
         return {status: false, data: {}}

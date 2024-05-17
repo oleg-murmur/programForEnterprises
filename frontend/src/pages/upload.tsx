@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StarOutlined, UploadOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { Button, message, Typography, Upload } from 'antd';
-const types = ["application/pdf","application/vnd.openxmlformats-officedocument.wordprocessingm","application/msword","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+const types = ["application/pdf","text/plain","application/vnd.openxmlformats-officedocument.wordprocessingm","application/msword","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
 
 const dummyRequest = ({ file, onSuccess }:any) => {
     setTimeout(() => {
@@ -19,20 +19,25 @@ interface testProps {
 
 const UploadComponent: React.FC<testProps> = ({data,readonly,fileList,setObjFormData,objFormData}) => {
     const [filetest, setFiletest] = useState<any[]>([])
-    
+    let startF = fileList
+    console.log(fileList,'fileListfileList')
     useEffect( () => {
-          setFiletest(fileList)       
+      setFiletest(fileList)   
+      // setObjFormData({...objFormData, files: [...fileList, ...filetest]})  
+
       },[fileList])
 
     const deleteFileFromList = (file:any) => {
         let afterDelete = filetest.filter(item => item.uid !== file.uid)
             setFiletest(afterDelete);
     }
-
     const onChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
+        setObjFormData({...objFormData, files: [...fileList,...newFileList]}) 
+        console.log(newFileList,'newFileList')
         setFiletest(newFileList);
-        setObjFormData({...objFormData, files: newFileList})
-        console.log(fileList)
+        console.log(newFileList,'newFileList')
+        // setObjFormData({...objFormData, files: newFileList})
+        // console.log(fileList)
       };
     const { Text, Link } = Typography;
   return (
@@ -52,7 +57,7 @@ const UploadComponent: React.FC<testProps> = ({data,readonly,fileList,setObjForm
         onChange={onChange} 
         beforeUpload={(file) => {
             if (!types.includes(file.type)) {
-              message.error(`${file.name} is not a pdf, doc or docx file`);
+              message.error(`${file.name} файл не имеет формат типа: pdf, doc,docx`);
               return false;
             } else {
               return true

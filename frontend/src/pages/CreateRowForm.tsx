@@ -71,9 +71,7 @@ const CreateFormEdit: React.FC = () => {
     useEffect( () => {
       const getData = async () =>{
         const valid = async () => {
-          console.log((localStorage.getItem('token')), '(localStorage.getItem()')
           const isValidToken = await checkToken(localStorage.getItem('token')?? '')
-          console.log(isValidToken,'isValidTokenisValidTokenisValidToken')
           if(isValidToken.status) {
             switch (isValidToken.data.role) {
               case "admin":
@@ -92,12 +90,10 @@ const CreateFormEdit: React.FC = () => {
                 console.log('нет данных о роли пользователя')
                 setEditStatus(false)
             }
-            // setStatus(isValidToken.data)
-            console.log('хуйня')
+
           }else{
             localStorage.clear()
             navigate('/auth')
-            console.log('полная хуйня')
           }
         }
     
@@ -128,18 +124,20 @@ const CreateFormEdit: React.FC = () => {
           data: EditInst,
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`},
         })
-  
+        console.log(resultEditInst,'resultEditInst')
         FilesUpload.append("instId", resultEditInst.data.id)
       for (let i = 0; i < objFormData.files.length; i++) {
         FilesUpload.append('files', objFormData.files[i].originFileObj);
       };
       try {
+        
         const resultFileUpload = await axios({
           method: "post",
           url: `${process.env.REACT_APP_BACKEND_URL_FILE_EP}`,
           data: FilesUpload,
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`,"Content-Type": "multipart/form-data" },
         })
+        console.log(resultFileUpload,'resultFileUpload')
       } catch (error) {
        // delete created row from db
        console.log(error) 
@@ -310,7 +308,7 @@ const { Text, Link } = Typography;
                     setObjFormData={setObjFormData} 
                     fileList={objFromServer.files} 
                     data={""} 
-                    readonly={false}
+                    readonly={!editStatus}
                 />
 
           </ProFormGroup>
