@@ -12,11 +12,12 @@ export class AuthService {
     private usersService: UserService,
     private jwtService: JwtService
 ) {}
-
+ 
   async signIn(createUserDto: CreateUserDto): Promise<{ access_token: string, result:any }> {
     const user = await this.usersService.findOne(createUserDto.email);
+    console.log(user)
     if (user?.password !== createUserDto.password) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('че то не так 1');
     }
     const payload = { sub: user.id, email: user.email };
     // const { password, ...result } = user;
@@ -26,10 +27,10 @@ export class AuthService {
 
     // TODO: Generate a JWT and return it here
     // instead of the user object
-    const result = await this.usersService.updateToken({password: user.password, email: user.email,token})
+    // const result = await this.usersService.updateToken({password: user.password, email: user.email,token})
     return {
         access_token: token,
-        result: result
+        result: ''
       };
   }
 }

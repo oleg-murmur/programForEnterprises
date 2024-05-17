@@ -69,14 +69,15 @@ const CreateFormEdit: React.FC = () => {
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
     useEffect( () => {
       const getData = async () =>{
-        let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`,
-        {headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json',
-        }})
-        console.log(data.data)
-        // setObjFromServer()
-        // setObjFormData()
+        
+        // let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`,
+        // {headers: {
+        //   'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        //   'Content-Type': 'application/json',
+        // }})
+        // console.log(data.data)
+        // // setObjFromServer()
+        // // setObjFormData()
       }
 
       setTimeout(()=> {

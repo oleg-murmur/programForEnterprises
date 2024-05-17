@@ -12,9 +12,11 @@ import { AuthGuard } from 'src/auth/auth.guard';
 @Module({
   imports: [TypeOrmModule.forFeature([MeasuringDevice, MeasuringInstrumentType])],
   controllers: [MeasuringDeviceController],
-  providers: [MeasuringDeviceService,MeasuringInstrumentTypeService,  {
-    provide: APP_GUARD,
-    useClass: AuthGuard,
-  }],
+  providers: [MeasuringDeviceService,MeasuringInstrumentTypeService
+  //   ,  {
+  //   provide: APP_GUARD,
+  //   useClass: AuthGuard,
+  // }
+],
 })
 export class MeasuringDeviceModule {}

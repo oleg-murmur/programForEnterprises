@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button, notification, Space } from 'antd';
 import {  checkTool, setTool, updateTool,  } from '../http/mutexAPI';
+import { checkToken } from '../hooks/checkValidToken';
 
 const close = () => {
   console.log(
@@ -35,12 +36,25 @@ export const NotificationComp: React.FC = () => {
 
 useEffect(() => {
   const getData = async() => {
-    let data = await setTool("321")
-    let data2 =await updateTool("321",{})
-    let data3 =await checkTool("123",{})
-    console.log(data.data)
-    console.log(data2.data)
-    console.log(data3.data)
+    try {
+      const isValidToken = await checkToken(localStorage.getItem('token')?? '')
+      if(isValidToken) {
+        let data = await setTool("321")
+        let data2 =await updateTool("321",{})
+        let data3 =await checkTool("123",{})
+        console.log(data.data)
+        console.log(data2.data)
+        console.log(data3.data)
+      }else{
+        // localStorage.clear()
+        // navigate('/auth')
+        console.log('полная хуйня')
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+
   }
   getData()
   return () => {

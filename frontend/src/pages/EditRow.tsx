@@ -21,6 +21,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { getCurrentDate } from '../hooks/currentDay';
 import NotificationComp from '../components/notification';
+import { checkToken } from '../hooks/checkValidToken';
 const dateFormat = 'YYYY-MM-DD';
 export const waitTime = (time: number = 100) => {
     return new Promise((resolve) => {
@@ -61,16 +62,37 @@ const EditRow = ({route}: any) => {
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
 
     useEffect( () => {
-      const getData = async () => {
-        const instrumentFromBD = await getInstByID(instId)
-        instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? {value: 'Нет информации', label: "Нет информации"}
-        setObjFormData(instrumentFromBD.data)
-        setObjFromServer(instrumentFromBD.data)
+      const valid = async () => {
+        console.log((localStorage.getItem('token')), '(localStorage.getItem()')
+        const isValidToken = await checkToken(localStorage.getItem('token')?? '')
+        console.log(isValidToken)
+        if(isValidToken) {
+          console.log('хуйня')
+        }else{
+          localStorage.clear()
+          navigate('/auth')
+          console.log('полная хуйня')
+        }
       }
-      setTimeout(()=> {
-        setLoading(true)
-      },3000)
-      getData()
+  
+  valid()
+
+    const getData = async () => {
+      try {
+      const instrumentFromBD = await getInstByID(instId)
+      instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? {value: 'Нет информации', label: "Нет информации"}
+      setObjFormData(instrumentFromBD.data)
+      setObjFromServer(instrumentFromBD.data)
+    } catch (error) {
+      console.log(error)
+    }
+
+    setTimeout(()=> {
+      setLoading(true)
+    },3000)
+    getData()    
+  }
+
     },[])
     const onFinish = async() => {
       const FilesUpload:any = new FormData();

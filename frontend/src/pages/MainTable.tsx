@@ -70,7 +70,7 @@ const MainTable: React.FC = () => {
   useEffect( () => {
     const valid = async () => {
       console.log((localStorage.getItem('token')), '(localStorage.getItem()')
-      const isValidToken = await checkToken(localStorage.getItem('token'))
+      const isValidToken = await checkToken(localStorage.getItem('token')?? '')
       console.log(isValidToken)
       if(isValidToken) {
         console.log('хуйня')

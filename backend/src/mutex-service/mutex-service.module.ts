@@ -6,9 +6,13 @@ import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   controllers: [MutexServiceController],
-  providers: [MutexServiceService,  {
-    provide: APP_GUARD,
-    useClass: AuthGuard,
-  },],
+  providers: [MutexServiceService
+  //   ,  {
+  //   provide: APP_GUARD,
+  //   useClass: 
+  //   AuthGuard,
+  // },
+]
+  ,
 })
 export class MutexServiceModule {}

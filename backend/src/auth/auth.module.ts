@@ -9,11 +9,14 @@ import { AuthGuard } from './auth.guard';
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/entities/user.entity';
 
+
+import { SetMetadata } from '@nestjs/common';
+
 @Module({
   imports: [UserModule,User,JwtModule.register({
     global: true,
     secret: jwtConstants.secret,
-    signOptions: { expiresIn: '60s' },
+    signOptions: { expiresIn: '7d' },
   }),],
   providers: [AuthService,  {
     provide: APP_GUARD,
