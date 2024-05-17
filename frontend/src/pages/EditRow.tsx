@@ -70,6 +70,23 @@ const EditRow = ({route}: any) => {
         const isValidToken = await checkToken(localStorage.getItem('token')?? '')
         console.log(isValidToken)
         if(isValidToken.status) {
+          switch (isValidToken.data.role) {
+            case "admin":
+              console.log('admin')
+              setStatus('admin')
+              break;
+            case "editor":
+              console.log('editor')
+              setStatus('editor')
+              break;
+            case "employee":
+              console.log('employee')
+              setStatus('employee')
+              break;
+            default:
+              console.log('нет данных о роли пользователя')
+              setStatus('employee')
+          }
           console.log('хуйня')
         }else{
           localStorage.clear()
