@@ -20,7 +20,7 @@ export class AuthService {
       throw new UnauthorizedException('че то не так 1');
     }
     const payload = { sub: user.id, email: user.email };
-    // const { password, ...result } = user;
+    const { password, ...result } = user;
 
     const token = await this.jwtService.signAsync(payload);
     // const token = await jwt.sign({ data: createUserDto.email }, secretKey);
@@ -30,7 +30,7 @@ export class AuthService {
     // const result = await this.usersService.updateToken({password: user.password, email: user.email,token})
     return {
         access_token: token,
-        result: ''
+        result: result
       };
   }
 }

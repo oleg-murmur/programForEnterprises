@@ -37,14 +37,36 @@ export default () => {
 
 
   const onFinish = async(userInfo:any) => {
-    let {data} = await axios.post('http://localhost:5000/api/auth/login', {      
-        email: "employee",
-        password: "employee",
+    console.log(userInfo,'    console.log(userInfo)')
+    if(loginType === 'login'){
+      let {data} = await axios.post('http://localhost:5000/api/auth/login', {      
+        email: userInfo.email,
+        password: userInfo.password,
         role: ""  
     })
-    console.log(data.access_token)
+
+    console.log(data.result,'data check')
+
     localStorage.setItem('token', data.access_token);
-    await setToken({token: data.access_token, email: "employee",password: "employee"})
+
+    await setToken({token: data.access_token, email: data.result.email,password: data.result.password})
+
+
+    }else 
+    if(loginType === 'registration') {
+      console.log(userInfo)
+
+      let objUser = {      
+        email: userInfo.email,
+        password: userInfo.password,
+        role: userInfo.email === 'admin2@admin.ru' ? "admin" : ""  
+    }
+    console.log(objUser,'objUser')
+      let {data} = await axios.post('http://localhost:5000/api/user/reg', objUser)
+    console.log(data)
+    localStorage.setItem('token', data.token);
+    }
+    
     // checkToken({token: data.access_token,email: "employee",password: "employee"})
     navigate("/table/1")
     }
@@ -102,7 +124,7 @@ useEffect(()=> {
           {loginType === 'login' && (
             <>
               <ProFormText
-                name="username"
+                name="email"
                 fieldProps={{
                   size: 'large',
                   prefix: <UserOutlined className={'prefixIcon'} />,
@@ -178,7 +200,7 @@ useEffect(()=> {
                   size: 'large',
                   prefix: <UserOutlined className={'prefixIcon'}  />,
                 }}
-                name="registration"
+                name="email"
                 placeholder={'Введите электронную почту'}
                 rules={[
                   {
@@ -191,7 +213,52 @@ useEffect(()=> {
                   },
                 ]}
               />
-              
+              <ProFormText.Password
+                name="password"
+                fieldProps={{
+                  size: 'large',
+                  prefix: <LockOutlined className={'prefixIcon'} />,
+                  strengthText:
+                    'Пароль должен содержать цифры, буквы и специальные символы длиной не менее 8 символов.',
+                  statusRender: (value) => {
+                    const getStatus = () => {
+                      if (value && value.length > 12) {
+                        return 'ok';
+                      }
+                      if (value && value.length > 6) {
+                        return 'pass';
+                      }
+                      return 'poor';
+                    };
+                    const status = getStatus();
+                    if (status === 'pass') {
+                      return (
+                        <div style={{ color: token.colorWarning }}>
+                          Средняя сложность
+                        </div>
+                      );
+                    }
+                    if (status === 'ok') {
+                      return (
+                        <div style={{ color: token.colorSuccess }}>
+                          Идеальный по длине пароль
+                        </div>
+                      );
+                    }
+                    return (
+                      <div style={{ color: token.colorError }}>Введите больше символов для надежного пароля</div>
+                    );
+                  },
+                }}
+                placeholder={'Пароль'}
+                rules={[
+                  {
+                    required: true,
+                    message: 'Поле не заполнено',
+                  },
+                  { validator: handleCompare }
+                ]}
+              />
             </>
           )}
           <div

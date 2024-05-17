@@ -20,6 +20,7 @@ export class UserService {
     if(userFromDB) {
       return {error: 'Пользователь с такой почтой уже существует'}
     }
+    console.log(createUserDto,'createUserDto REG')
     if(!createUserDto.role) {
       createUserDto.role = 'employee'
     }
@@ -55,7 +56,8 @@ export class UserService {
     }
     async getToken(createUserDto: CreateUserDto): Promise<any> {
       console.log(createUserDto,'createUserDto')
-      const result = await this.userRepository.findOne({where: {token: createUserDto.token}});
+      const user = await this.userRepository.findOne({where: {token: createUserDto.token}});
+      const {password, ...result} = user 
       console.log(result)
       return result
     }
