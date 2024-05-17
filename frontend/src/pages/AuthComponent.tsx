@@ -17,7 +17,7 @@ import {
 import { Space, Tabs, message, theme } from 'antd';
 import axios from 'axios';
 import type { CSSProperties } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { checkToken, setToken } from '../hooks/checkValidToken';
 
@@ -49,7 +49,12 @@ export default () => {
     navigate("/table/1")
     }
 
-
+useEffect(()=> {
+  const deletlStorage = () => {
+    localStorage.removeItem('token')
+  }
+  deletlStorage()
+},[])
     const handleCompare = async (any: any, value: any) => {
       console.log(value)
       if(!value) {
