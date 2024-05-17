@@ -47,15 +47,15 @@ const App: React.FC = () => {
   };
   useEffect( () => {
     const valid = async () => {
-      console.log((localStorage.getItem('token')), '(localStorage.getItem()')
+      // console.log((localStorage.getItem('token')), '(localStorage.getItem()')
       const isValidToken = await checkToken(localStorage.getItem('token')?? '')
-      console.log(isValidToken)
+      // console.log(isValidToken)
       if(isValidToken.status) {
-        console.log('хуйня')
+        // console.log('хуйня')
       }else{
         localStorage.clear()
         navigate('/auth')
-        console.log('полная хуйня')
+        // console.log('полная хуйня')
       }
     }
 

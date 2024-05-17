@@ -31,7 +31,7 @@ interface DataType {
   }
   
   type DataIndex = keyof DataType;
-  const useColumnSearchProps = (dataIndex: DataIndex, dataName: string): TableColumnType<any>=> {
+  const useColumnSearchProps = (dataIndex: DataIndex, dataName: string, setFilters: any,filters:any): TableColumnType<any>=> {
 
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
@@ -47,8 +47,10 @@ interface DataType {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
+      console.log(searchText)
       const newTimeoutId:any = setTimeout(() => {
-        confirm();
+        setFilters({...filters, [dataIndex]: selectedKeys[0]})
+        // confirm();
         setSearchText(selectedKeys[0]);
         setSearchedColumn(dataIndex);
       }, 2000);
@@ -57,6 +59,7 @@ interface DataType {
     };
     const handleReset = (clearFilters: () => void) => {
       clearFilters();
+      setFilters({...filters, [dataIndex]: ''}) // ?????????????????!!!
       setSearchText('');
     };
   
@@ -88,7 +91,7 @@ interface DataType {
           >
             Сбросить
           </Button>
-          <Button
+          {/* <Button
             type="link"
             size="small"
             onClick={() => {
@@ -98,7 +101,7 @@ interface DataType {
             }}
           >
             Фильтр
-          </Button>
+          </Button> */}
           <Button
             type="link"
             size="small"

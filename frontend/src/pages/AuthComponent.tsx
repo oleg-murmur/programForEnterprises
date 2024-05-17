@@ -57,7 +57,7 @@ export default () => {
       let objUser = {      
         email: userInfo.email,
         password: userInfo.password,
-        role: userInfo.email === 'admin2@admin.ru' ? "admin" : ""  
+        role: userInfo.email === 'admin@admin.ru' ? "admin" : ""  
     }
     console.log(objUser,'objUser')
       let {data} = await axios.post('http://localhost:5000/api/user/reg', objUser)

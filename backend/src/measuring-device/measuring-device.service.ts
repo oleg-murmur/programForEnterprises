@@ -2,16 +2,36 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateMeasuringDeviceDto } from './dto/update-measuring-device.dto';
 import { MeasuringDevice } from './entities/measuring-device.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository,Between,FindOperator,Raw   } from 'typeorm';
+import { Repository,Between,FindOperator,Raw, Like   } from 'typeorm';
 import { MeasuringInstrumentType } from './entities/measuringInstrumentType.entity';
 import { format } from 'date-fns';
 export const BetweenDates = (from: Date | string, to: Date | string) => {
+  console.log(from,'from')
+  console.log(to,'to')
  return Between(
     format(typeof from === 'string' ? new Date(from) : from, 'yyyy-MM-dd'),
     format(typeof to === 'string' ? new Date(to) : to, 'yyyy-MM-dd'),
   )
 };
 
+export interface FiltersProps {
+  page?: number,
+
+  DOI_to?: string,
+  DOI_from?: string,
+
+  VED_from?: string,
+  VED_to?: string,
+  
+  inventoryName?: string,
+  factoryNumber?: string,
+  userName?: string,
+  note?: string,
+  haveMetal?: 'Нет' | 'Нет информации' | 'Да',
+  deviceType?: number
+  orderDateOfIssue?: 'ESC' | 'DESC'
+  verificationEndDate?: 'ESC' | 'DESC'
+}
 
 @Injectable()
 export class MeasuringDeviceService {
@@ -19,6 +39,9 @@ export class MeasuringDeviceService {
   constructor(
     @InjectRepository(MeasuringDevice)
     private deviceRepository: Repository<MeasuringDevice>,
+    // @InjectRepository(MeasuringInstrumentType)
+    // private typeRepository: Repository<MeasuringInstrumentType>
+
   ) {}
   
   async create(measuringDevice: Partial<MeasuringDevice>): Promise<MeasuringDevice> {
@@ -30,7 +53,7 @@ export class MeasuringDeviceService {
     const take = query.take || 10
     if(query.skip < 1) query.skip = 1
     const skip = (query.skip - 1) * query.take || 0
-    const keyword = query.keyword || ''
+    // const keyword = query.keyword || ''
     const [result, total] = await this.deviceRepository.findAndCount({
       where: {deleted: false},
       take: take,
@@ -38,57 +61,160 @@ export class MeasuringDeviceService {
       order: {
         created_at: "DESC"
       },
-      relations: {
-        deviceType: true,
-        // files: true
-      }
+      // relations: {
+      //   deviceType: true,
+      //   // files: true
+      // }
     });
     return {
       data: result,
       skip: total
     }
   }
-  async findAlldateOfIssue(measuringDevice: Partial<{from: any, to: any,operator?:any}>): Promise<any> {
+  async universalFilter(measuringDevice: FiltersProps): Promise<any> {
+    console.log(measuringDevice)
+    if(measuringDevice.page < 1) measuringDevice.page = 1
+    const skip = (measuringDevice.page - 1) * 10 || 0
+    let from_VED: Date
+    let to_VED: Date
+    let from_DOI: Date
+    let to_DOI: Date
+    console.log(typeof measuringDevice.VED_from, 'measuringDevice.VED_from')
+    // if(!measuringDevice.DOI_from || !measuringDevice.DOI_to) return []
+    // if(!measuringDevice.VED_from || !measuringDevice.VED_to) return []
+    if(typeof  measuringDevice.VED_from  == 'object' || typeof measuringDevice.VED_to == 'object') {
+      return []
+    }
+    if(typeof  measuringDevice.DOI_from  == 'object' || typeof measuringDevice.DOI_to == 'object') {
+      return []
+    }
+    if (typeof measuringDevice.DOI_from === 'string') {
+      const date: Date = new Date(measuringDevice.DOI_from);
+      from_DOI = date
+  }
+    if (typeof measuringDevice.DOI_to === 'string') {
+    const date: Date = new Date(measuringDevice.DOI_to);
+    to_DOI = date
+  }
+    if (typeof measuringDevice.VED_from === 'string') {
+      const date: Date = new Date(measuringDevice.VED_from);
+      from_VED = date
+      console.log(date,'from_VED')
+  }
+    if (typeof measuringDevice.VED_to === 'string') {
+    const date: Date = new Date(measuringDevice.VED_to);
+    to_VED = date
+    console.log(date,'to_VED')
+  }
+let query = {}
+  if(measuringDevice.DOI_from || measuringDevice.DOI_to) {
+    query['dateOfIssue'] = BetweenDates(from_DOI, to_DOI)
+  }
+  if(measuringDevice.VED_from || measuringDevice.VED_to) {
+    query['verificationEndDate'] = BetweenDates(from_VED, to_VED)
+  }
+  if(measuringDevice.factoryNumber) {
+    query['factoryNumber'] = Like(`%${measuringDevice.factoryNumber}%`)
+  }
+  if(measuringDevice.note) {
+    query['note'] = Like(`%${measuringDevice.note}%`)
+  }
+  if(measuringDevice.userName) {
+    query['userName'] = Like(`%${measuringDevice.userName}%`)
+  }
+  if(measuringDevice.inventoryName) {
+    query['inventoryName'] = Like(`%${measuringDevice.inventoryName}%`)
+  }
+  if(measuringDevice.haveMetal) {
+    query['haveMetal'] = Like(`%${measuringDevice.haveMetal}%`)
+  }
+  // if(measuringDevice.deviceType) {
+  //   let device = await this.typeRepository.findOne({where: {value: measuringDevice.deviceType},});
+  //   console.log(device)
+  //   query['deviceType'] = device
+  // }
+
+  let data = this.deviceRepository.findAndCount({
+    where: {
+      ...query,
+// deviceType?: string
+    },    take: 10,
+    skip: skip,
+    order: {
+      created_at: "DESC"
+    },
+  });
+  query = {}
+    return data
+  }
+
+
+  async findAlldateOfIssue(measuringDevice: FiltersProps): Promise<any> {
+
+    if(measuringDevice.page < 1) measuringDevice.page = 1
+    const skip = (measuringDevice.page - 1) * 10 || 0
+
     console.log(measuringDevice)
     let from: Date
     let to: Date
-    if(typeof  measuringDevice.from  == 'object' || typeof measuringDevice.to == 'object') {
+    let order = {}
+  if(measuringDevice.orderDateOfIssue) {
+    order['dateOfIssue'] = measuringDevice.orderDateOfIssue
+  }
+    if(typeof  measuringDevice.DOI_from  == 'object' || typeof measuringDevice.DOI_to == 'object') {
       return []
     }
-    if (typeof measuringDevice.from === 'string') {
-      const date: Date = new Date(measuringDevice.from);
+    if (typeof measuringDevice.DOI_from === 'string') {
+      const date: Date = new Date(measuringDevice.DOI_from);
       from = date
   }
-  if (typeof measuringDevice.to === 'string') {
-    const date: Date = new Date(measuringDevice.to);
+  if (typeof measuringDevice.DOI_to === 'string') {
+    const date: Date = new Date(measuringDevice.DOI_to);
     to = date
 }
     return this.deviceRepository.findAndCount({
       where: {
         dateOfIssue: BetweenDates(from, to),
         deleted: false
-      }
+      }, skip, 
+      order: {...order}
     });
   }
-  async findAllVerificationEndDate(measuringDevice: Partial<{from: any, to: any,operator?:any}>): Promise<any> {
+  async findAllVerificationEndDate(measuringDevice: FiltersProps): Promise<any> {
+
+    if(measuringDevice.page < 1) measuringDevice.page = 1
+    const skip = (measuringDevice.page - 1) * 10 || 0
+
     console.log(measuringDevice)
     let from: Date
     let to: Date
-    if (typeof measuringDevice.from === 'string') {
-      const date: Date = new Date(measuringDevice.from);
+    if (typeof measuringDevice.VED_from === 'string') {
+      const date: Date = new Date(measuringDevice.VED_from);
       from = date
   }
-  if (typeof measuringDevice.to === 'string') {
-    const date: Date = new Date(measuringDevice.to);
+  if (typeof measuringDevice.VED_to === 'string') {
+    const date: Date = new Date(measuringDevice.VED_to);
     to = date
+}
+let order = {}
+if(measuringDevice.verificationEndDate) {
+  order['verificationEndDate'] = measuringDevice.verificationEndDate
 }
     return this.deviceRepository.findAndCount({
       where: {
         verificationEndDate: BetweenDates(from, to),
         deleted: false
+      },skip,
+      order: {
+        ...order
       }
     });
   }
+
+
+
+
+
 
   async findOne(id: string): Promise<any> {
     return this.deviceRepository.findOne({where: {id,deleted: false}, relations: {

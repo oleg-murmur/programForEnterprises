@@ -7,44 +7,18 @@ import { Link, Navigate} from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 import useColumnSearchProps from "../hooks/getColumnSearchProps"
 import { DatePicker } from 'antd';
-import useGetColumnDateSearch from '../hooks/getColumnDateSearch';
 import dayjs from 'dayjs';
-import moment from 'moment';
 import { runFilterDateOfIssue, runVerificationEndDate } from '../hooks/DateFilters';
-import { FilterDropdownProps } from 'antd/es/table/interface';
 import ruRU from 'antd/locale/ru_RU';
 import { CheckboxProps } from 'antd/lib/checkbox/Checkbox';
-import { getAllInstFilter } from '../http/instAPI';
+import { getAllInstFilter, universalFilter } from '../http/instAPI';
 import { checkToken } from '../hooks/checkValidToken';
 const PAGE_SIZE = 10
 
 export type userRole = 'admin' | 'editor' | 'employee'
 const dateFormatList = ["YYYY/MM/DD", "DD/MM/YYYY"];
 const { RangePicker } = DatePicker;
-interface DataType {
-    id: string;
-    dataIndex: any
-    //инвантарный номер
-    inventoryName: string
 
-    //заводской номер
-    factoryNumber: string
-
-    //пользователь прибора
-    userName: string // кто отвечает за прибор (отдельная сущность?)
-
-    dateOfIssue: string; // Дата выпуска
-
-    note: string; // Примечание
-
-    verificationEndDate: string; // Дата окончания поверки
-
-    //наличие драг. металлов
-    haveMetal: 'Да' | 'Нет информации' | 'Нет'
-    
-    deviceType: number; // Тип измерительного прибора
-
-}
 
 const MainTable: React.FC = () => {
   
@@ -52,6 +26,7 @@ const MainTable: React.FC = () => {
   const navigate = useNavigate();
   // const [isEditing, setIsEditing] = useState(true);
   const [resetFilter, setResetFilter] = useState(true);
+  const [filters, setFilters] = useState({});
   const [countList, setCountList] = useState(0);
   const [dateStartdateOfIssue, setDateStartdateOfIssue] = useState<string | null>("")
   const [dateEnddateOfIssue, setDateEnddateOfIssue] = useState<string | null>("")
@@ -65,12 +40,12 @@ const MainTable: React.FC = () => {
   const [hasData, setHasData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1)
-  
   useEffect( () => {
+
     const valid = async () => {
-      console.log((localStorage.getItem('token')), '(localStorage.getItem()')
+      // console.log((localStorage.getItem('token')), '(localStorage.getItem()')
       const isValidToken = await checkToken(localStorage.getItem('token')?? '')
-      console.log(isValidToken,'isValidTokenisValidTokenisValidToken')
+      // console.log(isValidToken,'isValidTokenisValidTokenisValidToken')
       if(isValidToken.status) {
         switch (isValidToken.data.role) {
           case "admin":
@@ -90,21 +65,26 @@ const MainTable: React.FC = () => {
             setStatus('employee')
         }
         // setStatus(isValidToken.data)
-        console.log('хуйня')
+        // console.log('хуйня')
       }else{
         localStorage.clear()
         navigate('/auth')
-        console.log('полная хуйня')
+        // console.log('полная хуйня')
       }
     }
-
 valid()
+  },[])
+
+  useEffect( () => {
 
 const getData = async () => {
-
+  // console.log(await universalFilter(1))
   try {
+    const isValidToken = await checkToken(localStorage.getItem('token')?? '')
+    // console.log(isValidToken,'isValidTokenisValidTokenisValidToken')
+    if(isValidToken.status) {
     setLoading(true)
-    let data = await getAllInstFilter(page, PAGE_SIZE)
+    let data = await universalFilter(filters)
     let data2:any = [];
     console.log(data.data)
     data.data.forEach((element: any) => {
@@ -120,27 +100,27 @@ const getData = async () => {
     setData(data2)
     setHasData(true)
     setLoading(false)
+  }
   } catch (error) {
     console.log(error)
   }
-
 }
-
 try {
   getData()
 } catch (error) {
   console.log(error)
 }
 
-  },[resetFilter,page])
+  },[resetFilter,page,filters])
 
 const onButtonClickDateOfIssue = async (close:any) => {
   setdateOfIssue(true)
   setLoading(true)
-  const test = await runFilterDateOfIssue(dateStartdateOfIssue,dateEnddateOfIssue)
-  console.log(test)
-  setCountList(test.skip)
-  setData(test.data)
+  setFilters({...filters, DOI_from: dateStartdateOfIssue,DOI_to: dateEnddateOfIssue})
+   const test = await runFilterDateOfIssue(dateStartdateOfIssue,dateEnddateOfIssue)
+  // console.log(test)
+  //  setCountList(test.skip)
+  // setData(test.data)
 
   close()
   setLoading(false)
@@ -148,9 +128,11 @@ const onButtonClickDateOfIssue = async (close:any) => {
 const onButtonClickVerificationEndDate = async (close:any) => {
   setverificationEndDate(true)
   setLoading(true)
-  const test = await runVerificationEndDate(dateStartverificationEndDate,dateEndverificationEndDate)
-  setCountList(test.skip)
-  setData(test.data)
+  setFilters({...filters, VED_from: dateStartverificationEndDate,VED_to: dateEndverificationEndDate})
+
+  // const test = await runVerificationEndDate(dateStartverificationEndDate,dateEndverificationEndDate)
+  // setCountList(test.skip)
+  // setData(test.data)
 
   close()
   setLoading(false)
@@ -162,9 +144,10 @@ const onButtonClickVerificationEndDate = async (close:any) => {
       key: 'inventoryName',
       width: '200px',
       // fixed: 'left',
-      sorter: (record1,record2):any=>{
-        return record1.inventoryName > record2.inventoryName
-      },
+      // sorter: (record1,record2):any=>{
+      //   return record1.inventoryName > record2.inventoryName
+      // },
+      ...useColumnSearchProps('inventoryName', 'Инвентарный номер', setFilters,filters),
       ellipsis: {
         showTitle: false,
       },
@@ -173,9 +156,10 @@ const onButtonClickVerificationEndDate = async (close:any) => {
       title: 'Заводской номер',
       dataIndex: 'factoryNumber',
       key: 'factoryNumber',
-      sorter: (record1,record2):any=>{
-        return record1.factoryNumber > record2.factoryNumber
-      },
+      // sorter: (record1,record2):any=>{
+      //   return record1.factoryNumber > record2.factoryNumber
+      // },
+      ...useColumnSearchProps('factoryNumber', 'Заводской номер', setFilters,filters),
       ellipsis: {
         showTitle: false,
       },
@@ -186,7 +170,7 @@ const onButtonClickVerificationEndDate = async (close:any) => {
       ellipsis: {
       showTitle: false,
     },
-    ...useColumnSearchProps('userName', 'Пользователь прибора'),
+    ...useColumnSearchProps('userName', 'Пользователь прибора', setFilters,filters),
       render: (userName) => (
         <Tooltip placement="topLeft" title={userName}>
           {userName}
@@ -214,7 +198,7 @@ const onButtonClickVerificationEndDate = async (close:any) => {
             if(!(e && e[0])) {
               setResetFilter(value => !value)
               setdateOfIssue(false)
-              
+              setFilters({...filters, DOI_from: '', DOI_to: ''})
             }
               setDateStartdateOfIssue(e && e[0] ? dayjs(e[0]).format("YYYY-MM-DD") : '0');
               setDateEnddateOfIssue(e && e[1] ? dayjs(e[1]).format("YYYY-MM-DD") : '0');
@@ -225,7 +209,8 @@ const onButtonClickVerificationEndDate = async (close:any) => {
       />
       <Button onClick={e=> onButtonClickDateOfIssue(close)} type="primary" size={"large"} icon={<SearchOutlined />}>
         Поиск
-      </Button></div>)
+      </Button>
+      </div>)
     },
     render: (dateOfIssue) => (
       <Tooltip placement="topLeft" title={dateOfIssue}>
@@ -245,6 +230,7 @@ const onButtonClickVerificationEndDate = async (close:any) => {
             if(!(e && e[0])) {
               setResetFilter(value => !value)
               setverificationEndDate(false)
+              setFilters({...filters, VED_from: '', VED_to: ''})
             }
             setDateStartverificationEndDate(e && e[0] ? dayjs(e[0]).format("YYYY-MM-DD") : '0');
             setDateEndverificationEndDate(e && e[1] ? dayjs(e[1]).format("YYYY-MM-DD") : '0');
@@ -255,7 +241,9 @@ const onButtonClickVerificationEndDate = async (close:any) => {
       />
       <Button onClick={e=> onButtonClickVerificationEndDate(close)} type="primary" size={"large"} icon={<SearchOutlined />}>
         Поиск
-      </Button></div>)
+      </Button>
+      </div>
+      )
     },
  },
  //////////////////////
@@ -265,7 +253,7 @@ const onButtonClickVerificationEndDate = async (close:any) => {
     ellipsis: {
       showTitle: false,
     },
-    ...useColumnSearchProps('note','Примечания'),
+    ...useColumnSearchProps('note','Примечания', setFilters,filters),
     render: (note) => (
       <Tooltip placement="topLeft" title={note}>
         {note}
@@ -287,8 +275,10 @@ const onButtonClickVerificationEndDate = async (close:any) => {
           value: 'Нет информации',
         },
     ],
+    
     onFilter:(value,record)=>{
-      return record.haveMetal === value
+      // setFilters({...filters, haveMetal: record.haveMetal})
+      return record.haveMetal === 'Нет'
     },
  },
     { title: 'Тип измерительного прибора', dataIndex: 'deviceType', key: 'deviceType',
@@ -372,7 +362,7 @@ const onButtonClickVerificationEndDate = async (close:any) => {
         pageSize: PAGE_SIZE,
         total: countList,
         defaultPageSize: 10, showSizeChanger: false,showQuickJumper: true,
-        onChange: (page)=> setPage(page)
+        onChange: (page)=> {setPage(page); setFilters({...filters, page})}
       }} 
       dataSource={hasData ? data : []} 
       scroll={{ x: 1300 }} 
@@ -391,3 +381,27 @@ const type = [
   { text: "Регистрирующий", value: "Регистрирующий" },
   { text: "Суммирующий", value: "Суммирующий" },
   { text: "Интегрирующий", value: "Интегрирующий" }]
+
+  interface DataType {
+    id: string;
+    dataIndex: any
+    //инвантарный номер
+    inventoryName: string
+
+    //заводской номер
+    factoryNumber: string
+
+    //пользователь прибора
+    userName: string // кто отвечает за прибор (отдельная сущность?)
+
+    dateOfIssue: string; // Дата выпуска
+
+    note: string; // Примечание
+
+    verificationEndDate: string; // Дата окончания поверки
+
+    //наличие драг. металлов
+    haveMetal: 'Да' | 'Нет информации' | 'Нет'
+    
+    deviceType: number; // Тип измерительного прибора
+}

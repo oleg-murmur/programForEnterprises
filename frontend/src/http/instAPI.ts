@@ -1,5 +1,26 @@
 import axios from "axios"
 
+interface FiltersParams {
+  page?: number,
+
+  DOI_to?: string,
+  DOI_from?: string,
+
+  VED_from?: string,
+  VED_to?: string,
+  
+  inventoryName?: string,
+  factoryNumber?: string,
+  userName?: string,
+  note?: string,
+  haveMetal?: 'Нет' | 'Нет информации' | 'Да',
+  deviceType?: number
+  orderDateOfIssue?: 'ESC' | 'DESC'
+  verificationEndDate?: 'ESC' | 'DESC'
+}
+
+
+const PAGE_SIZE = 10
 export const getAllInst = async () => {
     let data = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`,{
         headers: {
@@ -18,13 +39,27 @@ export const getInstByID = async (id:any) => {
       })
     return instrumentFromBD
 }
-export const getAllInstFilter = async (page: any,page_size: any) => {
+export const getAllInstFilter = async (page: any) => {
   console.log(page,'page')
   let test = `Bearer ${localStorage.getItem('token')}`
   console.log('BEARER', test)
-  console.log(page_size,'page_size')
+  // console.log(PAGE_SIZE,'page_size')
   const {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`, {params: {
-    skip: page, take: page_size
+    skip: page, take: PAGE_SIZE
+  },
+  headers: {
+    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    'Content-Type': 'application/json',
+  },})
+    return data
+}
+export const universalFilter = async (filters: any) => {
+  console.log(filters,'page')
+  let test = `Bearer ${localStorage.getItem('token')}`
+  console.log('BEARER', test)
+  // console.log(PAGE_SIZE,'page_size')
+  const {data} = await axios.get(`${process.env.REACT_APP_BACKEND_UNVERSAL_FILTER}`, {params: {
+    ...filters
   },
   headers: {
     'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -41,10 +76,10 @@ export const deleteByID = async (id:any) => {
       })
     return instrumentFromBD
 }
-export const filterDateOfIssue = async ({from, to}:any) => {
+export const filterDateOfIssue = async ({from, to,page}:any) => {
     let data = await axios.get(`${process.env.REACT_APP_BACKEND_FILTER_DATE_OF_ISSUE}`,{
         params: { 
-            from, to
+          DOI_from: from, DOI_to: to, page
         },
         headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -53,10 +88,10 @@ export const filterDateOfIssue = async ({from, to}:any) => {
     })
     return data
 }
-export const filterVerificationEndDate = async ({from, to}:any) => {
+export const filterVerificationEndDate = async ({from, to,page}:any) => {
     let data = await axios.get(`${process.env.REACT_APP_BACKEND_FILTER_END_DATE}`,{
         params: { 
-            from, to
+          VED_from: from, VED_to: to, page
         },
         headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`,

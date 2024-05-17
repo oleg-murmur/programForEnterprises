@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
-import { MeasuringDeviceService, MeasuringInstrumentTypeService } from './measuring-device.service';
+import { FiltersProps, MeasuringDeviceService, MeasuringInstrumentTypeService } from './measuring-device.service';
 import { CreateMeasuringDeviceDto, CreateTypeDto } from './dto/create-measuring-device.dto';
 import { UpdateMeasuringDeviceDto } from './dto/update-measuring-device.dto';
 import { UUID } from 'typeorm/driver/mongodb/bson.typings';
@@ -39,9 +39,23 @@ export class MeasuringDeviceController {
 
 
 
+  @Get('universalFilter')
+async universalFilter(@Req() request: Request<any>): Promise<Object> {
+    const [result,total] =  await this.measuringDeviceService.universalFilter(request.query);
+    console.log(request.query,'request.query')
+    console.log(    {
+      data: result,
+      skip: total
+    })
+    return  {
+      data: result,
+      skip: total
+    }
+  }
   @Get('filterDateOfIssue')
 async getdata(@Req() request: Request): Promise<Object> {
-    const [result,total] =  await this.measuringDeviceService.findAlldateOfIssue({...request.query});
+    const [result,total] =  await this.measuringDeviceService.findAlldateOfIssue(request.query);
+    console.log(request.query,'request.query')
     console.log(    {
       data: result,
       skip: total
@@ -53,7 +67,8 @@ async getdata(@Req() request: Request): Promise<Object> {
   }
   @Get('filterVerificationEndDate')
  async findAllVerificationEndDate(@Req() request: Request): Promise<Object> {
-    const [result,total] = await this.measuringDeviceService.findAllVerificationEndDate({...request.query});
+    const [result,total] = await this.measuringDeviceService.findAllVerificationEndDate(request.query);
+    console.log(request.query,'request.query')
     console.log(    {
       data: result,
       skip: total
@@ -61,7 +76,7 @@ async getdata(@Req() request: Request): Promise<Object> {
 
     return  {
       data: result,
-      skip: total
+      skip: total,
     }
   }
 
