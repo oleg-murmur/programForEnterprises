@@ -279,6 +279,7 @@ const { Text, Link } = Typography;
                       name="haveMetal"
                       label="Наличие драг. металлов"
                       options={options}
+                      rules={[{ required: true, message: 'Заполните информацию о драг. металлах' }]}
                 />
                 <UploadComponent 
                     objFormData={objFormData}
