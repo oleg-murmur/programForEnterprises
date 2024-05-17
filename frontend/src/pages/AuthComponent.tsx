@@ -196,7 +196,9 @@ useEffect(()=> {
             }}>Для отправки заявки на регистрацию введите электронную почту
            </div>
               <ProFormText
+
                 fieldProps={{
+                  onPressEnter: () => {console.log('onPressEnter')},
                   size: 'large',
                   prefix: <UserOutlined className={'prefixIcon'}  />,
                 }}

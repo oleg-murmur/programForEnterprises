@@ -51,15 +51,26 @@ export class UserService {
       const user = await this.userRepository.findOne({where: {email: createUserDto.email, password: createUserDto.password}});
 
       let editedUser = {...user, token: createUserDto.token}
-      const {password, ...result} = await this.userRepository.save(editedUser);
-      return result
+      const Saveuser = await this.userRepository.save(editedUser);
+      let result2
+      if(Saveuser)  {
+        const {password, ...result} = Saveuser
+        result2 = result
+      }
+
+      return result2
     }
     async getToken(createUserDto: CreateUserDto): Promise<any> {
       console.log(createUserDto,'createUserDto')
       const user = await this.userRepository.findOne({where: {token: createUserDto.token}});
-      const {password, ...result} = user 
-      console.log(result)
-      return result
+      let result2
+      if(user)  {
+        const {password, ...result} = user
+        result2 = result
+      }
+
+      console.log(result2)
+      return result2
     }
 
 }
