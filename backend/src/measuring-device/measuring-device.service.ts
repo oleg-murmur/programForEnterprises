@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateMeasuringDeviceDto } from './dto/update-measuring-device.dto';
 import { MeasuringDevice } from './entities/measuring-device.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository,Between,FindOperator,Raw, Like   } from 'typeorm';
+import { Repository,Between,FindOperator,Raw, Like, In, IsNull, Not   } from 'typeorm';
 import { MeasuringInstrumentType } from './entities/measuringInstrumentType.entity';
 import { format } from 'date-fns';
 export const BetweenDates = (from: Date | string, to: Date | string) => {
@@ -13,7 +13,7 @@ export const BetweenDates = (from: Date | string, to: Date | string) => {
     format(typeof to === 'string' ? new Date(to) : to, 'yyyy-MM-dd'),
   )
 };
-
+type haveMetalType = 'Нет' | 'Нет информации' | 'Да'
 export interface FiltersProps {
   page?: number,
 
@@ -27,8 +27,8 @@ export interface FiltersProps {
   factoryNumber?: string,
   userName?: string,
   note?: string,
-  haveMetal?: 'Нет' | 'Нет информации' | 'Да',
-  deviceType?: number
+  haveMetal?: haveMetalType[],
+  deviceType?: any[]
   orderDateOfIssue?: 'ESC' | 'DESC'
   verificationEndDate?: 'ESC' | 'DESC'
 }
@@ -82,9 +82,8 @@ export class MeasuringDeviceService {
     let to_VED: Date
     let from_DOI: Date
     let to_DOI: Date
-    console.log(typeof measuringDevice.VED_from, 'measuringDevice.VED_from')
-    // if(!measuringDevice.DOI_from || !measuringDevice.DOI_to) return []
-    // if(!measuringDevice.VED_from || !measuringDevice.VED_to) return []
+    let query = {}
+    // console.log(typeof measuringDevice.VED_from, 'measuringDevice.VED_from')
     if(typeof  measuringDevice.VED_from  == 'object' || typeof measuringDevice.VED_to == 'object') {
       return []
     }
@@ -94,54 +93,64 @@ export class MeasuringDeviceService {
     if (typeof measuringDevice.DOI_from === 'string') {
       const date: Date = new Date(measuringDevice.DOI_from);
       from_DOI = date
-  }
+    }
     if (typeof measuringDevice.DOI_to === 'string') {
     const date: Date = new Date(measuringDevice.DOI_to);
     to_DOI = date
-  }
+    }
     if (typeof measuringDevice.VED_from === 'string') {
       const date: Date = new Date(measuringDevice.VED_from);
       from_VED = date
       console.log(date,'from_VED')
-  }
+    }
     if (typeof measuringDevice.VED_to === 'string') {
     const date: Date = new Date(measuringDevice.VED_to);
     to_VED = date
     console.log(date,'to_VED')
-  }
-let query = {}
-  if(measuringDevice.DOI_from || measuringDevice.DOI_to) {
-    query['dateOfIssue'] = BetweenDates(from_DOI, to_DOI)
-  }
-  if(measuringDevice.VED_from || measuringDevice.VED_to) {
-    query['verificationEndDate'] = BetweenDates(from_VED, to_VED)
-  }
-  if(measuringDevice.factoryNumber) {
-    query['factoryNumber'] = Like(`%${measuringDevice.factoryNumber}%`)
-  }
-  if(measuringDevice.note) {
-    query['note'] = Like(`%${measuringDevice.note}%`)
-  }
-  if(measuringDevice.userName) {
-    query['userName'] = Like(`%${measuringDevice.userName}%`)
-  }
-  if(measuringDevice.inventoryName) {
-    query['inventoryName'] = Like(`%${measuringDevice.inventoryName}%`)
-  }
-  if(measuringDevice.haveMetal) {
-    query['haveMetal'] = Like(`%${measuringDevice.haveMetal}%`)
-  }
-  // if(measuringDevice.deviceType) {
-  //   let device = await this.typeRepository.findOne({where: {value: measuringDevice.deviceType},});
-  //   console.log(device)
-  //   query['deviceType'] = device
-  // }
+    }
+    if(measuringDevice.DOI_from && measuringDevice.DOI_to) {
+      query['dateOfIssue'] = BetweenDates(from_DOI, to_DOI)
+    }
+    if(measuringDevice.VED_from && measuringDevice.VED_to) {
+      query['verificationEndDate'] = BetweenDates(from_VED, to_VED)
+    }
+    if(measuringDevice.factoryNumber) {
+      query['factoryNumber'] = Like(`%${measuringDevice.factoryNumber}%`)
+    }
+    if(measuringDevice.note) {
+      query['note'] = Like(`%${measuringDevice.note}%`)
+    }
+    if(measuringDevice.userName) {
+      query['userName'] = Like(`%${measuringDevice.userName}%`)
+    }
+    if(measuringDevice.inventoryName) {
+      query['inventoryName'] = Like(`%${measuringDevice.inventoryName}%`)
+    }
+    if(measuringDevice.haveMetal) {
+      query['haveMetal'] = In(measuringDevice.haveMetal)
+    }
+    if(measuringDevice.deviceType) {
+      query['deviceType'] = {};
+      // для фильтра по пустым данным, где нет информации о типе, 
+      //нужно добавить в инструмент булево значение
+      // что если deviceType пустой, то haveType = false, если есть = true
+
+      // let newTypes = measuringDevice.deviceType.filter((element)=> {
+      //   console.log(element)
+      //   if(element === 'Нет информации') {
+      //     console.log(element, 'console.log(element)')
+      //     // query['deviceType'] = Not(Not(IsNull()))
+      //   }
+      //   // return element !== 'Нет информации'
+      // })
+      query['deviceType'].value = In(measuringDevice.deviceType) 
+    }
 
   let data = this.deviceRepository.findAndCount({
     where: {
       ...query,
-// deviceType?: string
-    },    take: 10,
+    },    
+    take: 10,
     skip: skip,
     order: {
       created_at: "DESC"
@@ -150,6 +159,7 @@ let query = {}
       deviceType: true
     }
   });
+
   query = {}
     return data
   }

@@ -13,6 +13,7 @@ import ruRU from 'antd/locale/ru_RU';
 import { CheckboxProps } from 'antd/lib/checkbox/Checkbox';
 import { getAllInstFilter, universalFilter } from '../http/instAPI';
 import { checkToken } from '../hooks/checkValidToken';
+import { ProFormSelect } from '@ant-design/pro-components';
 const PAGE_SIZE = 10
 
 export type userRole = 'admin' | 'editor' | 'employee'
@@ -36,7 +37,14 @@ const MainTable: React.FC = () => {
 
   const [FilterverificationEndDate, setverificationEndDate] = useState(false)
   const [FilterdateOfIssue, setdateOfIssue] = useState(false)
-  const [data, setData] = useState([]);
+
+  const [filterDeviceType, setFilterDeviceType] = useState(false)
+  const [filterHaveMetal, setFilterHaveMetal] = useState(false)
+
+  const [deviceTypeList, setDeviceTypeList] = useState("")
+  const [deviceHaveMetal, setDeviceHaveMetal] = useState("")
+
+  const [data, setData] = useState<any[]>([]);
   const [hasData, setHasData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1)
@@ -132,24 +140,59 @@ const onButtonClickDateOfIssue = async (close:any) => {
   setLoading(false)
 }
 const onButtonClickVerificationEndDate = async (close:any) => {
-  
   setLoading(true)
-  // setFilters({...filters, VED_from: dateStartverificationEndDate,VED_to: dateEndverificationEndDate})
   if(dateStartverificationEndDate !== '' || dateEndverificationEndDate !== '') {
     setFilters({...filters, VED_from: dateStartverificationEndDate,VED_to: dateEndverificationEndDate})
     setverificationEndDate(true)
-    // setResetFilter(true)
   }else{
-    // setResetFilter(false)
     setverificationEndDate(false)
   }
-  // const test = await runVerificationEndDate(dateStartverificationEndDate,dateEndverificationEndDate)
-  // setCountList(test.skip)
-  // setData(test.data)
-
   close()
   setLoading(false)
 }
+const onChangeDeviceTypeFilter = async (value: string)=> {
+  setDeviceTypeList(value)
+  if(!value) {
+    setFilters({...filters, deviceType: []})
+  }
+} 
+const onButtonClickDeviceTypeFilter = async (close:any) => {
+  setLoading(true)
+  if(deviceTypeList.length > 0) {
+    setFilterDeviceType(true)
+    setFilters({...filters, deviceType: deviceTypeList})
+    // setFilters({...filters, haveMetal: deviceTypeList})
+    setTimeout(()=>{console.log('отправили данные')}, 1500)
+  }else{
+    setFilters({...filters, deviceType: []})
+    setFilterDeviceType(false)
+  }
+  close()
+  setLoading(false)
+}
+const onChangeHaveMetalFilter = async (value: string)=> {
+  setDeviceHaveMetal(value)
+  if(!value) {
+    setFilters({...filters, deviceType: []})
+  }
+} 
+const onButtonClickHaveMetalFilter = async (close:any) => {
+  setLoading(true)
+  if(deviceHaveMetal.length > 0) {
+    setFilterHaveMetal(true)
+    setFilters({...filters, haveMetal: deviceHaveMetal})
+    // setFilters({...filters, haveMetal: deviceTypeList})
+    setTimeout(()=>{console.log('отправили данные')}, 1500)
+  }else{
+    setFilters({...filters, haveMetal: []})
+    setFilterHaveMetal(false)
+  }
+  close()
+  setLoading(false)
+}
+
+
+
   const columns: TableColumnsType<DataType> = [
     {
       title: 'Инвентарный номер',
@@ -274,30 +317,73 @@ const onButtonClickVerificationEndDate = async (close:any) => {
  },
     { title: 'Наличие драг. металлов', dataIndex: 'haveMetal', key: 'haveMetal',
 
-    filters: [
-      {
-        text: 'Нет',
-        value: 'Нет',
-      },
-      {
-        text: 'Да',
-        value: 'Да',
-      },
-      {
-        text: 'Нет информации',
-          value: 'Нет информации',
-        },
-    ],
     
-    onFilter:(value,record)=>{
-      // setFilters({...filters, haveMetal: record.haveMetal})
-      return record.haveMetal === 'Нет'
+    filtered: filterHaveMetal ? true : false,
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
+      return (<div style={{padding: '15px', width: '300px'}} onKeyDown={(e) => e.stopPropagation()}>
+        <ProFormSelect
+                style={{ width: '100%' }}
+                mode='multiple'
+                width="md"
+                name="haveMetal"
+                // showSearch
+                options={[
+                  {
+                    text: 'Нет',
+                    value: 'Нет',
+                  },
+                  {
+                    text: 'Да',
+                    value: 'Да',
+                  },
+                  {
+                    text: 'Нет информации',
+                      value: 'Нет информации',
+                    },
+                ]}
+                onChange={onChangeHaveMetalFilter}
+                // debounceTime={3000}
+                /> 
+      <Button onClick={e=> onButtonClickHaveMetalFilter(close)} type="primary" size={"large"} icon={<SearchOutlined />}>
+        Поиск
+      </Button>
+      </div>
+      )
     },
  },
     { title: 'Тип измерительного прибора', dataIndex: 'deviceType', key: 'deviceType',
-      filters: type,
-      onFilter:(value,record)=>{
-        return record.deviceType === value
+      // filters: type,
+      // onFilter:(value,record)=>{
+      //   return record.deviceType === value
+      // },
+      filtered: filterDeviceType ? true : false,
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
+        return (<div style={{padding: '15px', width: '300px'}} onKeyDown={(e) => e.stopPropagation()}>
+          <ProFormSelect
+          style={{ width: '100%' }}
+                  mode='multiple'
+                  width="md"
+                  name="deviceType"
+                  // showSearch
+                  
+                  onChange={onChangeDeviceTypeFilter}
+                  // debounceTime={3000}
+                  request={async () => {
+                      let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_TYPE_EP}`,{headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json',
+                      }})
+                      console.log(data)
+                      return [ 
+                        // {value: 'Нет информации', label: "Нет информации"}, 
+                      ...data]
+                }}
+                  /> 
+        <Button onClick={e=> onButtonClickDeviceTypeFilter(close)} type="primary" size={"large"} icon={<SearchOutlined />}>
+          Поиск
+        </Button>
+        </div>
+        )
       },
      },
   ];

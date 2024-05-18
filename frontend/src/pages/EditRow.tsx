@@ -267,6 +267,7 @@ return (
               rules={[{ required: true, message: 'Пользователь не выбран' }]}
               />
                 <ProFormSelect
+                  
                   width="md"
                   name="deviceType"
                   label="Тип прибора"
