@@ -85,7 +85,7 @@ useEffect(()=> {
     <ProConfigProvider hashed={false}>
       <div style={{ backgroundColor: token.colorBgContainer }}>
         <LoginForm
-        submitter={{searchConfig: {submitText: "Сохранить" }}}
+        submitter={{searchConfig: {submitText: "Войти" }}}
         onChange={e=> console.log(e.target)}
         onFinish={async obj=> onFinish(obj)}
           logo=""
@@ -106,7 +106,7 @@ useEffect(()=> {
             activeKey={loginType}
             onChange={(activeKey) => setLoginType(activeKey as LoginType)}
           >
-            <Tabs.TabPane key={'login'} tab={'Войти'} />
+            <Tabs.TabPane key={'login'} tab={'Вход'} />
             <Tabs.TabPane key={'registration'} tab={'Зарегистрироваться'} />
           </Tabs>
           {loginType === 'login' && (
@@ -179,10 +179,10 @@ useEffect(()=> {
           )}
           {loginType === 'registration' && (
             <>
-          <div className="" style={{
+          {/* <div className="" style={{
               padding:'5px'
             }}>Для отправки заявки на регистрацию введите электронную почту
-           </div>
+           </div> */}
               <ProFormText
 
                 fieldProps={{
