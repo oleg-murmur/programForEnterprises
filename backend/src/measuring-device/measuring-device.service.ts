@@ -61,6 +61,9 @@ export class MeasuringDeviceService {
       order: {
         created_at: "DESC"
       },
+      relations: {
+        deviceType: true
+      }
       // relations: {
       //   deviceType: true,
       //   // files: true
@@ -143,6 +146,9 @@ let query = {}
     order: {
       created_at: "DESC"
     },
+    relations: {
+      deviceType: true
+    }
   });
   query = {}
     return data

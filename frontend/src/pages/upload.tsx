@@ -20,11 +20,8 @@ interface testProps {
 const UploadComponent: React.FC<testProps> = ({data,readonly,fileList,setObjFormData,objFormData}) => {
     const [filetest, setFiletest] = useState<any[]>([])
     let startF = fileList
-    console.log(fileList,'fileListfileList')
     useEffect( () => {
       setFiletest(fileList)   
-      // setObjFormData({...objFormData, files: [...fileList, ...filetest]})  
-
       },[fileList])
 
     const deleteFileFromList = (file:any) => {
@@ -33,11 +30,7 @@ const UploadComponent: React.FC<testProps> = ({data,readonly,fileList,setObjForm
     }
     const onChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
         setObjFormData({...objFormData, files: [...fileList,...newFileList]}) 
-        console.log(newFileList,'newFileList')
         setFiletest(newFileList);
-        console.log(newFileList,'newFileList')
-        // setObjFormData({...objFormData, files: newFileList})
-        // console.log(fileList)
       };
     const { Text, Link } = Typography;
   return (

@@ -35,33 +35,24 @@ export default () => {
     cursor: 'pointer',
   };
 
-
   const onFinish = async(userInfo:any) => {
     if(loginType === 'login'){
-      let {data} = await axios.post('http://localhost:5000/api/auth/login', {      
+      let {data} = await axios.post(`${process.env.REACT_APP_BACKEND_LOGIN}`, {      
         email: userInfo.email,
         password: userInfo.password,
         role: ""  
     })
-
-
     localStorage.setItem('token', data.access_token);
-
     await setToken({token: data.access_token, email: data.result.email,password: data.result.password})
-
-
     }else 
     if(loginType === 'registration') {
-      console.log(userInfo)
 
       let objUser = {      
         email: userInfo.email,
         password: userInfo.password,
         role: userInfo.email === 'admin@admin.ru' ? "admin" : ""  
     }
-    console.log(objUser,'objUser')
-      let {data} = await axios.post('http://localhost:5000/api/user/reg', objUser)
-    console.log(data)
+      let {data} = await axios.post(`${process.env.REACT_APP_BACKEND_REG}`, objUser)
     localStorage.setItem('token', data.token);
     }
     
@@ -76,7 +67,6 @@ useEffect(()=> {
   deletlStorage()
 },[])
     const handleCompare = async (any: any, value: any) => {
-      console.log(value)
       if(!value) {
         return Promise.reject()
       }

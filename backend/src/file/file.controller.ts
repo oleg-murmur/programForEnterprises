@@ -39,7 +39,7 @@ export class FileController {
         let fileName = `id_${body.instId}_name_${file.originalname}`
         this.filesDevice.files.push({
           uid: uuidv4(),
-          url: process.env.SERVER_URL ? `${process.env.SERVER_URL}/${fileName}` : `http://localhost:5000/${fileName}`,
+          url: process.env.SERVER_URL ? `${process.env.SERVER_URL}/${fileName}` : `http://localhost:${process.env.PORT}/${fileName}`,
           name: fileName,
         })
 

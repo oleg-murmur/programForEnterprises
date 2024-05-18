@@ -25,7 +25,7 @@ const MainTable: React.FC = () => {
   const [userStatus, setStatus] = useState<userRole>("employee")
   const navigate = useNavigate();
   // const [isEditing, setIsEditing] = useState(true);
-  const [resetFilter, setResetFilter] = useState(true);
+  const [resetFilter, setResetFilter] = useState(false);
   const [filters, setFilters] = useState({});
   const [countList, setCountList] = useState(0);
   const [dateStartdateOfIssue, setDateStartdateOfIssue] = useState<string | null>("")
@@ -114,10 +114,16 @@ try {
   },[resetFilter,page,filters])
 
 const onButtonClickDateOfIssue = async (close:any) => {
-  setdateOfIssue(true)
+  
   setLoading(true)
-  setFilters({...filters, DOI_from: dateStartdateOfIssue,DOI_to: dateEnddateOfIssue})
-   const test = await runFilterDateOfIssue(dateStartdateOfIssue,dateEnddateOfIssue)
+  if(dateStartdateOfIssue !== '' || dateEnddateOfIssue !== '') {
+    setFilters({...filters, DOI_from: dateStartdateOfIssue,DOI_to: dateEnddateOfIssue})
+    // setResetFilter(false)
+    // setdateOfIssue(false)
+    setdateOfIssue(true)
+  }else{
+    setdateOfIssue(false)
+  }
   // console.log(test)
   //  setCountList(test.skip)
   // setData(test.data)
@@ -126,10 +132,17 @@ const onButtonClickDateOfIssue = async (close:any) => {
   setLoading(false)
 }
 const onButtonClickVerificationEndDate = async (close:any) => {
-  setverificationEndDate(true)
+  
   setLoading(true)
-  setFilters({...filters, VED_from: dateStartverificationEndDate,VED_to: dateEndverificationEndDate})
-
+  // setFilters({...filters, VED_from: dateStartverificationEndDate,VED_to: dateEndverificationEndDate})
+  if(dateStartverificationEndDate !== '' || dateEndverificationEndDate !== '') {
+    setFilters({...filters, VED_from: dateStartverificationEndDate,VED_to: dateEndverificationEndDate})
+    setverificationEndDate(true)
+    // setResetFilter(true)
+  }else{
+    // setResetFilter(false)
+    setverificationEndDate(false)
+  }
   // const test = await runVerificationEndDate(dateStartverificationEndDate,dateEndverificationEndDate)
   // setCountList(test.skip)
   // setData(test.data)
@@ -196,12 +209,12 @@ const onButtonClickVerificationEndDate = async (close:any) => {
           // ]}
           onChange={(e) => {
             if(!(e && e[0])) {
-              setResetFilter(value => !value)
+              // setResetFilter(value => !value)
               setdateOfIssue(false)
               setFilters({...filters, DOI_from: '', DOI_to: ''})
             }
-              setDateStartdateOfIssue(e && e[0] ? dayjs(e[0]).format("YYYY-MM-DD") : '0');
-              setDateEnddateOfIssue(e && e[1] ? dayjs(e[1]).format("YYYY-MM-DD") : '0');
+              setDateStartdateOfIssue(e && e[0] ? dayjs(e[0]).format("YYYY-MM-DD") : '');
+              setDateEnddateOfIssue(e && e[1] ? dayjs(e[1]).format("YYYY-MM-DD") : '');
           }
           }
           format={dateFormatList}
@@ -228,12 +241,12 @@ const onButtonClickVerificationEndDate = async (close:any) => {
           className="mr-3"
           onChange={(e) => {
             if(!(e && e[0])) {
-              setResetFilter(value => !value)
+              // setResetFilter(value => !value)
               setverificationEndDate(false)
               setFilters({...filters, VED_from: '', VED_to: ''})
             }
-            setDateStartverificationEndDate(e && e[0] ? dayjs(e[0]).format("YYYY-MM-DD") : '0');
-            setDateEndverificationEndDate(e && e[1] ? dayjs(e[1]).format("YYYY-MM-DD") : '0');
+            setDateStartverificationEndDate(e && e[0] ? dayjs(e[0]).format("YYYY-MM-DD") : '');
+            setDateEndverificationEndDate(e && e[1] ? dayjs(e[1]).format("YYYY-MM-DD") : '');
           }
           }
           format={dateFormatList}

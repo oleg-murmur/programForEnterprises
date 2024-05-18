@@ -48,7 +48,6 @@ useEffect(() => {
       }else{
         // localStorage.clear()
         // navigate('/auth')
-        console.log('полная хуйня')
       }
 
     } catch (error) {

@@ -66,6 +66,7 @@ const EditRow = ({route}: any) => {
     const [objFromServer, setObjFromServer] = useState<IObjProps>(defaultObj)
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
     console.log(files)
+
     useEffect( () => {
       const valid = async () => {
         const isValidToken = await checkToken(localStorage.getItem('token')?? '')
@@ -90,19 +91,23 @@ const EditRow = ({route}: any) => {
         }else{
           localStorage.clear()
           navigate('/auth')
-          console.log('полная хуйня')
         }
       }
-  
   valid()
+    },[])
+
+
+    useEffect( () => {
     const getData = async () => {
       try {
+        const isValidToken = await checkToken(localStorage.getItem('token')?? '')
+        if(isValidToken.status) {
       const instrumentFromBD = await getInstByID(instId)
-      console.log(instrumentFromBD.data,'instrumentFromBD.data')
       instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? {value: 'Нет информации', label: "Нет информации"}
       setObjFormData(instrumentFromBD.data)
       setObjFromServer(instrumentFromBD.data)
       setFiles(instrumentFromBD.data.files)
+        }
     } catch (error) {
       console.log(error)
     }   
@@ -115,7 +120,6 @@ const EditRow = ({route}: any) => {
 
     const onFinish = async() => {
       const FilesUpload:any = new FormData();
-      
       let EditInst = {
         id: instId,
         inventoryName: objFormData.inventoryName,
@@ -155,7 +159,6 @@ const EditRow = ({route}: any) => {
     const deleteRow = async () => {
       const instrumentFromBD = await deleteByID(instId)
       navigate("..")
-      console.log(instrumentFromBD, 'CHECK CHECK')
     }
 
     const handleCompare = async (_: any, value: { number: number }) => {
@@ -180,8 +183,6 @@ const EditRow = ({route}: any) => {
         return false
     }
     };
-console.log(objFormData,'objFormDataobjFormData')
-console.log(objFormData.files,'objFormData.filesobjFormData.files')
 
 return (
       <div
@@ -211,12 +212,16 @@ return (
         autoFocusFirstInput
         
         request={async () => {
+          const isValidToken = await checkToken(localStorage.getItem('token')?? '')
+          let values = []
+          // console.log(isValidToken,'isValidTokenisValidTokenisValidToken')
+          if(isValidToken.status) {
           const instrumentFromBD = await getInstByID(instId)
-          let values = {
+          values = {
             ...instrumentFromBD.data, deviceType: 
                 instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? {value: 'Нет информации', label: "Нет информации"}
         }
-
+      }
           setObjFormData({...values})
           setObjFromServer({...values})
           return values
