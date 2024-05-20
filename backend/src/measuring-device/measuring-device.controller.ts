@@ -43,10 +43,10 @@ export class MeasuringDeviceController {
 async universalFilter(@Req() request: Request<any>): Promise<Object> {
     const [result,total] =  await this.measuringDeviceService.universalFilter(request.query);
     console.log(request.query,'request.query')
-    console.log(    {
-      data: result,
-      skip: total
-    })
+    // console.log(    {
+    //   data: result,
+    //   skip: total
+    // })
     return  {
       data: result,
       skip: total

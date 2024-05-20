@@ -1,22 +1,26 @@
 import axios from "axios"
 
 interface FiltersParams {
-  page?: number,
+  page?: number;
 
-  DOI_to?: string,
-  DOI_from?: string,
+  DOI_to?: string;
+  DOI_from?: string;
 
-  VED_from?: string,
-  VED_to?: string,
+  VED_from?: string;
+  VED_to?: string;
   
-  inventoryName?: string,
-  factoryNumber?: string,
-  userName?: string,
-  note?: string,
-  haveMetal?: 'Нет' | 'Нет информации' | 'Да',
+  inventoryName?: string;
+  factoryNumber?: string;
+  userName?: string;
+  note?: string;
+  haveMetal?: 'Нет' | 'Нет информации' | 'Да';
   deviceType?: number
-  orderDateOfIssue?: 'ESC' | 'DESC'
-  verificationEndDate?: 'ESC' | 'DESC'
+  orderDateOfIssue?: 'ESC' | 'DESC';
+  verificationEndDate?: 'ESC' | 'DESC';
+  sorterVerificationEndDate?: 'ESC' | 'DESC';
+  sorterDateOfIssue?: 'ESC' | 'DESC';
+//sorterVerificationEndDate
+//sorterDateOfIssue
 }
 
 
@@ -53,13 +57,15 @@ export const getAllInstFilter = async (page: any) => {
   },})
     return data
 }
-export const universalFilter = async (filters: any) => {
+export const universalFilter = async (filters: FiltersParams) => {
   console.log(filters,'page')
   let test = `Bearer ${localStorage.getItem('token')}`
-  console.log('BEARER', test)
+  // console.log('BEARER', test)
   // console.log(PAGE_SIZE,'page_size')
   const {data} = await axios.get(`${process.env.REACT_APP_BACKEND_UNVERSAL_FILTER}`, {params: {
     ...filters
+    //sorterVerificationEndDate
+//sorterDateOfIssue
   },
   headers: {
     'Authorization': `Bearer ${localStorage.getItem('token')}`,

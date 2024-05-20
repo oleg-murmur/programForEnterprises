@@ -1,4 +1,4 @@
-import { SearchOutlined } from "@ant-design/icons";
+import { FilterOutlined, SearchOutlined } from "@ant-design/icons";
 import { Button, Input, InputRef, Space, TableColumnType } from "antd";
 import { FilterDropdownProps } from "antd/es/table/interface";
 import { useRef, useState } from "react";
@@ -115,7 +115,8 @@ interface DataType {
       </div>
     ),
     filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
+      // <SearchOutlined style={{ fontSize: '13px',color: filtered ? '#1677ff' : undefined}} />
+      <FilterOutlined  style={{ fontSize: '13px',color: filtered ? '#1677ff' : undefined}}/>
     ),
     onFilter: (value, record) => {
       if(record[dataIndex] === null) {

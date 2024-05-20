@@ -16,7 +16,7 @@ export const BetweenDates = (from: Date | string, to: Date | string) => {
 type haveMetalType = 'Нет' | 'Нет информации' | 'Да'
 export interface FiltersProps {
   page?: number,
-
+  
   DOI_to?: string,
   DOI_from?: string,
 
@@ -29,8 +29,11 @@ export interface FiltersProps {
   note?: string,
   haveMetal?: haveMetalType[],
   deviceType?: any[]
-  orderDateOfIssue?: 'ESC' | 'DESC'
-  verificationEndDate?: 'ESC' | 'DESC'
+  sorterDateOfIssue?: 'DESC' | 'ASC' // нужна доработка, даты типа string, для правильном сортировки
+  sorterVerificationEndDate?: 'DESC' | 'ASC' //  нужно преобразовывать в тип даты NULLS LAST не работает
+
+  verificationEndDate?: 'ESC' | 'DESC' //deprecated
+  orderDateOfIssue?: 'ESC' | 'DESC' //deprecated
 }
 
 @Injectable()
@@ -39,9 +42,6 @@ export class MeasuringDeviceService {
   constructor(
     @InjectRepository(MeasuringDevice)
     private deviceRepository: Repository<MeasuringDevice>,
-    // @InjectRepository(MeasuringInstrumentType)
-    // private typeRepository: Repository<MeasuringInstrumentType>
-
   ) {}
   
   async create(measuringDevice: Partial<MeasuringDevice>): Promise<MeasuringDevice> {
@@ -64,10 +64,6 @@ export class MeasuringDeviceService {
       relations: {
         deviceType: true
       }
-      // relations: {
-      //   deviceType: true,
-      //   // files: true
-      // }
     });
     return {
       data: result,
@@ -75,7 +71,7 @@ export class MeasuringDeviceService {
     }
   }
   async universalFilter(measuringDevice: FiltersProps): Promise<any> {
-    console.log(measuringDevice)
+    // console.log(measuringDevice)
     if(measuringDevice.page < 1) measuringDevice.page = 1
     const skip = (measuringDevice.page - 1) * 10 || 0
     let from_VED: Date
@@ -83,7 +79,7 @@ export class MeasuringDeviceService {
     let from_DOI: Date
     let to_DOI: Date
     let query = {}
-    // console.log(typeof measuringDevice.VED_from, 'measuringDevice.VED_from')
+    let sorter = {}
     if(typeof  measuringDevice.VED_from  == 'object' || typeof measuringDevice.VED_to == 'object') {
       return []
     }
@@ -101,12 +97,12 @@ export class MeasuringDeviceService {
     if (typeof measuringDevice.VED_from === 'string') {
       const date: Date = new Date(measuringDevice.VED_from);
       from_VED = date
-      console.log(date,'from_VED')
+      // console.log(date,'from_VED')
     }
     if (typeof measuringDevice.VED_to === 'string') {
     const date: Date = new Date(measuringDevice.VED_to);
     to_VED = date
-    console.log(date,'to_VED')
+    // console.log(date,'to_VED')
     }
     if(measuringDevice.DOI_from && measuringDevice.DOI_to) {
       query['dateOfIssue'] = BetweenDates(from_DOI, to_DOI)
@@ -134,17 +130,22 @@ export class MeasuringDeviceService {
       // для фильтра по пустым данным, где нет информации о типе, 
       //нужно добавить в инструмент булево значение
       // что если deviceType пустой, то haveType = false, если есть = true
-
-      // let newTypes = measuringDevice.deviceType.filter((element)=> {
-      //   console.log(element)
-      //   if(element === 'Нет информации') {
-      //     console.log(element, 'console.log(element)')
-      //     // query['deviceType'] = Not(Not(IsNull()))
-      //   }
-      //   // return element !== 'Нет информации'
-      // })
       query['deviceType'].value = In(measuringDevice.deviceType) 
     }
+
+    // нужна доработка, даты типа string, для правильном сортировки
+    //  нужно преобразовывать в тип даты
+    if(!measuringDevice.sorterDateOfIssue && !measuringDevice.sorterVerificationEndDate) {
+      console.log('DESC WORK')
+          sorter['created_at'] = "DESC"
+    }
+    if(measuringDevice.sorterDateOfIssue) {
+      sorter['dateOfIssue'] = measuringDevice.sorterDateOfIssue
+    }
+    if(measuringDevice.sorterVerificationEndDate) {
+      sorter['verificationEndDate'] = measuringDevice.sorterVerificationEndDate
+    }
+
 
   let data = this.deviceRepository.findAndCount({
     where: {
@@ -153,7 +154,7 @@ export class MeasuringDeviceService {
     take: 10,
     skip: skip,
     order: {
-      created_at: "DESC"
+      ...sorter
     },
     relations: {
       deviceType: true
@@ -170,7 +171,7 @@ export class MeasuringDeviceService {
     if(measuringDevice.page < 1) measuringDevice.page = 1
     const skip = (measuringDevice.page - 1) * 10 || 0
 
-    console.log(measuringDevice)
+    // console.log(measuringDevice)
     let from: Date
     let to: Date
     let order = {}

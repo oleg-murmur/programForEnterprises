@@ -20,7 +20,7 @@ export class UserService {
     if(userFromDB) {
       return {error: 'Пользователь с такой почтой уже существует'}
     }
-    console.log(createUserDto,'createUserDto REG')
+    // console.log(createUserDto,'createUserDto REG')
     if(!createUserDto.role) {
       createUserDto.role = 'employee'
     }
@@ -29,7 +29,7 @@ export class UserService {
       email: createUserDto.email, password: createUserDto.password, role: createUserDto.role, token
     })
 
-    console.log(newUser, 'new user')
+    // console.log(newUser, 'new user')
     // return {message: 'успешная регистрация', token: newUser.token}
     return await this.userRepository.save(newUser)
   }
@@ -37,7 +37,7 @@ export class UserService {
 
   async login(createUserDto: CreateUserDto): Promise<any> {
     let userFromDB = await this.userRepository.findOne({where: {email: createUserDto.email, password: createUserDto.password}})
-    console.log(userFromDB)
+    // console.log(userFromDB)
     if(!userFromDB) {
       return {error: 'Ошибка при вводе логина или пароля. Данные не корректы'}
     }
@@ -61,7 +61,7 @@ export class UserService {
       return result2
     }
     async getToken(createUserDto: CreateUserDto): Promise<any> {
-      console.log(createUserDto,'createUserDto')
+      // console.log(createUserDto,'createUserDto')
       const user = await this.userRepository.findOne({where: {token: createUserDto.token}});
       let result2
       if(user)  {
@@ -69,7 +69,7 @@ export class UserService {
         result2 = result
       }
 
-      console.log(result2)
+      // console.log(result2)
       return result2
     }
 

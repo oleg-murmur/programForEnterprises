@@ -8,21 +8,21 @@ import { useNavigate } from "react-router-dom";
 import useColumnSearchProps from "../hooks/getColumnSearchProps"
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
-import { runFilterDateOfIssue, runVerificationEndDate } from '../hooks/DateFilters';
 import ruRU from 'antd/locale/ru_RU';
 import { CheckboxProps } from 'antd/lib/checkbox/Checkbox';
-import { getAllInstFilter, universalFilter } from '../http/instAPI';
+import { universalFilter } from '../http/instAPI';
 import { checkToken } from '../hooks/checkValidToken';
 import { ProFormSelect } from '@ant-design/pro-components';
 const PAGE_SIZE = 10
-
+interface TableParams {
+  sorter?: any;
+}
 export type userRole = 'admin' | 'editor' | 'employee'
 const dateFormatList = ["YYYY/MM/DD", "DD/MM/YYYY"];
 const { RangePicker } = DatePicker;
 
-
 const MainTable: React.FC = () => {
-  
+  const [tableParams, setTableParams] = useState<TableParams>({});
   const [userStatus, setStatus] = useState<userRole>("employee")
   const navigate = useNavigate();
   // const [isEditing, setIsEditing] = useState(true);
@@ -192,35 +192,55 @@ const onButtonClickHaveMetalFilter = async (close:any) => {
 }
 
 
+    // нужна доработка, даты типа string, для правильном сортировки
+    //  нужно преобразовывать в тип даты
+const testFumc = (pagination: any, filters2: any, sorter: any) => {
+  console.log(pagination,'pagination')
+
+  console.log(sorter)
+  let field_1 = "";
+  let field_2 = "";
+  let order = "";
+
+  if(sorter.order === undefined) {order = ""}
+  if(sorter.order === "descend") order = "ASC" // работает почему то наоборот:) NULLS LAST не работает
+  if(sorter.order === "ascend") order = "DESC" // + nulls не в конце а сами себя ведут как хотят
+  let order_1 = order;
+  let order_2 = order;
+  if(sorter.field === 'dateOfIssue') {field_1 = "sorterDateOfIssue"; field_2 = "sorterVerificationEndDate"; order_2 = ""}
+  if(sorter.field === 'verificationEndDate') {field_2 = "sorterVerificationEndDate"; field_1 = "sorterDateOfIssue"; order_1 = ""}
+
+  if(sorter.field === undefined) {field_1 = ""; field_2 = ""}
+  console.log({[sorter.field]: order}, 'CHECK')
+  setFilters({...filters, [field_1]: order_1,[field_2]: order_2, page: pagination.current})
+}
 
   const columns: TableColumnsType<DataType> = [
     {
+      
       title: 'Инвентарный номер',
       dataIndex: 'inventoryName',
       key: 'inventoryName',
       width: '200px',
-      // fixed: 'left',
-      // sorter: (record1,record2):any=>{
-      //   return record1.inventoryName > record2.inventoryName
-      // },
       ...useColumnSearchProps('inventoryName', 'Инвентарный номер', setFilters,filters),
       ellipsis: {
         showTitle: false,
       },
     },
     {
+      filterSearch: true,
       title: 'Заводской номер',
       dataIndex: 'factoryNumber',
       key: 'factoryNumber',
-      // sorter: (record1,record2):any=>{
-      //   return record1.factoryNumber > record2.factoryNumber
-      // },
+      filtered: true, // добавить условия в поисках
       ...useColumnSearchProps('factoryNumber', 'Заводской номер', setFilters,filters),
       ellipsis: {
         showTitle: false,
       },
     },
-    { title: 'Пользователь прибора', 
+    { 
+      
+      title: 'Пользователь прибора', 
       dataIndex: 'userName', 
       key: 'userName',
       ellipsis: {
@@ -233,13 +253,8 @@ const onButtonClickHaveMetalFilter = async (close:any) => {
         </Tooltip>
     ), 
   },
-
-  ////////////////////
     { title: 'Дата выпуска прибора', dataIndex: 'dateOfIssue', key: 'dateOfIssue',
-
-    sorter: (record1,record2):any=>{
-      return record1.dateOfIssue > record2.dateOfIssue
-    },
+    sorter: true,
     filterSearch: true,
     filtered: FilterdateOfIssue ? true : false,
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
@@ -252,7 +267,6 @@ const onButtonClickHaveMetalFilter = async (close:any) => {
           // ]}
           onChange={(e) => {
             if(!(e && e[0])) {
-              // setResetFilter(value => !value)
               setdateOfIssue(false)
               setFilters({...filters, DOI_from: '', DOI_to: ''})
             }
@@ -274,9 +288,7 @@ const onButtonClickHaveMetalFilter = async (close:any) => {
       </Tooltip>)
   },
     { title: 'Дата окончания поверки', dataIndex: 'verificationEndDate', key: 'verificationEndDate',
-    sorter: (record1,record2):any=>{
-      return record1.dateOfIssue > record2.dateOfIssue
-    },
+    sorter: true,
     filtered: FilterverificationEndDate ? true : false,
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
       return (<div style={{padding: '15px'}} onKeyDown={(e) => e.stopPropagation()}>
@@ -284,7 +296,6 @@ const onButtonClickHaveMetalFilter = async (close:any) => {
           className="mr-3"
           onChange={(e) => {
             if(!(e && e[0])) {
-              // setResetFilter(value => !value)
               setverificationEndDate(false)
               setFilters({...filters, VED_from: '', VED_to: ''})
             }
@@ -303,8 +314,6 @@ const onButtonClickHaveMetalFilter = async (close:any) => {
     },
  },
  //////////////////////
-
-
     { title: 'Примечания', dataIndex: 'note', key: 'note',
     ellipsis: {
       showTitle: false,
@@ -465,7 +474,7 @@ const onButtonClickHaveMetalFilter = async (close:any) => {
       }} 
       dataSource={hasData ? data : []} 
       scroll={{ x: 1300 }} 
-      
+      onChange={testFumc}
     /></ConfigProvider>
   </div>)
 }
