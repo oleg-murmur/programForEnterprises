@@ -16,6 +16,7 @@ import AvatarComponent from './pages/AvatarComponent';
 import TestPage from './pages/TestPage';
 import ErrorPage from './pages/error-page';
 import { checkToken } from './hooks/checkValidToken';
+import InfoComponent from './pages/InfoComponent';
 
 const isAuthenticated = !!localStorage.getItem('token');
 // if(!isAuthenticated)
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: "/table/:tableId",
         element: <MainTable />,
+      },
+      {
+        path: "/info",
+        element: <InfoComponent />,
       },
       {
         path: "/table/:tableId/create",

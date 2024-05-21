@@ -1,11 +1,11 @@
-import { Breadcrumb, Layout, Menu, MenuProps, Pagination } from 'antd';
-import React, { useEffect } from 'react';
+import { Breadcrumb, Layout, Menu, MenuProps, Modal, Pagination } from 'antd';
+import React, { useEffect, useState } from 'react';
 import MainTable from './MainTable';
 import MainForm from './MainForm';
 import MainFormTwo from './CreateRowForm';
 import Load from './LoadData';
 import { Link, Outlet, useNavigate, useNavigation } from 'react-router-dom';
-import { AppstoreOutlined, LogoutOutlined, MailOutlined, SettingOutlined, TableOutlined, UserOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, FileMarkdownOutlined, LogoutOutlined, MailOutlined, SettingOutlined, TableOutlined, UserOutlined } from '@ant-design/icons';
 import { checkToken } from '../hooks/checkValidToken';
 
 const { Header, Content, Footer } = Layout;
@@ -36,26 +36,35 @@ function getItem(
   } as MenuItem;
 }
 
-const items: MenuProps['items'] = [
-  getItem(<Link to={'/table/1'}>Таблица</Link>, 'sub2', <TableOutlined />),
-  getItem(<Link to={'/profile'}>Профиль</Link>, 'sub3', <UserOutlined />),
-  getItem(<Link to={'/auth'}>Выйти</Link>, 'sub4', <LogoutOutlined />),
+const exit: MenuProps['items'] = [
+
+  getItem(<Link to={'/auth'}>Выйти</Link>, 'sub100', <LogoutOutlined />),
 ];
 const App: React.FC = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const onClick: MenuProps['onClick'] = (e) => {
   };
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+    navigate("/auth")
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
   useEffect( () => {
     const valid = async () => {
-      // console.log((localStorage.getItem('token')), '(localStorage.getItem()')
+
       const isValidToken = await checkToken(localStorage.getItem('token')?? '')
-      // console.log(isValidToken)
       if(isValidToken.status) {
-        // console.log('хуйня')
       }else{
         localStorage.clear()
         navigate('/auth')
-        // console.log('полная хуйня')
       }
     }
 
@@ -69,7 +78,16 @@ valid()
   //     <div className="">Перейти на страницу входа "кнопка"</div>
   //   </div>)
   // }
-
+  const items: MenuProps['items'] = [
+    getItem(<Link to={'/table/1'}>Таблица</Link>, 'sub1', <TableOutlined />),
+    getItem(<Link to={'/profile'}>Профиль</Link>, 'sub2', <UserOutlined />),
+    getItem(<Link to={'/info'}>О программе</Link>, 'sub3', <FileMarkdownOutlined />),
+    getItem(
+    <div className="" onClick={showModal}>
+      <LogoutOutlined />
+      <span>Выйти</span>
+    </div>, 'sub100'),
+  ];  
   return (
   <Layout className="layout">
     <Header>
@@ -81,6 +99,11 @@ valid()
         items={items}
         onClick={onClick}
       />
+      <Modal title="Вы точно хотите выйти из аккаунта?" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+        {/* <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p> */}
+      </Modal>
     </Header>
     <Content style={{ padding: '0 50px' }}>
     <Breadcrumb>
