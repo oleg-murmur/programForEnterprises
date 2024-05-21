@@ -223,14 +223,38 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
   const columns: TableColumnsType<DataType> = [
     {
       
+      title: 'Наименование прибора',
+      dataIndex: 'deviceName',
+      key: 'deviceName',
+      width: '200px',
+      ...useColumnSearchProps('deviceName', 'Наименование прибора', setFilters,filters),
+    },
+    {
+      
+      title: 'Модель прибора',
+      dataIndex: 'deviceModel',
+      key: 'deviceModel',
+      width: '200px',
+      ...useColumnSearchProps('deviceModel', 'Модель прибора', setFilters,filters),
+      ellipsis: {
+        showTitle: false,
+      }
+    },
+    {
+      
       title: 'Инвентарный номер',
       dataIndex: 'inventoryName',
       key: 'inventoryName',
-      width: '200px',
+      // width: '200px',
       ...useColumnSearchProps('inventoryName', 'Инвентарный номер', setFilters,filters),
       ellipsis: {
         showTitle: false,
       },
+      render: (field) => (
+        <Tooltip placement="topLeft" title={field}>
+          {field}
+        </Tooltip>
+    ), 
     },
     {
       filterSearch: true,
@@ -242,6 +266,11 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
       ellipsis: {
         showTitle: false,
       },
+      render: (field) => (
+        <Tooltip placement="topLeft" title={field}>
+          {field}
+        </Tooltip>
+    ), 
     },
     { 
       
@@ -252,9 +281,9 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
       showTitle: false,
     },
     ...useColumnSearchProps('userName', 'Пользователь прибора', setFilters,filters),
-      render: (userName) => (
-        <Tooltip placement="topLeft" title={userName}>
-          {userName}
+      render: (field) => (
+        <Tooltip placement="topLeft" title={field}>
+          {field}
         </Tooltip>
     ), 
   },
@@ -286,11 +315,7 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
         Поиск
       </Button>
       </div>)
-    },
-    render: (dateOfIssue) => (
-      <Tooltip placement="topLeft" title={dateOfIssue}>
-        {dateOfIssue}
-      </Tooltip>)
+    }
   },
     { title: 'Дата окончания поверки', dataIndex: 'verificationEndDate', key: 'verificationEndDate',
     sorter: true,
@@ -405,7 +430,7 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
 
   const options = columns.map(({ key, title }) => {
-    if(key === 'inventoryName') {
+    if(key === 'deviceModel' || key === 'deviceName') {
       return {
         label: title,
         value: key,
@@ -427,7 +452,7 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
   const indeterminate = checkedList.length > 0 && checkedList.length < options.length;
 
   const onCheckAllChange: CheckboxProps['onChange'] = (e) => {
-    setCheckedList(e.target.checked ? defaultCheckedList2 : ["inventoryName"]);
+    setCheckedList(e.target.checked ? defaultCheckedList2 : ["deviceModel","deviceName"]);
   };
 
   // const isAuthenticated = true
@@ -500,7 +525,9 @@ const type = [
     dataIndex: any
     //инвантарный номер
     inventoryName: string
-
+    
+    deviceName: string
+    deviceModel: string
     //заводской номер
     factoryNumber: string
 

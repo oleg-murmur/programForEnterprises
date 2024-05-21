@@ -10,7 +10,8 @@ const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 interface DataType {
   dataIndex: any
   id: string;
-
+  deviceName?: string;
+  deviceModel?: string;
   //инвантарный номер
   inventoryName: string
   

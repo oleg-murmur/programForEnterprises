@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import {
   Button,
   Cascader,
@@ -17,6 +17,7 @@ import {
   Slider,
   Space,
   Switch,
+  Tooltip,
   TreeSelect,
   Typography,
   Upload,
@@ -44,6 +45,8 @@ const normFile = (e: any) => {
 };
 interface IObjProps {
   id: string
+  deviceName: string;
+  deviceModel: string;
   inventoryName: string,
       factoryNumber: string,
       userName: string,
@@ -109,6 +112,8 @@ const CreateFormEdit: React.FC = () => {
    
         const FilesUpload:any = new FormData();
         let EditInst = {
+          deviceName: objFormData.deviceName,
+          deviceModel: objFormData.deviceModel,
           inventoryName: objFormData.inventoryName,
           factoryNumber: objFormData.factoryNumber,
           userName: objFormData.userName,
@@ -229,14 +234,25 @@ const { Text, Link } = Typography;
         onFinish={async () => onFinish()}
       >
           <ProFormGroup title="Изменить прибор">
-              <ProFormText width="md" name="inventoryName" label="Инвентарный номер" placeholder={"Инвантарный номер"}
-              rules={[{ required: true, message: 'Инвентарный номер не выбран' }]}
+            <ProFormText fieldProps={{maxLength: 25,showCount: true, 
+            // suffix: <Tooltip title="Extra information">
+            // <QuestionCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+            //         </Tooltip> 
+              }} width="md" name="deviceName" label="Наименование прибора" placeholder={"Наименование прибора"}
+              rules={[{ required: true, message: 'Наименование прибора не заполнено' }]}
+              
               />
-              <ProFormText width="md" name="factoryNumber" label="Заводской номер" placeholder={"Заводской номер"}
-              rules={[{ required: true, message: 'Заводской номер не выбран' }]}
+            <ProFormText fieldProps={{maxLength: 25,showCount: true}} width="md" name="deviceModel" label="Модель прибора" placeholder={"Модель прибора"}
+              rules={[{ required: true, message: 'Модель прибора не заполнена' }]}
               />
-              <ProFormText width="md" name="userName" label="Пользователь" placeholder={"Пользователь"}
-              rules={[{ required: true, message: 'Пользователь не выбран' }]}
+              <ProFormText fieldProps={{maxLength: 25,showCount: true}} width="md" name="inventoryName" label="Инвентарный номер" placeholder={"Инвантарный номер"}
+              
+              />
+              <ProFormText fieldProps={{maxLength: 25,showCount: true}} width="md" name="factoryNumber" label="Заводской номер" placeholder={"Заводской номер"}
+              
+              />
+              <ProFormText fieldProps={{maxLength: 35,showCount: true}} width="md" name="userName" label="Пользователь" placeholder={"Пользователь"}
+              
               />
 
               <ProFormSelect
@@ -339,6 +355,8 @@ const options = [
 
 const defaultObj = {
   id: "",
+  deviceName: "",
+  deviceModel: "",
   inventoryName: "",
   factoryNumber: "",
   userName: "",

@@ -27,7 +27,8 @@ interface DataType {
   haveMetal: 'Да' | 'Нет информации' | 'Нет'
   
   deviceType: number; // Тип измерительного прибора
-
+  deviceName: string;
+  deviceModel: string;
   }
   
   type DataIndex = keyof DataType;

@@ -25,7 +25,8 @@ export class CreateMeasuringDeviceDto {
     haveMetal: 'Да' | 'Нет информации' | 'Нет'
     
     type: number; // Тип измерительного прибора
-
+    deviceName: string;
+    deviceModel: string;
 
 }
 

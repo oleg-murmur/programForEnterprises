@@ -11,6 +11,12 @@ export class MeasuringDevice {
 
     //инвантарный номер
     @Column({ nullable: true })
+    deviceName: string
+
+    @Column({ nullable: true })
+    deviceModel: string
+    
+    @Column({ nullable: true })
     inventoryName: string
 
     //заводской номер

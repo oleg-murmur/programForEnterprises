@@ -36,6 +36,8 @@ export const waitTime = (time: number = 100) => {
 const currentDate = getCurrentDate();
 interface IObjProps {
   id: string
+  deviceName: string;
+  deviceModel: string;
   inventoryName: string,
       factoryNumber: string,
       userName: string,
@@ -122,6 +124,8 @@ const EditRow = ({route}: any) => {
       const FilesUpload:any = new FormData();
       let EditInst = {
         id: instId,
+        deviceName: objFormData.deviceName,
+        deviceModel: objFormData.deviceModel,
         inventoryName: objFormData.inventoryName,
         factoryNumber: objFormData.factoryNumber,
         userName: objFormData.userName,
@@ -257,14 +261,20 @@ return (
           onFinish={async () => onFinish()}
         >
             <ProFormGroup title={(userStatus === 'admin' || userStatus === 'editor'? false : true)? '' : 'Изменить прибор'}>
-            <ProFormText width="md" name="inventoryName" label="Инвентарный номер" placeholder={"Инвантарный номер"}
-              rules={[{ required: true, message: 'Инвентарный номер не выбран' }]}
+            <ProFormText fieldProps={{maxLength: 25,showCount: true }} width="md" name="deviceName" label="Наименование прибора" placeholder={"Наименование прибора"}
+              rules={[{ required: true, message: 'Наименование прибора не заполнено' }]}
               />
-              <ProFormText width="md" name="factoryNumber" label="Заводской номер" placeholder={"Заводской номер"}
-              rules={[{ required: true, message: 'Заводской номер не выбран' }]}
+            <ProFormText fieldProps={{maxLength: 25,showCount: true}} width="md" name="deviceModel" label="Модель прибора" placeholder={"Модель прибора"}
+              rules={[{ required: true, message: 'Модель прибора не заполнена' }]}
               />
-              <ProFormText width="md" name="userName" label="Пользователь" placeholder={"Пользователь"}
-              rules={[{ required: true, message: 'Пользователь не выбран' }]}
+              <ProFormText fieldProps={{maxLength: 25,showCount: true}} width="md" name="inventoryName" label="Инвентарный номер" placeholder={"Инвантарный номер"}
+              
+              />
+              <ProFormText fieldProps={{maxLength: 25,showCount: true}} width="md" name="factoryNumber" label="Заводской номер" placeholder={"Заводской номер"}
+              
+              />
+              <ProFormText fieldProps={{maxLength: 35,showCount: true}} width="md" name="userName" label="Пользователь" placeholder={"Пользователь"}
+              
               />
                 <ProFormSelect
                   
@@ -388,6 +398,8 @@ const options = [
 ]
 const defaultObj = {
   id: "",
+  deviceName: "",
+  deviceModel: "",
   inventoryName: "",
   factoryNumber: "",
   userName: "",

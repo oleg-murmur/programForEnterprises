@@ -2,7 +2,8 @@ import axios from "axios"
 
 interface FiltersParams {
   page?: number;
-
+  deviceName?: string;
+  deviceModel?: string;
   DOI_to?: string;
   DOI_from?: string;
 

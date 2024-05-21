@@ -16,7 +16,8 @@ export const BetweenDates = (from: Date | string, to: Date | string) => {
 type haveMetalType = 'Нет' | 'Нет информации' | 'Да'
 export interface FiltersProps {
   page?: number,
-  
+  deviceName?: string;
+  deviceModel?: string;
   DOI_to?: string,
   DOI_from?: string,
 
@@ -121,6 +122,12 @@ export class MeasuringDeviceService {
     }
     if(measuringDevice.inventoryName) {
       query['inventoryName'] = Like(`%${measuringDevice.inventoryName}%`)
+    }
+    if(measuringDevice.deviceName) {
+      query['deviceName'] = Like(`%${measuringDevice.deviceName}%`)
+    }
+    if(measuringDevice.deviceModel) {
+      query['deviceModel'] = Like(`%${measuringDevice.deviceModel}%`)
     }
     if(measuringDevice.haveMetal) {
       query['haveMetal'] = In(measuringDevice.haveMetal)
