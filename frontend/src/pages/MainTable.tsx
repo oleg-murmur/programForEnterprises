@@ -151,8 +151,10 @@ const onButtonClickVerificationEndDate = async (close:any) => {
   setLoading(false)
 }
 const onChangeDeviceTypeFilter = async (value: string)=> {
+  console.log(value, 'value')
   setDeviceTypeList(value)
-  if(!value) {
+  if(!value || value.length === 0) {
+    setFilterDeviceType(false)
     setFilters({...filters, deviceType: []})
   }
 } 
@@ -170,10 +172,13 @@ const onButtonClickDeviceTypeFilter = async (close:any) => {
   close()
   setLoading(false)
 }
+
+
 const onChangeHaveMetalFilter = async (value: string)=> {
   setDeviceHaveMetal(value)
-  if(!value) {
-    setFilters({...filters, deviceType: []})
+  if(!value || value.length === 0) {
+    setFilterHaveMetal(false)
+    setFilters({...filters, haveMetal: []})
   }
 } 
 const onButtonClickHaveMetalFilter = async (close:any) => {
