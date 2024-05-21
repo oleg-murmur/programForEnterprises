@@ -390,7 +390,7 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
       )
     },
  },
-    { title: 'Тип измерительного прибора', dataIndex: 'deviceType', key: 'deviceType',
+    { title: 'Тип прибора', dataIndex: 'deviceType', key: 'deviceType',
       // filters: type,
       // onFilter:(value,record)=>{
       //   return record.deviceType === value
@@ -510,15 +510,6 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
 }
 
 export default MainTable;
-
-const type = [
-  { text: "Нет информации", value: "Нет информации" },
-  { text: "Аналоговый", value: "Аналоговый" },
-  { text: "Цифровой", value: "Цифровой" },
-  { text: "Показывающий", value: "Показывающий" },
-  { text: "Регистрирующий", value: "Регистрирующий" },
-  { text: "Суммирующий", value: "Суммирующий" },
-  { text: "Интегрирующий", value: "Интегрирующий" }]
 
   interface DataType {
     id: string;
