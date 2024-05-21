@@ -1,12 +1,26 @@
 import React from 'react';
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
-import { Avatar, Card } from 'antd';
+import { Avatar, Card, Layout } from 'antd';
+import { Content, Footer, Header } from 'antd/es/layout/layout';
 
 const { Meta } = Card;
+const contentStyle: React.CSSProperties = {
+  textAlign: 'center',
+  minHeight: 120,
+  lineHeight: '120px',
+  color: '#fff',
+  alignItems: 'center',
+  // justifyContent: 'center',
+  backgroundColor: '#0958d9',  padding: '10px', display: 'flex'
+};
+
 
 const AvatarComponent: React.FC = () => (
+  <Layout >
+  <Header >Header</Header>
+  <Content style={contentStyle}>
   <Card
-    style={{ width: 300 }}
+
     cover={
       <img
         alt="example"
@@ -25,6 +39,10 @@ const AvatarComponent: React.FC = () => (
       description="This is the description"
     />
   </Card>
+  </Content>
+  <Footer >Footer</Footer>
+</Layout>
+
 );
 
 export default AvatarComponent;
