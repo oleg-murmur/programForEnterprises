@@ -90,19 +90,16 @@ valid()
   ];  
   return (
   <Layout className="layout">
-    <Header>
+    <Header style={{backgroundColor: 'white'}}>
       <div className="logo" />
-      <Menu
-        theme="light"
-        mode="horizontal"
-        defaultSelectedKeys={['1']}
-        items={items}
-        onClick={onClick}
-      />
-      <Modal title="Вы точно хотите выйти из аккаунта?" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-        {/* <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p> */}
+        <Menu
+          theme="light"
+          mode="horizontal"
+          defaultSelectedKeys={['1']}
+          items={items}
+          onClick={onClick}
+        />
+        <Modal title="Вы точно хотите выйти из аккаунта?" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
       </Modal>
     </Header>
     <Content style={{ padding: '0 50px' }}>
