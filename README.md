@@ -1,8 +1,8 @@
 # programForEnterprises
 
 Stack
-frontend: NextJS, Antdesign, TS
-server: NestJS, postgresQL, TypeORM, Docker
+frontend: React, Router-dom, Antdesign, TS
+server: NestJS, postgresQL, TypeORM, Docker(not yet)
 
 simple CRUD program. 
 In the local network for accounting of devices. 
