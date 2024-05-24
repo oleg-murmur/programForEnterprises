@@ -8,7 +8,7 @@ const EditableContext = React.createContext<FormInstance<any> | null>(null);
 
 interface Item {
   key: string;
-  name: string;
+  deviceName: string;
   age: string;
   address: string;
 }
@@ -101,9 +101,8 @@ type EditableTableProps = Parameters<typeof Table>[0];
 
 interface DataType {
   key: React.Key;
-  name: string;
-  age: string;
-  address: string;
+  deviceName: string;
+  notes: string;
 }
 
 type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
@@ -112,15 +111,33 @@ const DeviceTypeTable: React.FC = () => {
   const [dataSource, setDataSource] = useState<DataType[]>([
     {
       key: '0',
-      name: 'Edward King 0',
-      age: '32',
-      address: 'London, Park Lane no. 0',
+      deviceName: 'Аналоговый',
+      notes: 'Примечания/Особенности',
     },
     {
       key: '1',
-      name: 'Edward King 1',
-      age: '32',
-      address: 'London, Park Lane no. 1',
+      deviceName: 'Цифровой',
+      notes: 'Примечания/Особенности',
+    },
+    {
+      key: '2',
+      deviceName: 'Показывающий',
+      notes: 'Примечания/Особенности',
+    },
+    {
+      key: '3',
+      deviceName: 'Регистрирующий',
+      notes: 'Примечания/Особенности',
+    },
+    {
+      key: '4',
+      deviceName: 'Суммирующий',
+      notes: 'Примечания/Особенности',
+    },
+    {
+      key: '5',
+      deviceName: 'интегрирующий',
+      notes: 'Примечания/Особенности',
     },
   ]);
 
@@ -150,7 +167,7 @@ const DeviceTypeTable: React.FC = () => {
       render: (_, record) =>
         dataSource.length >= 1 ? (
           <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-            <a>Delete</a>
+            <a>Редактировать</a>
           </Popconfirm>
         ) : null,
     },
@@ -159,9 +176,8 @@ const DeviceTypeTable: React.FC = () => {
   const handleAdd = () => {
     const newData: DataType = {
       key: count,
-      name: `Edward King ${count}`,
-      age: '32',
-      address: `London, Park Lane no. ${count}`,
+      deviceName: `Придумайте название прибору ${count}`,
+      notes: 'Примечания/Особенности'
     };
     setDataSource([...dataSource, newData]);
     setCount(count + 1);
@@ -203,9 +219,9 @@ const DeviceTypeTable: React.FC = () => {
 
   return (
     <div>
-      {/* <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16 }}>
-        Add a row
-      </Button> */}
+      <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16 }}>
+        Добавить тип прибора
+      </Button>
       <Table
         components={components}
         rowClassName={() => 'editable-row'}

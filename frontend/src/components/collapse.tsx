@@ -15,6 +15,7 @@ const items: CollapseProps['items'] = [
     key: '1',
     label: 'Типы приборов',
     children: <DeviceTypeTable/>,
+    
   },
   {
     key: '2',

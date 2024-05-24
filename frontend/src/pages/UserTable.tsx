@@ -101,9 +101,9 @@ type EditableTableProps = Parameters<typeof Table>[0];
 
 interface DataType {
   key: React.Key;
-  name: string;
-  age: string;
-  address: string;
+  email: string;
+  fullName: string;
+  role: string;
 }
 
 type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
@@ -112,15 +112,21 @@ const UserTable: React.FC = () => {
   const [dataSource, setDataSource] = useState<DataType[]>([
     {
       key: '0',
-      name: 'Edward King 0',
-      age: '32',
-      address: 'London, Park Lane no. 0',
+      email: 'test2@test.ru',
+      fullName: 'Евгений Евгеньевич',
+      role: 'Пользователь',
     },
     {
       key: '1',
-      name: 'Edward King 1',
-      age: '32',
-      address: 'London, Park Lane no. 1',
+      email: 'test@test.ru',
+      fullName: 'Иванов Иван Иваныч',
+      role: 'Редактор',
+    },
+    {
+      key: '3',
+      email: 'admin@admin.ru',
+      fullName: 'Тестовый Администратор',
+      role: 'Администратор',
     },
   ]);
 
@@ -134,19 +140,19 @@ const UserTable: React.FC = () => {
   const defaultColumns: (ColumnTypes[number] & { editable?: boolean; dataIndex: string })[] = [
     {
         title: 'Электронная почта',
-        dataIndex: 'deviceName',
+        dataIndex: 'email',
         width: '30%',
         editable: true,
       },
       {
         title: 'ФИО',
-        dataIndex: 'notes',
+        dataIndex: 'fullName',
         width: '30%',
       //   editable: true,
       },
       {
         title: 'Роль',
-        dataIndex: 'notes',
+        dataIndex: 'role',
         width: '30%',
       //   editable: true,
       },
@@ -156,7 +162,7 @@ const UserTable: React.FC = () => {
         render: (_, record) =>
           dataSource.length >= 1 ? (
             <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-              <a>Delete</a>
+              <a>Редактировать</a>
             </Popconfirm>
           ) : null,
       },
@@ -165,9 +171,9 @@ const UserTable: React.FC = () => {
   const handleAdd = () => {
     const newData: DataType = {
       key: count,
-      name: `Edward King ${count}`,
-      age: '32',
-      address: `London, Park Lane no. ${count}`,
+      email: `Edward King ${count}`,
+      fullName: '32',
+      role: `London, Park Lane no. ${count}`,
     };
     setDataSource([...dataSource, newData]);
     setCount(count + 1);

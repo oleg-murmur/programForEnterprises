@@ -47,8 +47,9 @@ actions={[
 >
 <Meta
   avatar={<Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=8" />}
-  title="Card title"
-  description="This is the description"
+  title="admin@admin.ru"
+  description="Администратор"
+  
 />
 </Card>
   </div >
@@ -64,7 +65,7 @@ actions={[
 </div>
 
   {/* </Content> */}
-  <Footer >Footer</Footer>
+  
 </Layout>
 
 );
