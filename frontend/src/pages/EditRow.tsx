@@ -350,7 +350,7 @@ return (
             </ProFormGroup>
           </ProForm>
         </ConfigProvider>
-        <Button onClick={E=> deleteRow()} style={{marginTop: '15px', width: '90px', display: (userStatus ? 'flex' : 'none')}} type="primary" danger>Удалить</Button>
+        <Button onClick={E=> deleteRow()} style={{marginTop: '15px', width: '90px', display: (userStatus === 'admin' || userStatus === 'editor'? 'flex' : 'none')}} type="primary" danger>Удалить</Button>
 
       </div>
     );
