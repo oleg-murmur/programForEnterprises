@@ -85,7 +85,7 @@ useEffect(()=> {
     <ProConfigProvider hashed={false}>
       <div style={{ backgroundColor: token.colorBgContainer }}>
         <LoginForm
-        submitter={{searchConfig: {submitText: "Войти" }}}
+        submitter={{searchConfig: {submitText: loginType === 'login' ? "Войти" : "Зарегистрироваться" }}}
         onChange={e=> console.log(e.target)}
         onFinish={async obj=> onFinish(obj)}
           logo=""
