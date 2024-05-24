@@ -57,7 +57,7 @@ export const getAllInstFilter = async (page: any) => {
     'Content-Type': 'application/json',
   },})
     return data
-}
+} 
 export const universalFilter = async (filters: FiltersParams) => {
   console.log(filters,'page')
   let test = `Bearer ${localStorage.getItem('token')}`
@@ -75,13 +75,19 @@ export const universalFilter = async (filters: FiltersParams) => {
     return data
 }
 export const deleteByID = async (id:any) => {
-    let instrumentFromBD = await axios.delete(`${process.env.REACT_APP_BACKEND_URL_INST_EP}/${id}`,{
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json',
-        },
-      })
-    return instrumentFromBD
+  let data
+  try {
+    data = await axios.delete(`${process.env.REACT_APP_BACKEND_URL_INST_EP}/${id}`,{
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json',
+      },
+    })    
+  } catch (error) {
+    console.log(error)
+  }
+
+    return data
 }
 export const filterDateOfIssue = async ({from, to,page}:any) => {
     let data = await axios.get(`${process.env.REACT_APP_BACKEND_FILTER_DATE_OF_ISSUE}`,{

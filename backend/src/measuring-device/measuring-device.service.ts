@@ -156,6 +156,7 @@ export class MeasuringDeviceService {
 
   let data = this.deviceRepository.findAndCount({
     where: {
+      deleted: false,
       ...query,
     },    
     take: 10,
@@ -254,7 +255,7 @@ if(measuringDevice.verificationEndDate) {
   }
 
   async remove(id: string): Promise<any> { 
-    const entityToDelete = await this.deviceRepository.findOne({where: {id,deleted: false},relations: {files: true}});
+    const entityToDelete = await this.deviceRepository.findOne({where: {id,deleted: false}});
 
     if (!entityToDelete) {
       throw new NotFoundException(`Entity with id ${id} not found`);
