@@ -187,7 +187,7 @@ const EditRow = ({route}: any) => {
         return false
     }
     };
-
+    console.log(objFormData)
 return (
       <div
         style={{

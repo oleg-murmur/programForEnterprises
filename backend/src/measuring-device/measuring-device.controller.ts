@@ -100,10 +100,11 @@ async getdata(@Req() request: Request): Promise<Object> {
   @Post('edit')
   async edit(@Body() createMeasuringDeviceDto: Partial<any>) {
     let typed
+    console.log(createMeasuringDeviceDto, 'CHECK')
     if(createMeasuringDeviceDto.deviceType == "Нет информации" || createMeasuringDeviceDto.deviceType.value == "Нет информации"){
       typed = null
     }else{
-      typed = await this.findOneType(createMeasuringDeviceDto.deviceType.value)
+      typed = await this.findOneType(createMeasuringDeviceDto.deviceType)
     }
     let measuringDevice = {
       ...createMeasuringDeviceDto, deviceType: typed

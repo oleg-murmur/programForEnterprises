@@ -270,8 +270,11 @@ export class  MeasuringInstrumentTypeService{
     private typeRepository: Repository<MeasuringInstrumentType>,
   ) {}
 
-  async create(measuringDevice: Partial<MeasuringInstrumentType>): Promise<MeasuringInstrumentType> {
-
+  async create(measuringDevice: Partial<MeasuringInstrumentType>): Promise<MeasuringInstrumentType|string> {
+    if(measuringDevice.label.length <= 0) {
+      return Promise.resolve("ошибка при создании, передана пустая строка")
+    }
+    console.log(measuringDevice)
     let newInst = this.typeRepository.create(measuringDevice)
 
     return await this.typeRepository.save(newInst)
