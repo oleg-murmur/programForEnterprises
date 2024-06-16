@@ -89,7 +89,7 @@ async getdata(@Req() request: Request): Promise<Object> {
     if(createMeasuringDeviceDto.deviceType == "Нет информации" || createMeasuringDeviceDto.deviceType.value == "Нет информации"){
       typed = null
     }else{
-      typed = await this.findOneType(createMeasuringDeviceDto.deviceType)
+      typed = await this.findOneType(createMeasuringDeviceDto.deviceType.value)
     }
     let measuringDevice = {
       id: uuidv4(),
@@ -104,7 +104,11 @@ async getdata(@Req() request: Request): Promise<Object> {
     if(createMeasuringDeviceDto.deviceType == "Нет информации" || createMeasuringDeviceDto.deviceType.value == "Нет информации"){
       typed = null
     }else{
+      if(createMeasuringDeviceDto.deviceType.value) {
+        typed = await this.findOneType(createMeasuringDeviceDto.deviceType.value)
+      }else{
       typed = await this.findOneType(createMeasuringDeviceDto.deviceType)
+      }
     }
     let measuringDevice = {
       ...createMeasuringDeviceDto, deviceType: typed
