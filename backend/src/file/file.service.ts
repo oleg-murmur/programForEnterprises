@@ -28,4 +28,8 @@ export class  FilesOfDevicesService{
   async findOne(uid: string): Promise<FilesOfDevices> {
     return this.filesRepository.findOne({where: {uid}});
   }
+  async delete(files: any) {
+
+    return this.filesRepository.delete(files);
+  }
 }

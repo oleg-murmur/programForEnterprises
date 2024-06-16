@@ -42,7 +42,6 @@ export class FileController {
           url: process.env.SERVER_URL ? `${process.env.SERVER_URL}/${fileName}` : `http://localhost:${process.env.PORT}/${fileName}`,
           name: fileName,
         })
-
         const fileReponse = {
           filename: file.filename,
         };
@@ -103,6 +102,24 @@ export class FileController {
     return files
   }
   }
+
+  @Post('deleteInfo')
+  async deleteFileInfo(@Body() fileDtoMassive: any){
+    let devicesInfo = []
+//     fileDtoMassive.files.forEach(async (fileDto) => {
+//     if(fileDto && fileDto.deviceId){
+//       const result = await this.filesOfDevices.delete(fileDto.uid)
+//       devicesInfo.push(result)
+//   }
+// })
+try {
+  const filesToDelete = await this.filesOfDevices.delete(fileDtoMassive.files)
+  return filesToDelete
+} catch (error) {
+  return error
+}
+  }
+
   @Public()
   @Get('files/:deviceId')
  async findFilesOfInst(@Param('id') id: string) {
