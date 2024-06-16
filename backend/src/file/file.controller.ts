@@ -17,7 +17,6 @@ export class FileController {
   @Post('upload')
   @UseInterceptors(
       FilesInterceptor('files', 20, {
-        
         storage: diskStorage({
           destination: './uploads/',
           filename: (req,file,cb)=> {
@@ -32,10 +31,8 @@ export class FileController {
         deviceId: '',
         files: [],
       }
-      console.log(body, 'FILES TEST')
       const response = [];
       this.filesDevice.deviceId = body.instId ?? null
-      console.log(files,'filesfiles')
       if(files && files.length >=0) {
       files.map(file => {
         let fileName = `id_${body.instId}_name_${file.originalname}`

@@ -129,7 +129,6 @@ const CreateFormEdit: React.FC = () => {
           data: EditInst,
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`},
         })
-        console.log(resultEditInst,'resultEditInst')
         FilesUpload.append("instId", resultEditInst.data.id)
       for (let i = 0; i < objFormData.files.length; i++) {
         FilesUpload.append('files', objFormData.files[i].originFileObj);
@@ -142,7 +141,6 @@ const CreateFormEdit: React.FC = () => {
           data: FilesUpload,
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`,"Content-Type": "multipart/form-data" },
         })
-        console.log(resultFileUpload,'resultFileUpload')
       } catch (error) {
        // delete created row from db
        console.log(error) 

@@ -26,7 +26,6 @@ const UploadComponent: React.FC<testProps> = ({data,readonly,fileList,setObjForm
       setFiletest(fileList)   
       
       },[fileList])
-      console.log(filetest,'filetestfiletestfiletest')
     const deleteFileFromList = (file:any) => {
         let afterDelete = filetest.filter((item: { uid: any; }) => item.uid !== file.uid)
             setFiletest(afterDelete);
@@ -37,8 +36,6 @@ const UploadComponent: React.FC<testProps> = ({data,readonly,fileList,setObjForm
         setFiletest(newFileList);
       };
     const { Text, Link } = Typography;
-
-    console.log(deletedFiles,'deletedFiles')
   return (
     <> 
     <div className="" style={{
