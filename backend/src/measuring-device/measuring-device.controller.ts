@@ -8,10 +8,11 @@ import { v4 as uuidv4 } from 'uuid'
 import { MeasuringInstrumentType } from './entities/measuringInstrumentType.entity';
 import { FilesOfDevices } from './entities/filesInstrument.entity';
 import { Request } from 'express';
+import { FilesOfDevicesService } from 'src/file/file.service';
 @Controller('measuring-device')
 export class MeasuringDeviceController {
   constructor(private readonly measuringDeviceService: MeasuringDeviceService,
-    private readonly measuringInstrumentTypeService: MeasuringInstrumentTypeService,
+    private readonly measuringInstrumentTypeService: MeasuringInstrumentTypeService
   ) {}
 
 

@@ -32,9 +32,11 @@ export class FileController {
         deviceId: '',
         files: [],
       }
-      console.log(files, 'FILES TEST')
+      console.log(body, 'FILES TEST')
       const response = [];
       this.filesDevice.deviceId = body.instId ?? null
+      console.log(files,'filesfiles')
+      if(files && files.length >=0) {
       files.map(file => {
         let fileName = `id_${body.instId}_name_${file.originalname}`
         this.filesDevice.files.push({
@@ -47,6 +49,7 @@ export class FileController {
         };
         response.push(fileReponse);
       })
+    }
 
 ///////////////////////////
       this.createFileInfo(this.filesDevice)
@@ -105,6 +108,7 @@ export class FileController {
 
   @Post('deleteInfo')
   async deleteFileInfo(@Body() fileDtoMassive: any){
+    console.log(fileDtoMassive,'fileDtoMassivefileDtoMassivefileDtoMassive')
     let devicesInfo = []
 //     fileDtoMassive.files.forEach(async (fileDto) => {
 //     if(fileDto && fileDto.deviceId){

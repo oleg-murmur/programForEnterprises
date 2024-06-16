@@ -15,24 +15,30 @@ interface testProps {
     fileList: any[]
     objFormData: any;
     setObjFormData: any;
+    deletedFiles?: any;
+    setDeletedFiles?:any;
 }
 
-const UploadComponent: React.FC<testProps> = ({data,readonly,fileList,setObjFormData,objFormData}) => {
-    const [filetest, setFiletest] = useState<any[]>([])
+const UploadComponent: React.FC<testProps> = ({data,readonly,fileList,setObjFormData,objFormData,deletedFiles,setDeletedFiles}) => {
+      const [filetest, setFiletest] = useState<any[]>([])
     let startF = fileList
     useEffect( () => {
       setFiletest(fileList)   
+      
       },[fileList])
-
+      console.log(filetest,'filetestfiletestfiletest')
     const deleteFileFromList = (file:any) => {
-        let afterDelete = filetest.filter(item => item.uid !== file.uid)
+        let afterDelete = filetest.filter((item: { uid: any; }) => item.uid !== file.uid)
             setFiletest(afterDelete);
+            setDeletedFiles([...deletedFiles,file])
     }
     const onChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
         setObjFormData({...objFormData, files: [...fileList,...newFileList]}) 
         setFiletest(newFileList);
       };
     const { Text, Link } = Typography;
+
+    console.log(deletedFiles,'deletedFiles')
   return (
     <> 
     <div className="" style={{
@@ -55,7 +61,7 @@ const UploadComponent: React.FC<testProps> = ({data,readonly,fileList,setObjForm
             } else {
               return true
             }
-        }}
+        }} 
         // {...props}
         >
         <Button style={{

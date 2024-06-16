@@ -60,7 +60,7 @@ const EditRow = ({route}: any) => {
       useMode?: string;
     }>
   >();
-  
+  const [deletedFiles,setDeletedFiles]  = useState<any[]>([])
     const [readonly, setReadonly] = useState(true);
     const [loading, setLoading] = useState(false);
     const [userStatus, setStatus] = useState<userRole>("employee")
@@ -122,6 +122,10 @@ const EditRow = ({route}: any) => {
 
     const onFinish = async() => {
       const FilesUpload:any = new FormData();
+      let deletedFileList = {
+        files: deletedFiles
+      }
+      console.log(deletedFileList,'deletedFileListdeletedFileListdeletedFileList')
       let EditInst = {
         id: instId,
         deviceName: objFormData.deviceName,
@@ -140,20 +144,35 @@ const EditRow = ({route}: any) => {
     for (let i = 0; i < objFormData.files.length; i++) {
       FilesUpload.append('files', objFormData.files[i].originFileObj);
     };
+    console.log(objFormData.files,'objFormData.filesobjFormData.files')
+    try {
 
-    const resultFileUpload = await axios({
-      method: "post",
-      url: `${process.env.REACT_APP_BACKEND_URL_FILE_EP}`,
-      data: FilesUpload,
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`,"Content-Type": "multipart/form-data" },
-    })
-    const resultEditInst = await axios({
-      method: "post",
-      url: `${process.env.REACT_APP_BACKEND_URL_INST_EP_EDIT}`,
-      data: EditInst,
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`},
+      const resultFileDelete = await axios.post(`${process.env.REACT_APP_BACKEND_URL_FILE_DELETE}`,
+        deletedFileList
+      ,{headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json',
+      }})
+      console.log(resultFileDelete,'resultFileDeleteresultFileDelete')
 
-    })
+
+      const resultFileUpload = await axios({
+        method: "post",
+        url: `${process.env.REACT_APP_BACKEND_URL_FILE_EP}`,
+        data: FilesUpload,
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`,"Content-Type": "multipart/form-data"},
+      })
+      
+      const resultEditInst = await axios({
+        method: "post",
+        url: `${process.env.REACT_APP_BACKEND_URL_INST_EP_EDIT}`,
+        data: EditInst,
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`},
+      })
+    } catch (error) {
+      console.log(error)
+    }
+
     navigate("..")
     // проверка что изменений не было, сравнение значений до и после
   }
@@ -345,6 +364,7 @@ return (
                       fileList={files} 
                       data={""} 
                       readonly={(userStatus === 'admin' || userStatus === 'editor'? false : true)}
+                      deletedFiles={deletedFiles} setDeletedFiles={setDeletedFiles}
                   />
 
             </ProFormGroup>
