@@ -1,72 +1,35 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { InfoCircleOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
 import {
-  Button,
-  Cascader,
-  Checkbox,
-  ColorPicker,
   ConfigProvider,
-  DatePicker,
-  Form,
-  Input,
-  InputNumber,
-  Mentions,
-  message,
-  Radio,
-  Select,
-  Slider,
-  Space,
-  Switch,
-  Tooltip,
-  TreeSelect,
-  Typography,
-  Upload,
 } from 'antd';
-import { ProForm, ProFormDatePicker, ProFormGroup, ProFormInstance, ProFormRadio, ProFormSelect, ProFormSwitch, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
+import { ProForm, ProFormDatePicker, ProFormGroup, ProFormRadio, ProFormSelect, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
 import axios from 'axios';
 import UploadComponent from '../components/upload';
-import { getInstByID } from '../http/instAPI';
 import ruRU from 'antd/locale/ru_RU';
-import { useLocation, useNavigate, useParams } from 'react-router';
-import dayjs, { Dayjs } from 'dayjs';
+import {  useNavigate, useParams } from 'react-router';
+import dayjs from 'dayjs';
 import { getCurrentDate } from '../hooks/currentDay';
-import { checkToken, validateRoleByToken } from '../hooks/checkValidToken';
-import { IObjProps } from '../types/MainInterfaces';
-const { RangePicker } = DatePicker;
-const { TextArea } = Input;
-const dateFormat = 'YYYY-MM-DD';
+import { validateRoleByToken } from '../hooks/checkValidToken';
+import { DATE_FORMAT, defaultObj, DEVICE_TYPE, IObjProps, options } from '../types/MainInterfaces';
 
 
-
-const normFile = (e: any) => {
-  if (Array.isArray(e)) {
-    return e;
-  }
-  return e?.fileList;
-};
 const CreateFormEdit: React.FC = () => {
-  const {instId} = useParams()
-  const navigate = useNavigate();
-  const formRef = useRef<
-    ProFormInstance<{
-      name: string;
-      company?: string;
-      useMode?: string;
-    }>
-  >();
+
+    const token = localStorage.getItem('token')?? ''
+    const {instId} = useParams()
+    const navigate = useNavigate();
+
     const [loading, setLoading] = useState(false);
     const [editStatus, setEditStatus] = useState(false)
-    const [objFromServer, setObjFromServer] = useState<IObjProps>(defaultObj)
+    const [objDefault] = useState<IObjProps>(defaultObj)
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
     useEffect( () => {
       const getData = async () =>{
         const valid = async () => {
           await validateRoleByToken(setEditStatus,navigate)
         }
-    
     valid()
       }
-
       setTimeout(()=> {
         setLoading(true)
       },3000)
@@ -91,19 +54,18 @@ const CreateFormEdit: React.FC = () => {
           method: "post",
           url: `${process.env.REACT_APP_BACKEND_URL_INST_EP}`,
           data: EditInst,
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`},
+          headers: { 'Authorization': `Bearer ${token}`},
         })
         FilesUpload.append("instId", resultEditInst.data.id)
       for (let i = 0; i < objFormData.files.length; i++) {
         FilesUpload.append('files', objFormData.files[i].originFileObj);
       };
-      try {
-        
-        const resultFileUpload = await axios({
+      try { 
+        await axios({
           method: "post",
           url: `${process.env.REACT_APP_BACKEND_URL_FILE_EP}`,
           data: FilesUpload,
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`,"Content-Type": "multipart/form-data" },
+          headers: { 'Authorization': `Bearer ${token}`,"Content-Type": "multipart/form-data" },
         })
       } catch (error) {
        // delete created row from db
@@ -111,17 +73,8 @@ const CreateFormEdit: React.FC = () => {
       }
       navigate("..")
       }
-      // else{
-      //   console.log('ОШИБКА')
-      // }
-    // }
 
-  const [componentDisabled, setComponentDisabled] = useState<boolean>(true);
-  const formItemLayout = {
-    labelCol: { span: 6 },
-    wrapperCol: { span: 14 },
-  };
-
+const [componentDisabled, setComponentDisabled] = useState<boolean>(true);
 
 const currentDate = getCurrentDate();
 
@@ -137,7 +90,6 @@ const handleCompare = async (_: any, value: { number: number }) => {
     let test3 = new Date(dateOfIssue)
     let test4 = new Date(verificationEndDate)
 
-    console.log(test1,test2)
     if (test3.getTime() > test4.getTime()) {
       return Promise.reject(new Error('Дата поверки не может быть меньше даты создания'));
     } else if(!test1){
@@ -153,7 +105,6 @@ const handleCompare = async (_: any, value: { number: number }) => {
     return false
 }
 };
-const { Text, Link } = Typography;
   return (
     <div
       style={{
@@ -162,19 +113,15 @@ const { Text, Link } = Typography;
         borderRadius: '10px'
       }}
     >
-
         <ConfigProvider locale={ruRU}>
       {editStatus ? 
-  <ProForm
+    <ProForm
       autoFocusFirstInput
-      // form={form}
-      // request={}
       submitter={{
         searchConfig: {resetText: "Отменить", submitText: "Сохранить" },  
         submitButtonProps: {
           style: {
             display: 'flex',
-           
          },
          onClick: (e)=> {}
       },
@@ -196,25 +143,18 @@ const { Text, Link } = Typography;
         onFinish={async () => onFinish()}
       >
           <ProFormGroup title="Изменить прибор">
-            <ProFormText fieldProps={{maxLength: 25,showCount: true, 
-            // suffix: <Tooltip title="Extra information">
-            // <QuestionCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
-            //         </Tooltip> 
-              }} width="md" name="deviceName" label="Наименование прибора" placeholder={"Наименование прибора"}
-              rules={[{ required: true, message: 'Наименование прибора не заполнено' }]}
-              
+              <ProFormText fieldProps={{maxLength: 25,showCount: true, 
+                }} width="md" name="deviceName" label="Наименование прибора" placeholder={"Наименование прибора"}
+                rules={[{ required: true, message: 'Наименование прибора не заполнено' }]}
               />
-            <ProFormText fieldProps={{maxLength: 25,showCount: true}} width="md" name="deviceModel" label="Модель прибора" placeholder={"Модель прибора"}
-              rules={[{ required: true, message: 'Модель прибора не заполнена' }]}
+              <ProFormText fieldProps={{maxLength: 25,showCount: true}} width="md" name="deviceModel" label="Модель прибора" placeholder={"Модель прибора"}
+                rules={[{ required: true, message: 'Модель прибора не заполнена' }]}
               />
               <ProFormText fieldProps={{maxLength: 25,showCount: true}} width="md" name="inventoryName" label="Инвентарный номер" placeholder={"Инвантарный номер"}
-              
               />
               <ProFormText fieldProps={{maxLength: 25,showCount: true}} width="md" name="factoryNumber" label="Заводской номер" placeholder={"Заводской номер"}
-              
               />
               <ProFormText fieldProps={{maxLength: 35,showCount: true}} width="md" name="userName" label="Пользователь" placeholder={"Пользователь"}
-              
               />
 
               <ProFormSelect
@@ -228,23 +168,20 @@ const { Text, Link } = Typography;
                 debounceTime={3000}
                 request={async () => {
                     let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_TYPE_EP}`,{headers: {
-                      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                      'Authorization': `Bearer ${token}`,
                       'Content-Type': 'application/json',
                     }})
-                    return [ {value: 'Нет информации', label: "Нет информации"}, ...data]
+                    return [ DEVICE_TYPE, ...data]
               }}
                 /> 
                 <div className="">
-                    {/* <Text>Приложенные файлы</Text> */}
                     <ProFormTextArea
                     width="md"
                     placeholder="Примечания к прибору"
                     colProps={{ span: 24 }}
                     name="note"
                     label="Примечания к прибору"
-
                     style={{ maxHeight: 800,display: 'flex', height: 120, width: 328, resize: 'vertical', margin: '5px 0 15px 0' }}
-
                     fieldProps={{showCount: true, maxLength: 500}}
                 />
                 </div>
@@ -256,7 +193,7 @@ const { Text, Link } = Typography;
                     name="dateOfIssue"
                     placeholder="Дата выпуска прибора"
                     rules={[{ validator: handleCompare }]}
-                    fieldProps={{minDate: dayjs('1950-01-01', dateFormat),
+                    fieldProps={{minDate: dayjs('1950-01-01', DATE_FORMAT),
                     onChange: (e)=> {setObjFormData({...objFormData, dateOfIssue: e?e.toString(): null})},
                     disabledDate: (d) => !d || d.isAfter(currentDate)}}
                 />
@@ -268,7 +205,7 @@ const { Text, Link } = Typography;
                     name="verificationEndDate"
                     placeholder="Дата последней поверки"
                     rules={[{ validator: handleCompare }]}
-                    fieldProps={{minDate: dayjs('1950-01-01', dateFormat),
+                    fieldProps={{minDate: dayjs('1950-01-01', DATE_FORMAT),
                     onChange: (e)=> {setObjFormData({...objFormData, verificationEndDate: e?e.toString(): null})},
                     disabledDate: (d) => !d || d.isAfter(currentDate)
                   }}
@@ -284,14 +221,14 @@ const { Text, Link } = Typography;
                 <UploadComponent 
                     objFormData={objFormData}
                     setObjFormData={setObjFormData} 
-                    fileList={objFromServer.files} 
+                    fileList={objDefault.files} 
                     data={""} 
                     readonly={!editStatus}
                 />
 
           </ProFormGroup>
         </ProForm>
-        : <div className="">Какой хитрый. Нет доступа к редактированию. Нет прав:3</div>}
+        : <div className="">Нет доступа к редактированию. Нет прав:3</div>}
 
       </ConfigProvider>
     </div>
@@ -299,33 +236,3 @@ const { Text, Link } = Typography;
 };
 
 export default () => <CreateFormEdit />;
-const options = [
-  {
-    
-    label: 'Нет',
-    value: 'Нет',
-  },
-  {
-    label: 'Да',
-    value: 'Да',
-  },
-  {
-      label: 'Нет информации',
-      value: 'Нет информации',
-    },
-]
-
-const defaultObj = {
-  id: "",
-  deviceName: "",
-  deviceModel: "",
-  inventoryName: "",
-  factoryNumber: "",
-  userName: "",
-  dateOfIssue: null,
-  note: "",
-  verificationEndDate: null,
-  haveMetal: "Нет информации",
-  deviceType: {value: 'Нет информации', label: "Нет информации"},
-  files: []
-}

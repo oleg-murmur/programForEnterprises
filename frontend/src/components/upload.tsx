@@ -21,11 +21,11 @@ interface testProps {
 
 const UploadComponent: React.FC<testProps> = ({data,readonly,fileList,setObjFormData,objFormData,deletedFiles,setDeletedFiles}) => {
       const [filetest, setFiletest] = useState<any[]>([])
-    let startF = fileList
+      
     useEffect( () => {
       setFiletest(fileList)   
-      
       },[fileList])
+
     const deleteFileFromList = (file:any) => {
         let afterDelete = filetest.filter((item: { uid: any; }) => item.uid !== file.uid)
             setFiletest(afterDelete);
@@ -35,14 +35,13 @@ const UploadComponent: React.FC<testProps> = ({data,readonly,fileList,setObjForm
         setObjFormData({...objFormData, files: [...fileList,...newFileList]}) 
         setFiletest(newFileList);
       };
-    const { Text, Link } = Typography;
+    const { Text} = Typography;
   return (
     <> 
     <div className="" style={{
       paddingBottom: '8px'
     }}><Text>Приложенные файлы</Text></div>
       
-
       <Upload  
         disabled={readonly}
         onRemove={(file)=> deleteFileFromList(file)} 
@@ -59,7 +58,6 @@ const UploadComponent: React.FC<testProps> = ({data,readonly,fileList,setObjForm
               return true
             }
         }} 
-        // {...props}
         >
         <Button style={{
           display: readonly ? 'hidden' : ''
@@ -67,12 +65,4 @@ const UploadComponent: React.FC<testProps> = ({data,readonly,fileList,setObjForm
       </Upload>
   </>
 )};
-
 export default UploadComponent;
-
-// customRequest={async () => {
-//     // const allRows = await axios.get('http://localhost:5000/api/instrument/test',{})
-//     // setFiletest(allRows.data.files)
-//     // return allRows.data.files
-
-//   }}
