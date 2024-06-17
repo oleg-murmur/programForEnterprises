@@ -2,58 +2,40 @@ import {
     ProForm,
     ProFormDatePicker,
     ProFormGroup,
-    ProFormInstance,
     ProFormRadio,
     ProFormSelect,
-    ProFormSwitch,
     ProFormText,
     ProFormTextArea,
   } from '@ant-design/pro-components';
-  import { Button, ConfigProvider} from 'antd';
-import axios, { all } from 'axios';
+import { Button, ConfigProvider} from 'antd';
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 import ruRU from 'antd/locale/ru_RU';
-import { useRef } from 'react';
 import UploadComponent from './upload';
-import cl from "../test.module.css"
 import { deleteByID, getInstByID } from '../http/instAPI';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { getCurrentDate } from '../hooks/currentDay';
 import NotificationComp from '../components/notification';
 import { checkToken, validateRoleByToken } from '../hooks/checkValidToken';
-import { IObjProps, roles, userRole } from '../types/MainInterfaces';
-
-const dateFormat = 'YYYY-MM-DD';
-export const waitTime = (time: number = 100) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, time);
-    });
-  };
+import { DATE_FORMAT, defaultObj, DEVICE_TYPE, IObjProps, options,userRole } from '../types/MainInterfaces';
+import { helpStatus } from '../hooks/helpStatusComponent';
   
 const currentDate = getCurrentDate();
 
 const EditRow = ({route}: any) => {
-  const {instId} = useParams()
-  console.log(instId,'param')
-  const navigate = useNavigate();
-  const formRef = useRef<
-    ProFormInstance<{
-      name: string;
-      company?: string;
-      useMode?: string;
-    }>
-  >();
-  const [deletedFiles,setDeletedFiles]  = useState<any[]>([])
+
+    const token = localStorage.getItem('token')?? ''
+    const {instId} = useParams()
+    console.log(instId,'instId')
+
+    const navigate = useNavigate();
+    const [deletedFiles,setDeletedFiles]  = useState<any[]>([])
     const [readonly, setReadonly] = useState(true);
     const [loading, setLoading] = useState(false);
     const [userStatus, setStatus] = useState<userRole>("employee")
     const [files, setFiles] = useState([])
-    // const [objFromServer, setObjFromServer] = useState<IObjProps>(defaultObj)
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
-    console.log(files)
 
     useEffect( () => {
       const valid = async () => {
@@ -66,20 +48,16 @@ const EditRow = ({route}: any) => {
     useEffect( () => {
     const getData = async () => {
       try {
-        const isValidToken = await checkToken(localStorage.getItem('token')?? '')
+        const isValidToken = await checkToken(token)
         if(isValidToken.status) {
       const instrumentFromBD = await getInstByID(instId)
-      instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? {value: 'Нет информации', label: "Нет информации"}
+      instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? DEVICE_TYPE
       setObjFormData(instrumentFromBD.data)
-      // setObjFromServer(instrumentFromBD.data)
       setFiles(instrumentFromBD.data.files)
-        }
+      }
     } catch (error) {
       console.log(error)
     }   
-    // setTimeout(()=> {
-    //   setLoading(true)
-    // },3000)
   }
   getData() 
     },[])
@@ -89,7 +67,6 @@ const EditRow = ({route}: any) => {
       let deletedFileList = {
         files: deletedFiles
       }
-      console.log(deletedFileList,'deletedFileListdeletedFileListdeletedFileList')
       let EditInst = {
         id: instId,
         deviceName: objFormData.deviceName,
@@ -105,33 +82,31 @@ const EditRow = ({route}: any) => {
       }
 
       FilesUpload.append("instId", objFormData.id)
-    for (let i = 0; i < objFormData.files.length; i++) {
-      FilesUpload.append('files', objFormData.files[i].originFileObj);
-    };
-    console.log(objFormData.files,'objFormData.filesobjFormData.files')
-    try {
 
+      for (let i = 0; i < objFormData.files.length; i++) {
+        FilesUpload.append('files', objFormData.files[i].originFileObj);
+    };
+
+    try {
       const resultFileDelete = await axios.post(`${process.env.REACT_APP_BACKEND_URL_FILE_DELETE}`,
         deletedFileList
       ,{headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       }})
-      console.log(resultFileDelete,'resultFileDeleteresultFileDelete')
-
 
       const resultFileUpload = await axios({
         method: "post",
         url: `${process.env.REACT_APP_BACKEND_URL_FILE_EP}`,
         data: FilesUpload,
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`,"Content-Type": "multipart/form-data"},
+        headers: { 'Authorization': `Bearer ${token}`,"Content-Type": "multipart/form-data"},
       })
       
       const resultEditInst = await axios({
         method: "post",
         url: `${process.env.REACT_APP_BACKEND_URL_INST_EP_EDIT}`,
         data: EditInst,
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}`},
+        headers: { 'Authorization': `Bearer ${token}`},
       })
     } catch (error) {
       console.log(error)
@@ -179,38 +154,26 @@ return (
           borderRadius: '10px'
         }}
       >
-        {/* <ProFormSwitch
-          className={cl.myClassName}
-          onClick={e=> }
-          checkedChildren="Нет"
-          unCheckedChildren="Да"
-          label="Редактировать"
-          fieldProps={{
-            onChange: setReadonly,
-            checked: readonly
-          }}
-        /> */}
           <ConfigProvider locale={ruRU}>
-        <div style={{
-          display: (userStatus === 'admin' || userStatus === 'editor'? false : true)? 'none' : 'flex'
-        }}><NotificationComp /> </div>   
+            <div style={{
+              display: helpStatus(userStatus)? 'none' : 'flex'
+            }}><NotificationComp /> 
+            </div>   
 
     <ProForm
         autoFocusFirstInput
-        
         request={async () => {
-          const isValidToken = await checkToken(localStorage.getItem('token')?? '')
+          const isValidToken = await checkToken(token)
           let values = []
-          // console.log(isValidToken,'isValidTokenisValidTokenisValidToken')
           if(isValidToken.status) {
           const instrumentFromBD = await getInstByID(instId)
           values = {
-            ...instrumentFromBD.data, deviceType: 
-                instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? {value: 'Нет информации', label: "Нет информации"}
+            ...instrumentFromBD.data, 
+            deviceType: 
+                instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? DEVICE_TYPE
         }
       }
           setObjFormData({...values})
-          // setObjFromServer({...values})
           return values
           ;
         }}
@@ -219,48 +182,43 @@ return (
           searchConfig: {resetText: "Отменить", submitText: "Сохранить"},  
           submitButtonProps: {
             style: {
-              display: (userStatus === 'admin' || userStatus === 'editor'? false : true)? 'none' : 'flex',
+              display: helpStatus(userStatus)? 'none' : 'flex',
              
            },
            onClick: (e)=> {}
         },
           resetButtonProps: {
             style: {
-              display: (userStatus === 'admin' || userStatus === 'editor'? false : true)? 'none' : 'flex',
+              display: helpStatus(userStatus)? 'none' : 'flex',
             },
             //открывать модалку подтвердить несохранение
             onClick: (e)=> navigate("..")
           },
           
       }}
-          readonly={userStatus === 'admin' || userStatus === 'editor'? false : true}
+          readonly={helpStatus(userStatus)}
           name="validate_other"
           onValuesChange={async (_, values) => {
             setObjFormData({...objFormData, ...values})
-            // setObjFromServer({...objFormData, ...values})
           }
         }
 
           onFinish={async () => onFinish()}
         >
-            <ProFormGroup title={(userStatus === 'admin' || userStatus === 'editor'? false : true)? '' : 'Изменить прибор'}>
+            <ProFormGroup title={helpStatus(userStatus)? '' : 'Изменить прибор'}>
             <ProFormText fieldProps={{maxLength: 25,showCount: true }} width="md" name="deviceName" label="Наименование прибора" placeholder={"Наименование прибора"}
               rules={[{ required: true, message: 'Наименование прибора не заполнено' }]}
               />
             <ProFormText fieldProps={{maxLength: 25,showCount: true}} width="md" name="deviceModel" label="Модель прибора" placeholder={"Модель прибора"}
               rules={[{ required: true, message: 'Модель прибора не заполнена' }]}
               />
-              <ProFormText fieldProps={{maxLength: 25,showCount: true}} width="md" name="inventoryName" label="Инвентарный номер" placeholder={"Инвантарный номер"}
-              
+            <ProFormText fieldProps={{maxLength: 25,showCount: true}} width="md" name="inventoryName" label="Инвентарный номер" placeholder={"Инвантарный номер"}
               />
-              <ProFormText fieldProps={{maxLength: 25,showCount: true}} width="md" name="factoryNumber" label="Заводской номер" placeholder={"Заводской номер"}
-              
+            <ProFormText fieldProps={{maxLength: 25,showCount: true}} width="md" name="factoryNumber" label="Заводской номер" placeholder={"Заводской номер"}
               />
-              <ProFormText fieldProps={{maxLength: 35,showCount: true}} width="md" name="userName" label="Пользователь" placeholder={"Пользователь"}
-              
+            <ProFormText fieldProps={{maxLength: 35,showCount: true}} width="md" name="userName" label="Пользователь" placeholder={"Пользователь"} 
               />
                 <ProFormSelect
-                  
                   width="md"
                   name="deviceType"
                   label="Тип прибора"
@@ -269,12 +227,12 @@ return (
                   rules={[{ required: true, message: 'Тип прибора не выбран' }]}
                   debounceTime={3000}
                   request={async () => {
-                      let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_TYPE_EP}`,{headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                      let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_TYPE_EP}`,{
+                        headers: {
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                       }})
-                      console.log(data)
-                      return [ {value: 'Нет информации', label: "Нет информации"}, ...data]
+                      return [ DEVICE_TYPE, ...data]
                 }}
                   /> 
                 <div className="" style={{display: 'flex', flexWrap: 'wrap'}}>
@@ -284,39 +242,37 @@ return (
                       colProps={{ span: 24 }}
                       name="note"
                       label="Примечания к прибору"
-
                       style={{ maxHeight: 800,display: 'flex', height: 120, width: 328, resize: 'vertical', margin: '5px 0 15px 0' }}
-  
                       fieldProps={{showCount: true, maxLength: 500}}
                   /></div> 
                   
                   <ProFormDatePicker
                       width="md"
-                      dataFormat=''
+                      dataFormat={DATE_FORMAT}
                       colProps={{ xl: 8, md: 12 }}
                       label="Дата последней поверки"
                       name="dateOfIssue"
                       placeholder="дата"
                       rules={[{ validator: handleCompare }]}
-                      fieldProps={{minDate: dayjs('1950-01-01', dateFormat),
+                      fieldProps={{minDate: dayjs('1950-01-01', DATE_FORMAT),
                       disabledDate: (d) => !d || d.isAfter(currentDate), onChange: (e)=> {setObjFormData({...objFormData, dateOfIssue: e?e.toString(): null})}}}
                   />
                   <ProFormDatePicker
-                  
                       width="md"
-                      dataFormat=''
+                      dataFormat={DATE_FORMAT}
                       colProps={{ xl: 8, md: 12 }}
                       label="Дата окончания"
                       name="verificationEndDate"
                       placeholder="дата"
                       rules={[{ validator: handleCompare }]}
-                      fieldProps={{minDate: dayjs('1950-01-01', dateFormat),
+                      fieldProps={{minDate: dayjs('1950-01-01', DATE_FORMAT),
                       disabledDate: (d) => !d || d.isAfter(currentDate), onChange: (e)=> {setObjFormData({...objFormData, verificationEndDate: e?e.toString(): null})}}}
                   />
-                 
                     <ProFormRadio.Group
                     
-                    rules={[{ required: true, message: 'Заполните информацию о драг. металлах' }]}
+                    rules={[{ 
+                        required: true, 
+                        message: 'Заполните информацию о драг. металлах' }]}
                         width="md"
                         name="haveMetal"
                         label="Наличие драг. металлов"
@@ -327,70 +283,26 @@ return (
                       setObjFormData={setObjFormData} 
                       fileList={files} 
                       data={""} 
-                      readonly={(userStatus === 'admin' || userStatus === 'editor'? false : true)}
+                      readonly={helpStatus(userStatus)}
                       deletedFiles={deletedFiles} setDeletedFiles={setDeletedFiles}
                   />
 
             </ProFormGroup>
           </ProForm>
         </ConfigProvider>
-        <Button onClick={E=> deleteRow()} style={{marginTop: '15px', width: '90px', display: (userStatus === 'admin' || userStatus === 'editor'? 'flex' : 'none')}} type="primary" danger>Удалить</Button>
-
+        <Button 
+          onClick={E=> deleteRow()} 
+          style={{
+            marginTop: '15px', 
+            width: '90px', 
+            display: ( !helpStatus(userStatus)? 'flex' : 'none')
+          }} 
+          type="primary" 
+          danger>
+          Удалить
+        </Button>
       </div>
     );
   };
   
   export default EditRow;
-
-const types = ["application/pdf","application/vnd.openxmlformats-officedocument.wordprocessingm","application/msword"];
-let testfile = [
-  {
-    uid: "1",
-    name: "00000.txt",
-    url: "/table/1"
-  },
-  {
-    uid: "2",
-    name: "00000000000.docx",
-    url: "/table/1"
-  },
-  {
-    uid: "3",
-    name: "11111111111.txt",
-    url: "/table/1"
-  },
-  {
-    uid: "4",
-    name: "111111111111.docx",
-    url: "/table/1"
-  },
-]
-const options = [
-  {
-    
-    label: 'Нет',
-    value: 'Нет',
-  },
-  {
-    label: 'Да',
-    value: 'Да',
-  },
-  {
-      label: 'Нет информации',
-      value: 'Нет информации',
-    },
-]
-const defaultObj = {
-  id: "",
-  deviceName: "",
-  deviceModel: "",
-  inventoryName: "",
-  factoryNumber: "",
-  userName: "",
-  dateOfIssue: "05-12-2024",
-  note: "",
-  verificationEndDate: "05-12-2024",
-  haveMetal: "Нет информации",
-  deviceType: {value: 'Нет информации', label: "Нет информации"},
-  files: []
-}
