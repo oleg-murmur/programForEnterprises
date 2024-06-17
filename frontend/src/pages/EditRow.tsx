@@ -21,8 +21,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { getCurrentDate } from '../hooks/currentDay';
 import NotificationComp from '../components/notification';
-import { checkToken } from '../hooks/checkValidToken';
-import { userRole } from './MainTable';
+import { checkToken, validateRoleByToken } from '../hooks/checkValidToken';
+import { IObjProps, roles, userRole } from '../types/MainInterfaces';
 
 const dateFormat = 'YYYY-MM-DD';
 export const waitTime = (time: number = 100) => {
@@ -34,20 +34,6 @@ export const waitTime = (time: number = 100) => {
   };
   
 const currentDate = getCurrentDate();
-interface IObjProps {
-  id: string
-  deviceName: string;
-  deviceModel: string;
-  inventoryName: string,
-      factoryNumber: string,
-      userName: string,
-      dateOfIssue: string | null,
-      note: string,
-      verificationEndDate: string | null,
-      haveMetal: string,
-      deviceType: {value: any, label: string},
-      files: any[]
-}
 
 const EditRow = ({route}: any) => {
   const {instId} = useParams()
@@ -65,37 +51,15 @@ const EditRow = ({route}: any) => {
     const [loading, setLoading] = useState(false);
     const [userStatus, setStatus] = useState<userRole>("employee")
     const [files, setFiles] = useState([])
-    const [objFromServer, setObjFromServer] = useState<IObjProps>(defaultObj)
+    // const [objFromServer, setObjFromServer] = useState<IObjProps>(defaultObj)
     const [objFormData, setObjFormData] = useState<IObjProps>(defaultObj)
     console.log(files)
 
     useEffect( () => {
       const valid = async () => {
-        const isValidToken = await checkToken(localStorage.getItem('token')?? '')
-        if(isValidToken.status) {
-          switch (isValidToken.data.role) {
-            case "admin":
-              // console.log('admin')
-              setStatus('admin')
-              break;
-            case "editor":
-              // console.log('editor')
-              setStatus('editor')
-              break;
-            case "employee":
-              // console.log('employee')
-              setStatus('employee')
-              break;
-            default:
-              // console.log('нет данных о роли пользователя')
-              setStatus('employee')
-          }
-        }else{
-          localStorage.clear()
-          navigate('/auth')
-        }
+        await validateRoleByToken(setStatus,navigate)
       }
-  valid()
+    valid()
     },[])
 
 
@@ -107,7 +71,7 @@ const EditRow = ({route}: any) => {
       const instrumentFromBD = await getInstByID(instId)
       instrumentFromBD.data.deviceType = instrumentFromBD.data.deviceType ?? {value: 'Нет информации', label: "Нет информации"}
       setObjFormData(instrumentFromBD.data)
-      setObjFromServer(instrumentFromBD.data)
+      // setObjFromServer(instrumentFromBD.data)
       setFiles(instrumentFromBD.data.files)
         }
     } catch (error) {
@@ -246,7 +210,7 @@ return (
         }
       }
           setObjFormData({...values})
-          setObjFromServer({...values})
+          // setObjFromServer({...values})
           return values
           ;
         }}

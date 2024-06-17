@@ -30,7 +30,8 @@ import ruRU from 'antd/locale/ru_RU';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import dayjs, { Dayjs } from 'dayjs';
 import { getCurrentDate } from '../hooks/currentDay';
-import { checkToken } from '../hooks/checkValidToken';
+import { checkToken, validateRoleByToken } from '../hooks/checkValidToken';
+import { IObjProps } from '../types/MainInterfaces';
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 const dateFormat = 'YYYY-MM-DD';
@@ -43,20 +44,6 @@ const normFile = (e: any) => {
   }
   return e?.fileList;
 };
-interface IObjProps {
-  id: string
-  deviceName: string;
-  deviceModel: string;
-  inventoryName: string,
-      factoryNumber: string,
-      userName: string,
-      dateOfIssue: string | null,
-      note: string,
-      verificationEndDate: string  | null,
-      haveMetal: string,
-      deviceType: {value: any, label: string},
-      files: any[]
-}
 const CreateFormEdit: React.FC = () => {
   const {instId} = useParams()
   const navigate = useNavigate();
@@ -74,30 +61,7 @@ const CreateFormEdit: React.FC = () => {
     useEffect( () => {
       const getData = async () =>{
         const valid = async () => {
-          const isValidToken = await checkToken(localStorage.getItem('token')?? '')
-          if(isValidToken.status) {
-            switch (isValidToken.data.role) {
-              case "admin":
-                console.log('admin')
-                setEditStatus(true)
-                break;
-              case "editor":
-                console.log('editor')
-                setEditStatus(true)
-                break;
-              case "employee":
-                console.log('employee')
-                setEditStatus(false)
-                break;
-              default:
-                console.log('нет данных о роли пользователя')
-                setEditStatus(false)
-            }
-
-          }else{
-            localStorage.clear()
-            navigate('/auth')
-          }
+          await validateRoleByToken(setEditStatus,navigate)
         }
     
     valid()
