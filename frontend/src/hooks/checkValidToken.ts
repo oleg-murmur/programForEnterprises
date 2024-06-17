@@ -17,7 +17,7 @@ export const setToken = async ({token = '',email,password}:any) => {
     })
 }
 
-export const validateRoleByToken = async (setStatus:any, navigate:any) => {
+export const validateRoleByToken = async (setStatus:any, navigate:any, url = '/auth') => {
     const isValidToken = await checkToken(localStorage.getItem('token')?? '')
         if(isValidToken.status) {
           switch (isValidToken.data.role) {
@@ -35,6 +35,6 @@ export const validateRoleByToken = async (setStatus:any, navigate:any) => {
           }
         }else{
             localStorage.clear()
-            navigate('/auth')
+            navigate(url ?? '/auth')
           }
     }

@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Button, Checkbox, ConfigProvider, Divider, Form, message, Pagination, Space, Table, Tooltip } from 'antd';
-import type { CheckboxOptionType, GetProp, TableColumnsType, TableProps,  } from 'antd';
-import { DownloadOutlined, EditOutlined, SearchOutlined,  } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import { Button, Checkbox, ConfigProvider, Table, Tooltip } from 'antd';
+import type { CheckboxOptionType, TableColumnsType} from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import { Link, Navigate} from 'react-router-dom';
+import { Link} from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 import useColumnSearchProps from "../hooks/getColumnSearchProps"
 import { DatePicker } from 'antd';
@@ -11,21 +11,18 @@ import dayjs from 'dayjs';
 import ruRU from 'antd/locale/ru_RU';
 import { CheckboxProps } from 'antd/lib/checkbox/Checkbox';
 import { universalFilter } from '../http/instAPI';
-import { checkToken } from '../hooks/checkValidToken';
+import { checkToken, validateRoleByToken } from '../hooks/checkValidToken';
 import { ProFormSelect } from '@ant-design/pro-components';
+import { DATE_FORMAT_LIST, NO_INFO_TEXT, TableDataType, userRole } from '../types/MainInterfaces';
 const PAGE_SIZE = 10
-interface TableParams {
-  sorter?: any;
-}
-export type userRole = 'admin' | 'editor' | 'employee'
-const dateFormatList = ["YYYY/MM/DD", "DD/MM/YYYY"];
+
 const { RangePicker } = DatePicker;
 
 const MainTable: React.FC = () => {
-  const [tableParams, setTableParams] = useState<TableParams>({});
-  const [userStatus, setStatus] = useState<userRole>("employee")
+
   const navigate = useNavigate();
-  // const [isEditing, setIsEditing] = useState(true);
+
+  const [userStatus, setStatus] = useState<userRole>("employee")
   const [resetFilter, setResetFilter] = useState(false);
   const [filters, setFilters] = useState({});
   const [countList, setCountList] = useState(0);
@@ -48,94 +45,55 @@ const MainTable: React.FC = () => {
   const [hasData, setHasData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1)
-  useEffect( () => {
 
+  useEffect( () => {
     const valid = async () => {
-      // console.log((localStorage.getItem('token')), '(localStorage.getItem()')
-      const isValidToken = await checkToken(localStorage.getItem('token')?? '')
-      // console.log(isValidToken,'isValidTokenisValidTokenisValidToken')
-      if(isValidToken.status) {
-        switch (isValidToken.data.role) {
-          case "admin":
-            console.log('admin')
-            setStatus('admin')
-            break;
-          case "editor":
-            console.log('editor')
-            setStatus('editor')
-            break;
-          case "employee":
-            console.log('employee')
-            setStatus('employee')
-            break;
-          default:
-            console.log('нет данных о роли пользователя')
-            setStatus('employee')
-        }
-        // setStatus(isValidToken.data)
-        // console.log('хуйня')
-      }else{
-        localStorage.clear()
-        navigate('/auth')
-        // console.log('полная хуйня')
+      await validateRoleByToken(setStatus,navigate)
+    }
+    valid()
+  },[])
+  useEffect( () => {
+  const getData = async () => {
+      try {
+        const isValidToken = await checkToken(localStorage.getItem('token')?? '')
+        if(isValidToken.status) {
+        setLoading(true)
+        let data = await universalFilter(filters)
+        let dataList:any = [];
+        data.data.forEach((element: any) => {
+          if(!element.deviceType) {
+            element.deviceType = NO_INFO_TEXT
+            dataList.push(element)
+          }else{
+            element.deviceType= element.deviceType.label
+            dataList.push(element)
+          }
+        });
+        setCountList(data.skip)
+        setData(dataList)
+        setHasData(true)
+        setLoading(false)
+      }
+      } catch (error) {
+        console.log(error)
       }
     }
-valid()
-  },[])
-
-  useEffect( () => {
-
-const getData = async () => {
-  // console.log(await universalFilter(1))
-  try {
-    const isValidToken = await checkToken(localStorage.getItem('token')?? '')
-    // console.log(isValidToken,'isValidTokenisValidTokenisValidToken')
-    if(isValidToken.status) {
-    setLoading(true)
-    let data = await universalFilter(filters)
-    let data2:any = [];
-    console.log(data.data)
-    data.data.forEach((element: any) => {
-      if(!element.deviceType) {
-        element.deviceType = "Нет информации"
-        data2.push(element)
-      }else{
-        element.deviceType= element.deviceType.label
-        data2.push(element)
-      }
-    });
-    setCountList(data.skip)
-    setData(data2)
-    setHasData(true)
-    setLoading(false)
-  }
-  } catch (error) {
-    console.log(error)
-  }
-}
-try {
-  getData()
-} catch (error) {
-  console.log(error)
-}
-
-  },[resetFilter,page,filters])
+    try {
+      getData()
+    } catch (error) {
+      console.log(error)
+    }
+  },[page,filters])
 
 const onButtonClickDateOfIssue = async (close:any) => {
   
   setLoading(true)
   if(dateStartdateOfIssue !== '' || dateEnddateOfIssue !== '') {
     setFilters({...filters, DOI_from: dateStartdateOfIssue,DOI_to: dateEnddateOfIssue})
-    // setResetFilter(false)
-    // setdateOfIssue(false)
     setdateOfIssue(true)
   }else{
     setdateOfIssue(false)
   }
-  // console.log(test)
-  //  setCountList(test.skip)
-  // setData(test.data)
-
   close()
   setLoading(false)
 }
@@ -199,14 +157,11 @@ const onButtonClickHaveMetalFilter = async (close:any) => {
 
     // нужна доработка, даты типа string, для правильном сортировки
     //  нужно преобразовывать в тип даты
-const testFumc = (pagination: any, filters2: any, sorter: any) => {
-  console.log(pagination,'pagination')
+const onChangeFilterSorter = (pagination: any, filters2: any, sorter: any) => {
 
-  console.log(sorter)
   let field_1 = "";
   let field_2 = "";
   let order = "";
-
   if(sorter.order === undefined) {order = ""}
   if(sorter.order === "descend") order = "ASC" // работает почему то наоборот:) NULLS LAST не работает
   if(sorter.order === "ascend") order = "DESC" // + nulls не в конце а сами себя ведут как хотят
@@ -214,15 +169,12 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
   let order_2 = order;
   if(sorter.field === 'dateOfIssue') {field_1 = "sorterDateOfIssue"; field_2 = "sorterVerificationEndDate"; order_2 = ""}
   if(sorter.field === 'verificationEndDate') {field_2 = "sorterVerificationEndDate"; field_1 = "sorterDateOfIssue"; order_1 = ""}
-
   if(sorter.field === undefined) {field_1 = ""; field_2 = ""}
-  console.log({[sorter.field]: order}, 'CHECK')
   setFilters({...filters, [field_1]: order_1,[field_2]: order_2, page: pagination.current})
 }
 
-  const columns: TableColumnsType<DataType> = [
+  const columns: TableColumnsType<TableDataType> = [
     {
-      
       title: 'Наименование прибора',
       dataIndex: 'deviceName',
       key: 'deviceName',
@@ -230,7 +182,6 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
       ...useColumnSearchProps('deviceName', 'Наименование прибора', setFilters,filters),
     },
     {
-      
       title: 'Модель прибора',
       dataIndex: 'deviceModel',
       key: 'deviceModel',
@@ -240,8 +191,7 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
         showTitle: false,
       }
     },
-    {
-      
+    {     
       title: 'Инвентарный номер',
       dataIndex: 'inventoryName',
       key: 'inventoryName',
@@ -295,10 +245,6 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
       return (<div style={{padding: '15px'}} onKeyDown={(e) => e.stopPropagation()}>
         <RangePicker
           className="mr-3"
-          // defaultValue={[
-          //     dayjs(moment(nowDate, dateFormatList[0]).format("YYYY-MM-DD")),
-          //     dayjs(moment(nowDate, dateFormatList[0]).format("YYYY-MM-DD"))
-          // ]}
           onChange={(e) => {
             if(!(e && e[0])) {
               setdateOfIssue(false)
@@ -308,7 +254,7 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
               setDateEnddateOfIssue(e && e[1] ? dayjs(e[1]).format("YYYY-MM-DD") : '');
           }
           }
-          format={dateFormatList}
+          format={DATE_FORMAT_LIST}
           size={"large"}
       />
       <Button onClick={e=> onButtonClickDateOfIssue(close)} type="primary" size={"large"} icon={<SearchOutlined />}>
@@ -333,7 +279,7 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
             setDateEndverificationEndDate(e && e[1] ? dayjs(e[1]).format("YYYY-MM-DD") : '');
           }
           }
-          format={dateFormatList}
+          format={DATE_FORMAT_LIST}
           size={"large"}
       />
       <Button onClick={e=> onButtonClickVerificationEndDate(close)} type="primary" size={"large"} icon={<SearchOutlined />}>
@@ -391,10 +337,6 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
     },
  },
     { title: 'Тип прибора', dataIndex: 'deviceType', key: 'deviceType',
-      // filters: type,
-      // onFilter:(value,record)=>{
-      //   return record.deviceType === value
-      // },
       filtered: filterDeviceType ? true : false,
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
         return (<div style={{padding: '15px', width: '300px'}} onKeyDown={(e) => e.stopPropagation()}>
@@ -402,11 +344,8 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
           style={{ width: '100%' }}
                   mode='multiple'
                   width="md"
-                  name="deviceType"
-                  // showSearch
-                  
+                  name="deviceType"      
                   onChange={onChangeDeviceTypeFilter}
-                  // debounceTime={3000}
                   request={async () => {
                       let {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_TYPE_EP}`,{headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -414,7 +353,6 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
                       }})
                       console.log(data)
                       return [ 
-                        // {value: 'Нет информации', label: "Нет информации"}, 
                       ...data]
                 }}
                   /> 
@@ -442,6 +380,7 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
     label: title,
     value: key,
   }}});
+
   const options2 = columns
   const defaultCheckedList2 = options2.map((item) => item.key as string);
   const newColumns = columns.map((item) => ({
@@ -454,15 +393,9 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
   const onCheckAllChange: CheckboxProps['onChange'] = (e) => {
     setCheckedList(e.target.checked ? defaultCheckedList2 : ["deviceModel","deviceName"]);
   };
-
-  // const isAuthenticated = true
-  // if(isAuthenticated) {
-  //   return <div className="">Нет доступа к</div>
-  // }
   return (
   <div style={{paddingTop: '5px'}}>
     <ConfigProvider locale={ruRU}>
-    {/* <Divider>Columns displayed</Divider> */}
     <Table 
       bordered={true} 
       title={() =>  
@@ -499,40 +432,17 @@ const testFumc = (pagination: any, filters2: any, sorter: any) => {
       pagination={{
         pageSize: PAGE_SIZE,
         total: countList,
-        defaultPageSize: 10, showSizeChanger: false,showQuickJumper: true,
-        onChange: (page)=> {setPage(page); setFilters({...filters, page})}
+        defaultPageSize: 10, 
+        showSizeChanger: false,
+        showQuickJumper: true,
+        onChange: (page)=> {setPage(page); 
+        setFilters({...filters, page})}
       }} 
       dataSource={hasData ? data : []} 
-      scroll={{ x: 1300 }} 
-      onChange={testFumc}
+      scroll={{ x: checkedList.length == 2 ? "500px" : "1300px" }} 
+      onChange={onChangeFilterSorter}
     /></ConfigProvider>
   </div>)
 }
 
 export default MainTable;
-
-  interface DataType {
-    id: string;
-    dataIndex: any
-    //инвантарный номер
-    inventoryName: string
-    
-    deviceName: string
-    deviceModel: string
-    //заводской номер
-    factoryNumber: string
-
-    //пользователь прибора
-    userName: string // кто отвечает за прибор (отдельная сущность?)
-
-    dateOfIssue: string; // Дата выпуска
-
-    note: string; // Примечание
-
-    verificationEndDate: string; // Дата окончания поверки
-
-    //наличие драг. металлов
-    haveMetal: 'Да' | 'Нет информации' | 'Нет'
-    
-    deviceType: number; // Тип измерительного прибора
-}

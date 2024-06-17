@@ -20,8 +20,6 @@ interface FiltersParams {
   verificationEndDate?: 'ESC' | 'DESC';
   sorterVerificationEndDate?: 'ESC' | 'DESC';
   sorterDateOfIssue?: 'ESC' | 'DESC';
-//sorterVerificationEndDate
-//sorterDateOfIssue
 }
 
 
@@ -45,10 +43,6 @@ export const getInstByID = async (id:any) => {
     return instrumentFromBD
 }
 export const getAllInstFilter = async (page: any) => {
-  console.log(page,'page')
-  let test = `Bearer ${localStorage.getItem('token')}`
-  console.log('BEARER', test)
-  // console.log(PAGE_SIZE,'page_size')
   const {data} = await axios.get(`${process.env.REACT_APP_BACKEND_URL_INST_EP}`, {params: {
     skip: page, take: PAGE_SIZE
   },
@@ -59,14 +53,8 @@ export const getAllInstFilter = async (page: any) => {
     return data
 } 
 export const universalFilter = async (filters: FiltersParams) => {
-  console.log(filters,'page')
-  let test = `Bearer ${localStorage.getItem('token')}`
-  // console.log('BEARER', test)
-  // console.log(PAGE_SIZE,'page_size')
   const {data} = await axios.get(`${process.env.REACT_APP_BACKEND_UNVERSAL_FILTER}`, {params: {
     ...filters
-    //sorterVerificationEndDate
-//sorterDateOfIssue
   },
   headers: {
     'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -86,7 +74,6 @@ export const deleteByID = async (id:any) => {
   } catch (error) {
     console.log(error)
   }
-
     return data
 }
 export const filterDateOfIssue = async ({from, to,page}:any) => {
