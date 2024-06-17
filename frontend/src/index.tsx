@@ -1,26 +1,20 @@
-import React from 'react';
+
 import ReactDOM from 'react-dom/client';
-import App from './App';
 import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import MainForm from './pages/MainForm';
 import CreateFormEdit from './pages/CreateRowForm';
 import MainPage from './pages/MainPage';
 import MainTable from './pages/MainTable';
-import EditRow from './pages/EditRow';
+import EditRow from './pages/EditRowForm';
 import AuthComponent from './pages/AuthComponent';
 import AvatarComponent from './pages/AvatarComponent';
-import TestPage from './pages/TestPage';
 import ErrorPage from './pages/error-page';
-import { checkToken } from './hooks/checkValidToken';
-import InfoComponent from './pages/InfoComponent';
+import InfoComponent from './components/ProfileDocComponents/InfoComponent';
 
-const isAuthenticated = !!localStorage.getItem('token');
-// if(!isAuthenticated)
-// localStorage.getItem('token')
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -31,7 +25,6 @@ const router = createBrowserRouter([
         index: true,
         errorElement: <ErrorPage />,
         element: <Navigate replace to="/table/1" /> ,
-        
       },
       {
         path: "/table/:tableId",
@@ -53,10 +46,7 @@ const router = createBrowserRouter([
         path: "/profile",
         element: <AvatarComponent />,
       },
-      {
-        path: "/test",
-        element: <TestPage />,
-      },
+
     ]
   },
   {

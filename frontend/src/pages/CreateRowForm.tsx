@@ -24,7 +24,7 @@ import {
 } from 'antd';
 import { ProForm, ProFormDatePicker, ProFormGroup, ProFormInstance, ProFormRadio, ProFormSelect, ProFormSwitch, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
 import axios from 'axios';
-import UploadComponent from './upload';
+import UploadComponent from '../components/upload';
 import { getInstByID } from '../http/instAPI';
 import ruRU from 'antd/locale/ru_RU';
 import { useLocation, useNavigate, useParams } from 'react-router';

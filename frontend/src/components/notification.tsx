@@ -53,7 +53,6 @@ useEffect(() => {
     } catch (error) {
       console.log(error)
     }
-
   }
   getData()
   return () => {

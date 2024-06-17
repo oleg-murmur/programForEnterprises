@@ -1,7 +1,7 @@
 import React from 'react';
 import type { CollapseProps } from 'antd';
 import { Collapse } from 'antd';
-import { AUTH_PAGE, ROLES, TABLE, CRAETE_FORM, PROFILE, ROLES_INFO, TABLE_INFO, AUTH_INFO, CRETE_FORM_INFO, MAIN_TEXT, INFO_TEXT } from '../Info';
+import { AUTH_PAGE, ROLES, TABLE, CRAETE_FORM, PROFILE, ROLES_INFO, TABLE_INFO, AUTH_INFO, CRETE_FORM_INFO, MAIN_TEXT, INFO_TEXT } from '../../Info';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import Title from 'antd/es/typography/Title';
 
@@ -54,8 +54,6 @@ const InfoComponent = () => {
       return (
     <div className="" style={{paddingTop: '20px'}}>
         <div className="">
-        {/* <InfoCircleOutlined style={{ display: 'flex', fontSize: '25px',color: 'rgba(0,0,0,.60)' }}/> */}
-        {/* <Title style={{ display: 'flex', fontSize: '25px',color: 'rgba(0,0,0,.60)'}} level={2}>{MAIN_TEXT}</Title> */}
         <Title style={{ padding: '20px',display: 'flex', fontSize: '25px',color: 'rgba(0,0,0,.60)'}} level={4}>{INFO_TEXT}</Title>
         </div> 
         <Collapse onChange={onChange} items={items} />

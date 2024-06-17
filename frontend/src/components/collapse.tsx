@@ -1,8 +1,8 @@
 import React from 'react';
 import type { CollapseProps } from 'antd';
 import { Collapse } from 'antd';
-import DeviceTypeTable from '../pages/DeviceTypeTable';
-import UserTable from '../pages/UserTable';
+import UserTable from './ProfileDocComponents/UserTable';
+import DeviceTypeTable from './ProfileDocComponents/DeviceTypeTable';
 
 const text = `
   A dog is a type of domesticated animal.

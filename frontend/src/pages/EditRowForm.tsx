@@ -11,7 +11,7 @@ import { Button, ConfigProvider} from 'antd';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import ruRU from 'antd/locale/ru_RU';
-import UploadComponent from './upload';
+import UploadComponent from '../components/upload';
 import { deleteByID, getInstByID } from '../http/instAPI';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -88,21 +88,21 @@ const EditRow = ({route}: any) => {
     };
 
     try {
-      const resultFileDelete = await axios.post(`${process.env.REACT_APP_BACKEND_URL_FILE_DELETE}`,
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL_FILE_DELETE}`,
         deletedFileList
       ,{headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       }})
 
-      const resultFileUpload = await axios({
+      await axios({
         method: "post",
         url: `${process.env.REACT_APP_BACKEND_URL_FILE_EP}`,
         data: FilesUpload,
         headers: { 'Authorization': `Bearer ${token}`,"Content-Type": "multipart/form-data"},
       })
       
-      const resultEditInst = await axios({
+      await axios({
         method: "post",
         url: `${process.env.REACT_APP_BACKEND_URL_INST_EP_EDIT}`,
         data: EditInst,

@@ -117,36 +117,6 @@ type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 
 const DeviceTypeTable: React.FC = () => {
   const [dataSource, setDataSource] = useState<DataType[]>([
-    // {
-    //   key: '0',
-    //   deviceName: 'Аналоговый',
-    //   notes: 'Примечания/Особенности',
-    // },
-    // {
-    //   key: '1',
-    //   deviceName: 'Цифровой',
-    //   notes: 'Примечания/Особенности',
-    // },
-    // {
-    //   key: '2',
-    //   deviceName: 'Показывающий',
-    //   notes: 'Примечания/Особенности',
-    // },
-    // {
-    //   key: '3',
-    //   deviceName: 'Регистрирующий',
-    //   notes: 'Примечания/Особенности',
-    // },
-    // {
-    //   key: '4',
-    //   deviceName: 'Суммирующий',
-    //   notes: 'Примечания/Особенности',
-    // },
-    // {
-    //   key: '5',
-    //   deviceName: 'интегрирующий',
-    //   notes: 'Примечания/Особенности',
-    // },
   ]);
 
   const [count, setCount] = useState(2);
