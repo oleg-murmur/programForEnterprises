@@ -12,11 +12,13 @@ No internet required
 start without docker:
 ```
 cd ./frontend
+npm install
 npm start
 ```
 new terminal:
 ```
 cd ./backend
+npm install
 npm start
 ```
 
