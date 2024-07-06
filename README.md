@@ -13,6 +13,7 @@ start without docker:
 ```
 cd ./frontend
 npm install
+npm run build
 npm start
 ```
 new terminal:
