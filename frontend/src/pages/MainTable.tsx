@@ -88,6 +88,7 @@ const getData = async () => {
     let data2:any = [];
     console.log(data.data)
     data.data.forEach((element: any) => {
+console.log(element,'element')
       if(!element.deviceType) {
         element.deviceType = "Нет информации"
         data2.push(element)
@@ -116,8 +117,13 @@ try {
 const onButtonClickDateOfIssue = async (close:any) => {
   setdateOfIssue(true)
   setLoading(true)
-  setFilters({...filters, DOI_from: dateStartdateOfIssue,DOI_to: dateEnddateOfIssue})
-   const test = await runFilterDateOfIssue(dateStartdateOfIssue,dateEnddateOfIssue)
+  if(dateStartdateOfIssue === '' || dateEnddateOfIssue === '') {
+    setFilters({...filters, DOI_from: dateStartdateOfIssue,DOI_to: dateEnddateOfIssue})
+    // setResetFilter(false)
+    // setdateOfIssue(false)
+  }
+  // setFilters({...filters, DOI_from: dateStartdateOfIssue,DOI_to: dateEnddateOfIssue})
+  //  const test = await runFilterDateOfIssue(dateStartdateOfIssue,dateEnddateOfIssue)
   // console.log(test)
   //  setCountList(test.skip)
   // setData(test.data)
@@ -128,7 +134,11 @@ const onButtonClickDateOfIssue = async (close:any) => {
 const onButtonClickVerificationEndDate = async (close:any) => {
   setverificationEndDate(true)
   setLoading(true)
-  setFilters({...filters, VED_from: dateStartverificationEndDate,VED_to: dateEndverificationEndDate})
+  if(dateStartverificationEndDate === '' || dateEndverificationEndDate === '') {
+    setFilters({...filters, VED_from: dateStartverificationEndDate,VED_to: dateEndverificationEndDate})
+    // setResetFilter(value => !value)
+  }
+
 
   // const test = await runVerificationEndDate(dateStartverificationEndDate,dateEndverificationEndDate)
   // setCountList(test.skip)
@@ -181,14 +191,15 @@ const onButtonClickVerificationEndDate = async (close:any) => {
   ////////////////////
     { title: 'Дата выпуска прибора', dataIndex: 'dateOfIssue', key: 'dateOfIssue',
 
-    sorter: (record1,record2):any=>{
-      return record1.dateOfIssue > record2.dateOfIssue
-    },
+    // sorter: (record1,record2):any=>{
+    //   return record1.dateOfIssue > record2.dateOfIssue
+    // },
     filterSearch: true,
     filtered: FilterdateOfIssue ? true : false,
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
       return (<div style={{padding: '15px'}} onKeyDown={(e) => e.stopPropagation()}>
         <RangePicker
+        // required={true}
           className="mr-3"
           // defaultValue={[
           //     dayjs(moment(nowDate, dateFormatList[0]).format("YYYY-MM-DD")),
@@ -200,8 +211,8 @@ const onButtonClickVerificationEndDate = async (close:any) => {
               setdateOfIssue(false)
               setFilters({...filters, DOI_from: '', DOI_to: ''})
             }
-              setDateStartdateOfIssue(e && e[0] ? dayjs(e[0]).format("YYYY-MM-DD") : '0');
-              setDateEnddateOfIssue(e && e[1] ? dayjs(e[1]).format("YYYY-MM-DD") : '0');
+              setDateStartdateOfIssue(e && e[0] ? dayjs(e[0]).format("YYYY-MM-DD") : '');
+              setDateEnddateOfIssue(e && e[1] ? dayjs(e[1]).format("YYYY-MM-DD") : '');
           }
           }
           format={dateFormatList}
@@ -218,13 +229,14 @@ const onButtonClickVerificationEndDate = async (close:any) => {
       </Tooltip>)
   },
     { title: 'Дата окончания поверки', dataIndex: 'verificationEndDate', key: 'verificationEndDate',
-    sorter: (record1,record2):any=>{
-      return record1.dateOfIssue > record2.dateOfIssue
-    },
+    // sorter: (record1,record2):any=>{
+    //   return record1.dateOfIssue > record2.dateOfIssue
+    // },
     filtered: FilterverificationEndDate ? true : false,
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => {
       return (<div style={{padding: '15px'}} onKeyDown={(e) => e.stopPropagation()}>
         <RangePicker
+        // required={true}
           className="mr-3"
           onChange={(e) => {
             if(!(e && e[0])) {
@@ -232,8 +244,8 @@ const onButtonClickVerificationEndDate = async (close:any) => {
               setverificationEndDate(false)
               setFilters({...filters, VED_from: '', VED_to: ''})
             }
-            setDateStartverificationEndDate(e && e[0] ? dayjs(e[0]).format("YYYY-MM-DD") : '0');
-            setDateEndverificationEndDate(e && e[1] ? dayjs(e[1]).format("YYYY-MM-DD") : '0');
+            setDateStartverificationEndDate(e && e[0] ? dayjs(e[0]).format("YYYY-MM-DD") : '');
+            setDateEndverificationEndDate(e && e[1] ? dayjs(e[1]).format("YYYY-MM-DD") : '');
           }
           }
           format={dateFormatList}
@@ -261,31 +273,31 @@ const onButtonClickVerificationEndDate = async (close:any) => {
  },
     { title: 'Наличие драг. металлов', dataIndex: 'haveMetal', key: 'haveMetal',
 
-    filters: [
-      {
-        text: 'Нет',
-        value: 'Нет',
-      },
-      {
-        text: 'Да',
-        value: 'Да',
-      },
-      {
-        text: 'Нет информации',
-          value: 'Нет информации',
-        },
-    ],
+    // filters: [
+    //   {
+    //     text: 'Нет',
+    //     value: 'Нет',
+    //   },
+    //   {
+    //     text: 'Да',
+    //     value: 'Да',
+    //   },
+    //   {
+    //     text: 'Нет информации',
+    //       value: 'Нет информации',
+    //     },
+    // ],
     
-    onFilter:(value,record)=>{
-      // setFilters({...filters, haveMetal: record.haveMetal})
-      return record.haveMetal === 'Нет'
-    },
+    // onFilter:(value,record)=>{
+    //   // setFilters({...filters, haveMetal: record.haveMetal})
+    //   return record.haveMetal === 'Нет'
+    // },
  },
     { title: 'Тип измерительного прибора', dataIndex: 'deviceType', key: 'deviceType',
-      filters: type,
-      onFilter:(value,record)=>{
-        return record.deviceType === value
-      },
+      // filters: type,
+      // onFilter:(value,record)=>{
+      //   return record.deviceType === value
+      // },
      },
   ];
   const defaultCheckedList = columns.map((item) => item.key as string);

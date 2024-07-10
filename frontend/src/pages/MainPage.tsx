@@ -38,7 +38,7 @@ function getItem(
 
 const items: MenuProps['items'] = [
   getItem(<Link to={'/table/1'}>Таблица</Link>, 'sub2', <TableOutlined />),
-  getItem(<Link to={'/profile'}>Профиль</Link>, 'sub3', <UserOutlined />),
+  // getItem(<Link to={'/profile'}>Профиль</Link>, 'sub3', <UserOutlined />),
   getItem(<Link to={'/auth'}>Выйти</Link>, 'sub4', <LogoutOutlined />),
 ];
 const App: React.FC = () => {

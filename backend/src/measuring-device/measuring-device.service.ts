@@ -61,10 +61,10 @@ export class MeasuringDeviceService {
       order: {
         created_at: "DESC"
       },
-      // relations: {
-      //   deviceType: true,
-      //   // files: true
-      // }
+      relations: {
+        deviceType: true,
+        // files: true
+      }
     });
     return {
       data: result,
@@ -143,6 +143,9 @@ let query = {}
     order: {
       created_at: "DESC"
     },
+    relations: {
+      deviceType: true
+    }
   });
   query = {}
     return data
@@ -245,8 +248,8 @@ export class  MeasuringInstrumentTypeService{
     private typeRepository: Repository<MeasuringInstrumentType>,
   ) {}
 
-  async create(measuringDevice: Partial<MeasuringInstrumentType>): Promise<MeasuringInstrumentType> {
-
+  async create(measuringDevice: any): Promise<any> {
+    console.log(measuringDevice,'measuringDevice')
     let newInst = this.typeRepository.create(measuringDevice)
 
     return await this.typeRepository.save(newInst)

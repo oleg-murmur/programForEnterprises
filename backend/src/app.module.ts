@@ -15,7 +15,7 @@ import { FileModule } from './file/file.module';
 import { MutexServiceModule } from './mutex-service/mutex-service.module';
 
 @Module({
-  imports: [InstrumentModule,MeasuringDeviceModule, AuthModule, CommonModule,NestjsFormDataModule,
+  imports: [MeasuringDeviceModule, AuthModule, CommonModule,NestjsFormDataModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
     }),
@@ -26,10 +26,10 @@ import { MutexServiceModule } from './mutex-service/mutex-service.module';
       useFactory: (configSrvice: ConfigService) => ({
       type: 'postgres',
       host: 'localhost',
-      port: 5432,
+      port: 5433,
       username: 'postgres',
       password: '12345',
-      database: 'PFEnterprises',
+      database: 'instDBDB',
       entities: [join(process.cwd(), 'dist/**/*.entity.js')],
       synchronize: true,
     })

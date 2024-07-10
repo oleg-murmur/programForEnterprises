@@ -53,10 +53,23 @@ export const getAllInstFilter = async (page: any) => {
   },})
     return data
 }
-export const universalFilter = async (filters: any) => {
-  console.log(filters,'page')
+function removeEmptyProperties(obj:any) {
+  for (let key in obj) {
+      if (obj[key] === '0' || obj[key] === '' || obj[key].length === 0) {
+          console.log(obj[key])
+          delete obj[key];
+      }
+  }
+  return obj;
+}
+
+export const universalFilter = async (filters2: any) => {
+
+  let filters = removeEmptyProperties(filters2)
+  console.log(filters)
+
   let test = `Bearer ${localStorage.getItem('token')}`
-  console.log('BEARER', test)
+
   // console.log(PAGE_SIZE,'page_size')
   const {data} = await axios.get(`${process.env.REACT_APP_BACKEND_UNVERSAL_FILTER}`, {params: {
     ...filters
@@ -65,6 +78,7 @@ export const universalFilter = async (filters: any) => {
     'Authorization': `Bearer ${localStorage.getItem('token')}`,
     'Content-Type': 'application/json',
   },})
+  console.log(data, 'CHECK')
     return data
 }
 export const deleteByID = async (id:any) => {

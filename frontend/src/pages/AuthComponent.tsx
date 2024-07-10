@@ -38,7 +38,7 @@ export default () => {
 
   const onFinish = async(userInfo:any) => {
     if(loginType === 'login'){
-      let {data} = await axios.post('http://localhost:5000/api/auth/login', {      
+      let {data} = await axios.post('http://localhost:9000/api/auth/login', {      
         email: userInfo.email,
         password: userInfo.password,
         role: ""  
@@ -60,7 +60,7 @@ export default () => {
         role: userInfo.email === 'admin@admin.ru' ? "admin" : ""  
     }
     console.log(objUser,'objUser')
-      let {data} = await axios.post('http://localhost:5000/api/user/reg', objUser)
+      let {data} = await axios.post('http://localhost:9000/api/user/reg', objUser)
     console.log(data)
     localStorage.setItem('token', data.token);
     }
@@ -191,7 +191,7 @@ useEffect(()=> {
             <>
           <div className="" style={{
               padding:'5px'
-            }}>Для отправки заявки на регистрацию введите электронную почту
+            }}>
            </div>
               <ProFormText
 

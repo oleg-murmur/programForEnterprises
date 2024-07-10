@@ -203,9 +203,9 @@ return (
           }}
         /> */}
           <ConfigProvider locale={ruRU}>
-        <div style={{
+        {/* <div style={{
           display: (userStatus === 'admin' || userStatus === 'editor'? false : true)? 'none' : 'flex'
-        }}><NotificationComp /> </div>   
+        }}><NotificationComp /> </div>    */}
 
     <ProForm
         autoFocusFirstInput
@@ -307,7 +307,7 @@ return (
                       width="md"
                       dataFormat=''
                       colProps={{ xl: 8, md: 12 }}
-                      label="Дата окончания"
+                      label="Дата создания прибора"
                       name="verificationEndDate"
                       placeholder="дата"
                       rules={[{ validator: handleCompare }]}
