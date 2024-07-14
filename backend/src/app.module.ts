@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { InstrumentModule } from './instrument/instrument.module';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { AppController } from './app.controller';
@@ -15,7 +14,7 @@ import { FileModule } from './file/file.module';
 import { MutexServiceModule } from './mutex-service/mutex-service.module';
 
 @Module({
-  imports: [InstrumentModule,MeasuringDeviceModule, AuthModule, CommonModule,NestjsFormDataModule,
+  imports: [MeasuringDeviceModule, AuthModule, CommonModule,NestjsFormDataModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
     }),
@@ -24,12 +23,12 @@ import { MutexServiceModule } from './mutex-service/mutex-service.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configSrvice: ConfigService) => ({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: '12345',
-      database: 'PFEnterprises',
+        type: 'postgres',
+        host: 'localhost',
+        port: 5433,
+        username: 'postgres',
+        password: '12345',
+        database: 'instDBDB',
       entities: [join(process.cwd(), 'dist/**/*.entity.js')],
       synchronize: true,
     })
